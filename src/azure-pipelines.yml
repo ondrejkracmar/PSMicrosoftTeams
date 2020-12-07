@@ -17,13 +17,28 @@ steps:
   displayName: 'Publish Test Results **/TEST-*.xml'
   inputs:
     testResultsFormat: NUnit
+
+- task: PowerShell@2
+  displayName: RegisterRepository
+  inputs:
+    targetType: filePath
+    filePath: './src/build/vsts-registerRepository.ps1'
+    arguments:
+      -OrganizationName "i-system"
+      -RepositoryName "AutomationPlatform"
+      -ArtifactFeedName = "AzArtifactsPSModules"
+      -ArtifactRepositoryName "IsAzPSRepository"
+      -Repository "IsAzPSRepository"
+      -PersonalAccessToken "c3hdrkgv3ealoea5pqsqthmjqh2hynqmmobx3ign5e5mtzehunta"
+      -FeedUsername "Ondrej Kracmar"
+  
 - task: PowerShell@2
   displayName: Build
   inputs:
     targetType: filePath
     filePath: './src/build/vsts-build.ps1'
     arguments:
-        -WorkingDirectory "./src"
-        -ApiKey "c3hdrkgv3ealoea5pqsqthmjqh2hynqmmobx3ign5e5mtzehunta"
-        -Repository "IsAzPSRepository"
+      -WorkingDirectory "./src"
+      -ApiKey "c3hdrkgv3ealoea5pqsqthmjqh2hynqmmobx3ign5e5mtzehunta"
+      -Repository "IsAzPSRepository"
   condition: always()
