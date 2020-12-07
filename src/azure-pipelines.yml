@@ -24,6 +24,6 @@ steps:
     filePath: './src/build/vsts-build.ps1'
     arguments:
         -WorkingDirectory "./src"
-        -ApiKey ${env:AZUREDEVOPSAPIKEY}
+        -ApiKey ${$env:AZUREDEVOPSAPIKEY}
         -Repository "IsAzPSRepository"
   condition: always()
