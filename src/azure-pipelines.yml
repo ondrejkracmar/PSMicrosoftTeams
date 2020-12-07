@@ -21,7 +21,7 @@ steps:
   displayName: Build
   inputs:
     targetType: filePath
-    filePath: './build/vsts-build.ps1'
+    filePath: './src/build/vsts-build.ps1'
     arguments:
         -ApiKey "c3hdrkgv3ealoea5pqsqthmjqh2hynqmmobx3ign5e5mtzehunta"
         -Repository "IsAzPSRepository"
