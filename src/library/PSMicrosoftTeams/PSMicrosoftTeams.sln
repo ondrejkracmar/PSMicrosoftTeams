@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2010
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{6B8A3E24-627C-47A8-8158-005A33F8A28F}") = "PSMicrosoftTeams", "PSMicrosoftTeams\PSMicrosoftTeams.csproj", "{D03A77F1-D42C-462E-84E1-448CA563D08E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D03A77F1-D42C-462E-84E1-448CA563D08E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D03A77F1-D42C-462E-84E1-448CA563D08E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D03A77F1-D42C-462E-84E1-448CA563D08E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D03A77F1-D42C-462E-84E1-448CA563D08E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8A9FDC5E-B1C8-45A0-A1C2-A4DCDD2E0B36}
+	EndGlobalSection
+EndGlobal

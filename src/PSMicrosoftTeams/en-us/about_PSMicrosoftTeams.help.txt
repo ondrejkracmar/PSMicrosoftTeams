@@ -1,0 +1,11 @@
+﻿TOPIC
+	about_PSMicrosoftTeams
+	
+SHORT DESCRIPTION
+	Explains how to use the PSMicrosoftTeams powershell module
+	
+LONG DESCRIPTION
+	<Insert Content here>
+
+KEYWORDS
+	PSMicrosoftTeams

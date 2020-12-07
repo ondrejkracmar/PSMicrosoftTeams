@@ -1,0 +1,22 @@
+﻿
+# ignore the settings folder and files for VSCode and PSS
+.vscode/*
+*.psproj
+*TempPoint*
+
+# Ignore staging info from Visual Studio
+library/PSMicrosoftTeams/.vs/*
+library/PSMicrosoftTeams/PSMicrosoftTeams/bin/*
+library/PSMicrosoftTeams/PSMicrosoftTeams/obj/*
+
+# ignore PowerShell Studio MetaData
+PSMicrosoftTeams/PSMicrosoftTeams.psproj
+PSMicrosoftTeams/PSMicrosoftTeams.psproj.bak
+PSMicrosoftTeams/PSMicrosoftTeams.psprojs
+PSMicrosoftTeams/PSMicrosoftTeams.psproj
+
+# ignore the TestResults
+TestResults/*
+
+# ignore the publishing Directory
+publish/*
