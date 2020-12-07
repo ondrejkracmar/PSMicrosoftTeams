@@ -28,7 +28,6 @@ steps:
       -RepositoryName "AutomationPlatform"
       -ArtifactFeedName = "AzArtifactsPSModules"
       -ArtifactRepositoryName "IsAzPSRepository"
-      -Repository "IsAzPSRepository"
       -FeedUsername "Ondrej Kracmar"
       -PersonalAccessToken "c3hdrkgv3ealoea5pqsqthmjqh2hynqmmobx3ign5e5mtzehunta"
   condition: always()
