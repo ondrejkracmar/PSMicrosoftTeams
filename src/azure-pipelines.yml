@@ -29,8 +29,8 @@ steps:
       -ArtifactFeedName = "AzArtifactsPSModules"
       -ArtifactRepositoryName "IsAzPSRepository"
       -Repository "IsAzPSRepository"
-      -PersonalAccessToken "c3hdrkgv3ealoea5pqsqthmjqh2hynqmmobx3ign5e5mtzehunta"
       -FeedUsername "Ondrej Kracmar"
+      -PersonalAccessToken "c3hdrkgv3ealoea5pqsqthmjqh2hynqmmobx3ign5e5mtzehunta"
   
 - task: PowerShell@2
   displayName: Build
@@ -41,4 +41,3 @@ steps:
       -WorkingDirectory "./src"
       -ApiKey "c3hdrkgv3ealoea5pqsqthmjqh2hynqmmobx3ign5e5mtzehunta"
       -Repository "IsAzPSRepository"
-  condition: always()
