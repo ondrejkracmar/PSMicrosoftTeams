@@ -26,7 +26,7 @@ steps:
     arguments:
       -OrganizationName "i-system"
       -RepositoryName "AutomationPlatform"
-      -ArtifactFeedName = "AzArtifactsPSModules"
+      -ArtifactFeedName "AzArtifactsPSModules"
       -ArtifactRepositoryName "IsAzPSRepository"
       -FeedUsername "Ondrej Kracmar"
       -PersonalAccessToken "c3hdrkgv3ealoea5pqsqthmjqh2hynqmmobx3ign5e5mtzehunta"
