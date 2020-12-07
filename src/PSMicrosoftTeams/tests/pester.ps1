@@ -71,7 +71,7 @@ if ($TestGeneral)
 $global:__pester_data.ScriptAnalyzer | Out-Host
 
 #region Test Commands
-if ($TestFunctions)
+<#if ($TestFunctions)
 {
 	Write-PSFMessage -Level Important -Message "Proceeding with individual tests"
 	foreach ($file in (Get-ChildItem "$PSScriptRoot\functions" -Recurse -File | Where-Object Name -like "*Tests.ps1"))
@@ -99,7 +99,7 @@ if ($TestFunctions)
 			}
 		}
 	}
-}
+}#>
 #endregion Test Commands
 
 $testresults | Sort-Object Describe, Context, Name, Result, Message | Format-List
