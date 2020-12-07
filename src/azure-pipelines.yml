@@ -23,7 +23,7 @@ steps:
     targetType: filePath
     filePath: './src/build/vsts-build.ps1'
     arguments:
-        -WorkingDirectory "Release"
-        -ApiKey "c3hdrkgv3ealoea5pqsqthmjqh2hynqmmobx3ign5e5mtzehunta"
+        -WorkingDirectory "./src"
+        -ApiKey ${env:AZUREDEVOPSAPIKEY}
         -Repository "IsAzPSRepository"
   condition: always()
