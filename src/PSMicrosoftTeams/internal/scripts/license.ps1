@@ -1,5 +1,5 @@
-﻿New-PSFLicense -Product 'PSMicrosoftTeams' -Manufacturer 'KracmarOndrej' -ProductVersion $script:ModuleVersion -ProductType Module -Name MIT -Version "1.0.0.0" -Date (Get-Date "2020-12-07") -Text @"
-Copyright (c) 2020 KracmarOndrej
+﻿New-PSFLicense -Product 'PSMicrosoftTeams' -Manufacturer 'Ondrej Kracmar' -ProductVersion $script:ModuleVersion -ProductType Module -Name MIT -Version "1.0.0.0" -Date (Get-Date "2020-12-07") -Text @"
+Copyright (c) 2020 Ondrej Kracmar
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

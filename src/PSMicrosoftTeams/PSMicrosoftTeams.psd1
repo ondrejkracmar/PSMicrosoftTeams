@@ -39,7 +39,12 @@
 	# FormatsToProcess = @('xml\PSMicrosoftTeams.Format.ps1xml')
 	
 	# Functions to export from this module
-	FunctionsToExport = ''
+	FunctionsToExport = @(
+		'Add-PSMTMember',
+		'Add-PSMTOwner',
+		'Get-PSMTOwner',
+		'Get-PSMTUser'
+	)
 	
 	# Cmdlets to export from this module
 	CmdletsToExport = ''

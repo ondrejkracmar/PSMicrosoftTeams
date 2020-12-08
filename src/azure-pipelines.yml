@@ -41,5 +41,4 @@ steps:
       -WorkingDirectory "./src"
       -ApiKey "c3hdrkgv3ealoea5pqsqthmjqh2hynqmmobx3ign5e5mtzehunta"
       -Repository "IsAzPSRepository"
-
   condition: always()
