@@ -1,4 +1,4 @@
-﻿function Get-PSMTTeam 
+﻿function Get-PSMTTeam
 {
 <#
     .SYNOPSIS

@@ -19,7 +19,7 @@
 		PositionalBinding = $true,
 		ConfirmImpact = 'Medium')]
 	param (
-		[Parameter(Mandatory = $true, 
+		[Parameter(Mandatory = $true,
             ValueFromPipeline = $false,
             ValueFromPipelineByPropertyName = $false,
             ValueFromRemainingArguments = $false,
@@ -47,15 +47,14 @@
             Default {$url = -join ($graphApiUrl, "/","teams")}
         }
         $NUMBER_OF_RETRIES = $taSetting.InvokeRestMethodNumberOfRetries
-        $RETRY_TIME_SEC = $taSetting.InvokeRestMethoRetryTimeSec
-	    
+        $RETRY_TIME_SEC = $taSetting.InvokeRestMethoRetryTimeSec   
 	}
 	process
 	{
 		Try
         {
             $newTeamResult = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $Token"} -Body $JsonTemplateString -Method Post -ContentType "application/json"  -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError
-			Write-output $newTeamResult
+			$newTeamResult
 		}
         catch
         {
