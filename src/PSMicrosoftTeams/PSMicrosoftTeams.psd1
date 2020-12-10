@@ -43,7 +43,12 @@
 		'Add-PSMTMember',
 		'Add-PSMTOwner',
 		'Get-PSMTOwner',
-		'Get-PSMTUser'
+		'Get-PSMTMember',
+		'Get-PSMTUser',
+		'Remove-PSMTMember',
+		'Remove-PSMTOwner',
+		"Get-PSMTTeam",
+		'New-PSMTTeam'
 	)
 	
 	# Cmdlets to export from this module

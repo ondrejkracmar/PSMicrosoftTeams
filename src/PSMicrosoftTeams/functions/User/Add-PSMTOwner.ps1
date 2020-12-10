@@ -1,26 +1,24 @@
-function Add-PSMTOwner
-{
+function Add-PSMTOwner {
 <#
-.SYNOPSIS
-    Json string of template new team.
+    .SYNOPSIS
+        Add owner to specified team.
               
-.DESCRIPTION
-    Json string of template new team.
+    .DESCRIPTION
+        Add owner to specified team.
 
-.PARAMETER Token
-    Access Token for Graph Api .
+    .PARAMETER Token
+        Access Token for Graph Api .
               
-.PARAMETER TeamId
-    Id of Team
+    .PARAMETER TeamId
+        Id of Team
 
-.PARAMETER UserId
-    Id of User
-
+    .PARAMETER UserId
+        Id of User
 #>
-[CmdletBinding(DefaultParameterSetName = 'Token',
-    SupportsShouldProcess = $false,
-    PositionalBinding = $true,
-    ConfirmImpact = 'Medium')]
+    [CmdletBinding(DefaultParameterSetName = 'Token',
+        SupportsShouldProcess = $false,
+        PositionalBinding = $true,
+        ConfirmImpact = 'Medium')]
     param (
         [Parameter(Mandatory = $true, 
             ValueFromPipeline = $false,
@@ -40,7 +38,7 @@ function Add-PSMTOwner
         [string]$TeamId,
         [Parameter(Mandatory = $true,
             ValueFromPipeline = $false,
-           ValueFromPipelineByPropertyName = $false,
+            ValueFromPipelineByPropertyName = $false,
             ValueFromRemainingArguments = $false,
             Position = 2,
             ParameterSetName = 'Token')]
@@ -48,48 +46,43 @@ function Add-PSMTOwner
         [string]$UserId
     )
               
-    begin
-    {
-        $graphApiUrl = -join ((Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiUrl),'/',(Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiVersion))
-        switch (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiVersion)
-        {
+    begin {
+        $graphApiUrl = -join ((Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiUrl), '/', (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiVersion))
+        switch (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiVersion) {
             'v1.0' {
-                $url = -join ($graphApiUrl, "/teams/$($TeamId)/","members")
-                $urlUsers = -join ($graphApiUrl, "/","users('$($UserId)')")
+                $url = -join ($graphApiUrl, "/teams/$($TeamId)/", "members")
+                $urlUsers = -join ($graphApiUrl, "/", "users('$($UserId)')")
             }
             'beta' {
-                $url = -join ($graphApiUrl, "/teams/$($TeamId)/","members")
-                $urlUsers = -join ($graphApiUrl, "/","users('$($UserId)')")
+                $url = -join ($graphApiUrl, "/teams/$($TeamId)/", "members")
+                $urlUsers = -join ($graphApiUrl, "/", "users('$($UserId)')")
             }
             Default {
-                $url = -join ($graphApiUrl, "/teams/$($TeamId)/","members")
-                $urlUsers = -join ($graphApiUrl, "/","users('$($UserId)')")
+                $url = -join ($graphApiUrl, "/teams/$($TeamId)/", "members")
+                $urlUsers = -join ($graphApiUrl, "/", "users('$($UserId)')")
             }
         }
         $NUMBER_OF_RETRIES = Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethodNumberOfRetries
         $RETRY_TIME_SEC = Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethoRetryTimeSec
     }
     
-    process
-    {
+    process {
         #-ResponseHeadersVariable status -StatusCodeVariable stauscode
-        Try
-        {
-            $ownerBody=@{
-                "@odata.type" = "#microsoft.graph.aadUserConversationMember"
-                "roles" = @('owner')
+        Try {
+            $ownerBody = @{
+                "@odata.type"     = "#microsoft.graph.aadUserConversationMember"
+                "roles"           = @('owner')
                 "user@odata.bind" = "$urlUsers"
             }
             $jsonOwnerBody = $ownerBody | ConvertTo-Json
-            $teamOwnerResult = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $Token"} -Body $jsonOwnerBody -ContentType "application/json"  -Method Post -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError                
-            Write-Output $teamOwnerResult
+            $teamOwnerResult = Invoke-RestMethod -Uri $url -Headers @{Authorization -Body $jsonOwnerBody -ContentType "application/json"  -Method Post -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError                
+                Write-Output $teamOwnerResult
+            }
+            catch {
+                $PSCmdlet.ThrowTerminatingError($PSItem)
+            }
         }
-        catch  {
-            $PSCmdlet.ThrowTerminatingError($PSItem)
-        }
-    }
-    end
-    {
+        end {
 
+        }
     }
-}

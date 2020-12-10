@@ -1,23 +1,21 @@
-function Get-PSMTOwner
-{
-<#
+function Get-PSMTOwner {
+    <#
 .SYNOPSIS
-    Json string of template new team.
+    Get owner(s) of team.
               
 .DESCRIPTION
-    Json string of template new team.
+    Get owner(s) of team.
 
 .PARAMETER Token
-    Access Token for Graph Api .
+    Access Token for Graph Api
               
 .PARAMETER TeamId
     Id of Team
-
 #>
-[CmdletBinding(DefaultParameterSetName = 'Token',
-    SupportsShouldProcess = $false,
-    PositionalBinding = $true,
-    ConfirmImpact = 'Medium')]
+    [CmdletBinding(DefaultParameterSetName = 'Token',
+        SupportsShouldProcess = $false,
+        PositionalBinding = $true,
+        ConfirmImpact = 'Medium')]
     param (
         [Parameter(Mandatory = $true, 
             ValueFromPipeline = $false,
@@ -37,55 +35,46 @@ function Get-PSMTOwner
         [string]$TeamId
     )
               
-    begin
-    {
-        $graphApiUrl = -join ((Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiUrl),'/',(Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiVersion))
-        switch (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiVersion)
-        {
-            'v1.0' {$url = -join ($graphApiUrl, "/","groups")}
-            'beta' {$url = -join ($graphApiUrl, "/","groups")}
-            Default {$url = -join ($graphApiUrl, "/","groups")}
+    begin {
+        $graphApiUrl = -join ((Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiUrl), '/', (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiVersion))
+        switch (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiVersion) {
+            'v1.0' { $url = -join ($graphApiUrl, "/", "groups") }
+            'beta' { $url = -join ($graphApiUrl, "/", "groups") }
+            Default { $url = -join ($graphApiUrl, "/", "groups") }
         }
         $NUMBER_OF_RETRIES = Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethodNumberOfRetries
         $RETRY_TIME_SEC = Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethoRetryTimeSec
     }
 
-    process
-    {
+    process {
         #-ResponseHeadersVariable status -StatusCodeVariable stauscode
-        Try
-        {
+        Try {
             $teamResult = Invoke-RestMethod -Uri "$($url)/$($TeamId)/owners" -Headers @{Authorization = "Bearer $Token"} -Method Get -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError            
             $propName = Get-Member -InputObject $teamResult
-            if (($propName.MemberType -eq "NoteProperty") -and ($propName.name -eq "@odata.nextLink"))
-            {
+            if (($propName.MemberType -eq "NoteProperty") -and ($propName.name -eq "@odata.nextLink")) {
                 $nextURL = $result."@odata.nextLink"
-                if ($null -ne $nextURL)
-                {
-                    Do
-                    {
+                if ($null -ne $nextURL) {
+                    Do {
                         Write-Verbose ("Request to $nextURL" )
                         $resultNextLink = Invoke-RestMethod  -Header @{
-                                "Authorization" = $AuthHeader;
-                                "Content-Type"  = $ContentType;
-                            } -Method Get -Uri $nextURL
+                            "Authorization" = $AuthHeader;
+                            "Content-Type"  = $ContentType;
+                        } -Method Get -Uri $nextURL
                             
                         Write-Output $resultNextLink.value
                             
                         $nextURL = $resultNextLink."@odata.nextLink"
-                        } while ($null -ne $nextURL)
-                    }
+                    } while ($null -ne $nextURL)
+                }
             }
             Write-Output $teamResult.value
         }
-        catch
-        {
+        catch {
             $PSCmdlet.ThrowTerminatingError($PSItem)
         }
     }
 
-    end
-    {
+    end {
 
     }
 }

@@ -1,20 +1,16 @@
-function Add-PSMTMember {
+function Get-PSMTMember {
 <#
     .SYNOPSIS
-        Add meber to specified team.
+        Get member(s) of team.
               
     .DESCRIPTION
-        Add meber to specified team.
+        Get member(s) of team.
 
     .PARAMETER Token
         Access Token for Graph Api
               
     .PARAMETER TeamId
         Id of Team
-
-    .PARAMETER UserId
-        Id of User
-
 #>
     [CmdletBinding(DefaultParameterSetName = 'Token',
         SupportsShouldProcess = $false,
@@ -36,54 +32,51 @@ function Add-PSMTMember {
             Position = 1,
             ParameterSetName = 'Token')]
         [ValidateNotNullOrEmpty()]
-        [string]$TeamId,
-        [Parameter(Mandatory = $true,
-            ValueFromPipeline = $false,
-            ValueFromPipelineByPropertyName = $false,
-            ValueFromRemainingArguments = $false,
-            Position = 2,
-            ParameterSetName = 'Token')]
-        [ValidateNotNullOrEmpty()]
-        [string]$UserId
+        [string]$TeamId
     )
               
     begin {
         $graphApiUrl = -join ((Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiUrl), '/', (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiVersion))
         switch (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiVersion) {
-            'v1.0' {
-                $url = -join ($graphApiUrl, "/teams/$($TeamId)/", "members")
-                $urlUsers = -join ($graphApiUrl, "/", "users")
-            }
-            'beta' {
-                $url = -join ($graphApiUrl, "/teams/$($TeamId)/", "members")
-                $urlUsers = -join ($graphApiUrl, "/", "users")
-            }
-            default {
-                $url = -join ($graphApiUrl, "/teams/$($TeamId)/", "members")
-                $urlUsers = -join ($graphApiUrl, "/", "users")
-            }
+            'v1.0' { $url = -join ($graphApiUrl, "/", "temas") }
+            'beta' { $url = -join ($graphApiUrl, "/", "teams") }
+            Default { $url = -join ($graphApiUrl, "/", "teams") }
         }
         $NUMBER_OF_RETRIES = Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethodNumberOfRetries
         $RETRY_TIME_SEC = Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethoRetryTimeSec
     }
-    
+
     process {
         #-ResponseHeadersVariable status -StatusCodeVariable stauscode
         Try {
-            $memberBody = @{
-                "@odata.type"     = "#microsoft.graph.aadUserConversationMember"
-                "roles"           = @('member')
-                "user@odata.bind" = "$($urlUsers)('$UserID')"
-            }
-            $jsonMemberBody = $memberBody | ConvertTo-Json
-            $teamOwnerResult = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $Token"} -Body $jsonMemberBody -ContentType "application/json"  -Method Post -Verbose -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError
-                Write-Output $teamOwnerResult
+            $urlMebbers = -join (($url), "/", $TeamId, "/", "owners")
+            $teamResult = Invoke-RestMethod -Uri $urlMebbers -Headers @{Authorization -Method Get -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError            
+                $propName = Get-Member -InputObject $teamResult
+                if (($propName.MemberType -eq "NoteProperty") -and ($propName.name -eq "@odata.nextLink")) {
+                    $nextURL = $result."@odata.nextLink"
+                    if ($null -ne $nextURL) {
+                        Do {
+                            Write-Verbose ("Request to $nextURL" )
+                            $resultNextLink = Invoke-RestMethod -Header @{
+                                "Authorization" $AuthHeader;
+                                "Content-Type" = $ContentType;
+                            } -Method Get -Uri $nextURL
+                            
+                            Write-Output $resultNextLink.value
+                            
+                            $nextURL = $resultNextLink."@odata.nextLink"
+                        } while ($null -ne $nextURL)
+                    }
+                }
+                Write-Output $teamResult.value
             }
             catch {
                 $PSCmdlet.ThrowTerminatingError($PSItem)
             }
-    }
+        }
+
     end {
 
+        }
     }
 }

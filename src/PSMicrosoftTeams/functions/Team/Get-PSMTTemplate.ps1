@@ -1,5 +1,4 @@
-function Get-PSMTTeamTemplate
-{
+function Get-PSMTTeamTemplate {
 <#
 	.SYNOPSIS
 		Json string of template new team.
@@ -22,11 +21,11 @@ function Get-PSMTTeamTemplate
     .PARAMETER Owners
         Teams Owners
 #>
-	[CmdletBinding(DefaultParameterSetName = 'Token',
+    [CmdletBinding(DefaultParameterSetName = 'Token',
         SupportsShouldProcess = $false,
         PositionalBinding = $true,
         ConfirmImpact = 'Medium')]
-	param (
+    param (
         [Parameter(Mandatory = $true,
             ValueFromPipeline = $false,
             ValueFromPipelineByPropertyName = $false,
@@ -34,7 +33,7 @@ function Get-PSMTTeamTemplate
             Position = 0,
             ParameterSetName = 'Token')]
         [ValidateNotNullOrEmpty()]
-		[string]$Token,
+        [string]$Token,
         [Parameter(Mandatory = $true,
             ValueFromPipeline = $false,
             ValueFromPipelineByPropertyName = $false,
@@ -42,7 +41,7 @@ function Get-PSMTTeamTemplate
             Position = 1, 
             ParameterSetName = 'Token')]
         [ValidateNotNullOrEmpty()]
-		[string]$JsonTemplate,
+        [string]$JsonTemplate,
         [Parameter(Mandatory = $true,
             ValueFromPipeline = $false,
             ValueFromPipelineByPropertyName = $false,
@@ -50,7 +49,7 @@ function Get-PSMTTeamTemplate
             Position = 2,
             ParameterSetName = 'Token')]
         [ValidateNotNullOrEmpty()]
-		[string]$DisplayName,
+        [string]$DisplayName,
         [Parameter(Mandatory = $true,
             ValueFromPipeline = $false,
             ValueFromPipelineByPropertyName = $false,
@@ -58,61 +57,51 @@ function Get-PSMTTeamTemplate
             Position = 3,
             ParameterSetName = 'Token')]
         [ValidateNotNullOrEmpty()]
-		[string]$Description,
+        [string]$Description,
         [Parameter(Mandatory = $false,
             ValueFromPipeline = $false,
             ValueFromPipelineByPropertyName = $false,
             ValueFromRemainingArguments = $false,
             Position = 4,
             ParameterSetName = 'Token')]
-		[array]$Owners
-	)
+        [array]$Owners
+    )
 	
-	begin
-	{
+    begin {
         $taSetting = Get-TeamsAutomationSettings
-        $url = -join ($taSetting.GraphApiUrl,"/",$taSetting.GraphApiVersion, "/","users")        
+        $url = -join ($taSetting.GraphApiUrl, "/", $taSetting.GraphApiVersion, "/", "users")        
     }
     
-	process
-	{
-        Try
-        {
+    process {
+        Try {
             [array]$ownerList = @()
-            if($PSBoundParameters.ContainsKey('Owners'))
-            {
-                foreach($owner in $Owners)
-                {
+            if ($PSBoundParameters.ContainsKey('Owners')) {
+                foreach ($owner in $Owners) {
                     $userResult = Get-User -Token $token -UserPrincipalName $owner
-                    if($userResult.PSobject.Properties.name -eq "Id")
-                    {
-                        if (-not $ownerList.Contains("$url/$($userResult.Id)"))
-                        {
-                        #$ownerList.Add("$url/$($userResult.Id)")
-                        $ownerList+="$url/$($userResult.Id)"
+                    if ($userResult.PSobject.Properties.name -eq "Id") {
+                        if (-not $ownerList.Contains("$url/$($userResult.Id)")) {
+                            #$ownerList.Add("$url/$($userResult.Id)")
+                            $ownerList += "$url/$($userResult.Id)"
                         } 
                     }    
                 }
             }
                 
-           
             $teamsTemplate = $JsonTemplate | ConvertFrom-Json | ConvertTo-Hashtable
             $teamsTemplate['DisplayName'] = $DisplayName
             $teamsTemplate['Description'] = $Description
-            if($ownerList.count -gt 0)
-            {
-               $teamsTemplate['owners@odata.bind'] = [array]$ownerList
+            if ($ownerList.count -gt 0) {
+                $teamsTemplate['owners@odata.bind'] = [array]$ownerList
             }
-            [string]$jsonTeamsTemplate = $teamsTemplate | ConvertTo-Json | ForEach-Object { [System.Text.RegularExpressions.Regex]::Unescape($_)} 
-            write-Output $jsonTeamsTemplate
+            [string]$jsonTeamsTemplate = $teamsTemplate | ConvertTo-Json | ForEach-Object { [System.Text.RegularExpressions.Regex]::Unescape($_) } 
+            Write-Output $jsonTeamsTemplate
         }
-        catch  {
+        catch {
             $PSCmdlet.ThrowTerminatingError($PSItem)
         }
          
     }
-    end
-    {
+    end {
 
     }
 }

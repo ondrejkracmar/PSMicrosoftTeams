@@ -1,24 +1,23 @@
-function Get-PSMTTeam
-{
+function Get-PSMTTeam {
 <#
-	.SYNOPSIS
-		Json string of template new team.
+    .SYNOPSIS
+        Get the properties of the specified team.
 	
-	.DESCRIPTION
-        Json string of template new team.
+    .DESCRIPTION
+        Get the properties of the specified team.
 
-	.PARAMETER Token
-		Access Token for Graph Api .
+    .PARAMETER Token
+	    Access Token for Graph Api
 	
-	.PARAMETER TeamDisplayName
+    .PARAMETER TeamDisplayName
         DisplayName of Team
 
 #>
-	[CmdletBinding(DefaultParameterSetName = 'Token',
+    [CmdletBinding(DefaultParameterSetName = 'Token',
         SupportsShouldProcess = $false,
         PositionalBinding = $true,
         ConfirmImpact = 'Medium')]
-	param (
+    param (
         [Parameter(Mandatory = $true, 
             ValueFromPipeline = $false,
             ValueFromPipelineByPropertyName = $false,
@@ -34,32 +33,32 @@ function Get-PSMTTeam
             Position = 1,
             ParameterSetName = 'Token')]
         [ValidateNotNullOrEmpty()]
-		[string]$DisplayName
-	)
+        [string]$DisplayName
+    )
 	
-	begin
-	{
-        $taSetting = Get-TeamsAutomationSettings
-        $url = -join ($taSetting.GraphApiUrl,"/",$taSetting.GraphApiVersion, "/","groups")
+    begin {
+        $graphApiUrl = -join ((Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiUrl), '/', (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiVersion))
+        switch (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiVersion) {
+            'v1.0' { $url = -join ($graphApiUrl, "/", "groups") }
+            'beta' { $url = -join ($graphApiUrl, "/", "groups") }
+            Default { $url = -join ($graphApiUrl, "/", "groups") }
+        }
         $NUMBER_OF_RETRIES = $taSetting.InvokeRestMethodNumberOfRetries
         $RETRY_TIME_SEC = $taSetting.InvokeRestMethoRetryTimeSec
     }
     
-	process
-	{
+    process {
         #-ResponseHeadersVariable status -StatusCodeVariable stauscode
-        $teamsDisplayName = -join ("'",$DisplayName,"'")
-        Try
-        {
-            $teamResult = Invoke-RestMethod -Uri "$($url)?filter=displayname eq $($teamsDisplayName)" -Headers @{Authorization = "Bearer $Token"} -Method Get -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError            
+        $teamsDisplayName = -join ("'", $DisplayName, "'")
+        Try {
+            $teamResult = Invoke-RestMethod -Uri "$($url)?filter=displayname eq $($teamsDisplayName)" -Headers @{Authorization = "Bearer $Token" } -Method Get -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError            
             Write-Output $teamResult.value
         }
-        catch  {
+        catch {
             $PSCmdlet.ThrowTerminatingError($PSItem)
         }
     }
-    end
-    {
+    end {
 
     }
 }

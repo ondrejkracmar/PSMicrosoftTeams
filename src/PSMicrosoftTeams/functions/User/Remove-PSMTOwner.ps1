@@ -1,5 +1,4 @@
-function Remove-PSMTOwner
-{
+function Remove-PSMTOwner {
 <#
 	.SYNOPSIS
 		Json string of template new team.
@@ -17,11 +16,11 @@ function Remove-PSMTOwner
         Id of User
 
 #>
-	[CmdletBinding(DefaultParameterSetName = 'Token',
+    [CmdletBinding(DefaultParameterSetName = 'Token',
         SupportsShouldProcess = $false,
         PositionalBinding = $true,
         ConfirmImpact = 'Medium')]
-	param (
+    param (
         [Parameter(Mandatory = $true, 
             ValueFromPipeline = $false,
             ValueFromPipelineByPropertyName = $false,
@@ -45,32 +44,40 @@ function Remove-PSMTOwner
             Position = 2,
             ParameterSetName = 'Token')]
         [ValidateNotNullOrEmpty()]
-		[string]$UserId
-	)
+        [string]$UserId
+    )
 	
-	begin
-	{
-        $taSetting = Get-TeamsAutomationSettings
-        $url = -join ($taSetting.GraphApiUrl,"/",$taSetting.GraphApiVersion, "/","groups")
-        $NUMBER_OF_RETRIES = $taSetting.InvokeRestMethodNumberOfRetries
-        $RETRY_TIME_SEC = $taSetting.InvokeRestMethoRetryTimeSec
+    begin {
+        
+        $graphApiUrl = -join ((Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiUrl), '/', (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiVersion))
+        switch (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiVersion) {
+            'v1.0' {
+                $url = -join ($graphApiUrl, "/", "groups")
+           
+            }
+            'beta' {
+                $url = -join ($graphApiUrl, "/", "groups")
+            }
+            Default {
+                $url = -join ($graphApiUrl, "/", "groups")
+            }
+        }
+        $NUMBER_OF_RETRIES = Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethodNumberOfRetries
+        $RETRY_TIME_SEC = Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethoRetryTimeSec
     }
     
-	process
-	{
+    process {
         #-ResponseHeadersVariable status -StatusCodeVariable stauscode
-        Try
-        {
-            $ref='$ref'
-            $teamOwnerResult = Invoke-RestMethod -Uri "$($url)/$($TeamId)/owners/$($UserId)/$($ref)" -Headers @{Authorization = "Bearer $Token"} -ContentType "application/json"  -Method Delete -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError                
+        Try {
+            $ref = '$ref'
+            $teamOwnerResult = Invoke-RestMethod -Uri "$($url)$($TeamId)$($UserId)$($ref)$Token"-ContentType "application/json" -Method Delete -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError                
             Write-Output $teamOwnerResult
         }
-        catch  {
+        catch {
             $PSCmdlet.ThrowTerminatingError($PSItem)
         }
     }
-    end
-    {
+    end {
 
     }
 }

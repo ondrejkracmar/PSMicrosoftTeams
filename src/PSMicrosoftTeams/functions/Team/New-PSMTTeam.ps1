@@ -39,8 +39,13 @@ function New-PSMTTeam
 	
 	begin
 	{
-        $taSetting = Get-TeamsAutomationSettings
-        $url = -join ($taSetting.GraphApiUrl,"/",$taSetting.GraphApiVersion, "/","teams")
+        $graphApiUrl = -join ((Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiUrl),'/',(Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiVersion))
+        switch (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiVersion)
+        {
+            'v1.0' {$url = -join ($graphApiUrl, "/","teams")}
+            'beta' {$url = -join ($graphApiUrl, "/","teams")}
+            Default {$url = -join ($graphApiUrl, "/","teams")}
+        }
         $NUMBER_OF_RETRIES = $taSetting.InvokeRestMethodNumberOfRetries
         $RETRY_TIME_SEC = $taSetting.InvokeRestMethoRetryTimeSec
 	    
