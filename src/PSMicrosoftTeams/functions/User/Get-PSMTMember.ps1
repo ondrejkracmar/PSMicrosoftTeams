@@ -58,7 +58,7 @@ function Get-PSMTMember {
                         Do {
                             Write-Verbose ("Request to $nextURL" )
                             $resultNextLink = Invoke-RestMethod -Header @{
-                                "Authorization" $AuthHeader;
+                                "Authorization" = $AuthHeader;
                                 "Content-Type" = $ContentType;
                             } -Method Get -Uri $nextURL
                             
