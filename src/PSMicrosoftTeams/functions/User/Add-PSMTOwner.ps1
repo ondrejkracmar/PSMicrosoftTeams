@@ -75,7 +75,7 @@ function Add-PSMTOwner {
                 "user@odata.bind" = "$urlUsers"
             }
             $jsonOwnerBody = $ownerBody | ConvertTo-Json
-            $teamOwnerResult = Invoke-RestMethod -Uri $url -Headers @{Authorization -Body $jsonOwnerBody -ContentType "application/json"  -Method Post -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError                
+            $teamOwnerResult = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $Token"} -Body $jsonOwnerBody -ContentType "application/json"  -Method Post -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError                
                 Write-Output $teamOwnerResult
             }
             catch {
