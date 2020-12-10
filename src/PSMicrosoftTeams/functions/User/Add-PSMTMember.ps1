@@ -82,8 +82,5 @@
             catch {
                 $PSCmdlet.ThrowTerminatingError($PSItem)
             }
-    }
-    end {
-
-    }
+        }
 }

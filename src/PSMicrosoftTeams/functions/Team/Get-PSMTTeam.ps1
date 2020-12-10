@@ -1,4 +1,5 @@
-﻿function Get-PSMTTeam {
+﻿function Get-PSMTTeam 
+{
 <#
     .SYNOPSIS
         Get the properties of the specified team.
@@ -57,8 +58,5 @@
         catch {
             $PSCmdlet.ThrowTerminatingError($PSItem)
         }
-    }
-    end {
-
     }
 }

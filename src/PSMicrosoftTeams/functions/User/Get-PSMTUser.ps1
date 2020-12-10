@@ -71,9 +71,4 @@
                 $PSCmdlet.ThrowTerminatingError($PSItem) #Get-ParseErrorForResponseBody($_)
             }
         }
-    
-        end
-        {
-
-        }
     }
