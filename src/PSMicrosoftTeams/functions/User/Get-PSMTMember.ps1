@@ -55,14 +55,11 @@
                     $nextURL = $result."@odata.nextLink"
                     if ($null -ne $nextURL) {
                         Do {
-                            Write-Verbose ("Request to $nextURL" )
                             $resultNextLink = Invoke-RestMethod -Header @{
                                 "Authorization" = $AuthHeader;
                                 "Content-Type" = $ContentType;
                             } -Method Get -Uri $nextURL
-                            
-                            Write-Output $resultNextLink.value
-                            
+                            $resultNextLink.value
                             $nextURL = $resultNextLink."@odata.nextLink"
                         } while ($null -ne $nextURL)
                     }

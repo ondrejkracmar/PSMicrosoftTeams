@@ -12,8 +12,10 @@ $exceptions['LegalSurplus'] = @(
     'Exception.Streams.FailedDispose'
 )
 #>
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "")]
 $exceptions['LegalSurplus'] = @(
 
 )
 
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "")]
 $exceptions
