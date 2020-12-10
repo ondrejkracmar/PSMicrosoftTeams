@@ -17,7 +17,7 @@
         PositionalBinding = $true,
         ConfirmImpact = 'Medium')]
     param (
-        [Parameter(Mandatory = $true, 
+        [Parameter(Mandatory = $true,
             ValueFromPipeline = $false,
             ValueFromPipelineByPropertyName = $false,
             ValueFromRemainingArguments = $false,
@@ -49,7 +49,7 @@
     process {
         #-ResponseHeadersVariable status -StatusCodeVariable stauscode
         Try {
-            $teamResult = Invoke-RestMethod -Uri "$($url)/$($TeamId)/owners" -Headers @{Authorization = "Bearer $Token"} -Method Get -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError            
+            $teamResult = Invoke-RestMethod -Uri "$($url)/$($TeamId)/owners" -Headers @{Authorization = "Bearer $Token"} -Method Get -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError
             $propName = Get-Member -InputObject $teamResult
             if (($propName.MemberType -eq "NoteProperty") -and ($propName.name -eq "@odata.nextLink")) {
                 $nextURL = $result."@odata.nextLink"
@@ -59,15 +59,13 @@
                         $resultNextLink = Invoke-RestMethod  -Header @{
                             "Authorization" = $AuthHeader;
                             "Content-Type"  = $ContentType;
-                        } -Method Get -Uri $nextURL
-                            
-                        Write-Output $resultNextLink.value
-                            
+                        } -Method Get -Uri $nextURL                            
+                        $resultNextLink.value
                         $nextURL = $resultNextLink."@odata.nextLink"
                     } while ($null -ne $nextURL)
                 }
             }
-            Write-Output $teamResult.value
+            $teamResult.value
         }
         catch {
             $PSCmdlet.ThrowTerminatingError($PSItem)

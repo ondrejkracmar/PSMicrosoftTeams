@@ -47,13 +47,11 @@
         [string]$UserId
     )
 	
-    begin {
-        
+    begin {   
         $graphApiUrl = -join ((Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiUrl), '/', (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiVersion))
         switch (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiVersion) {
             'v1.0' {
                 $url = -join ($graphApiUrl, "/", "groups")
-           
             }
             'beta' {
                 $url = -join ($graphApiUrl, "/", "groups")
@@ -70,8 +68,8 @@
         #-ResponseHeadersVariable status -StatusCodeVariable stauscode
         Try {
             $ref = '$ref'
-            $teamOwnerResult = Invoke-RestMethod -Uri "$($url)$($TeamId)$($UserId)$($ref)$Token"-ContentType "application/json" -Method Delete -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError                
-            Write-Output $teamOwnerResult
+            $teamOwnerResult = Invoke-RestMethod -Uri "$($url)$($TeamId)$($UserId)$($ref)$Token"-ContentType "application/json" -Method Delete -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError
+            $teamOwnerResult
         }
         catch {
             $PSCmdlet.ThrowTerminatingError($PSItem)

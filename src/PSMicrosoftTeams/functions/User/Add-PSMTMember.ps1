@@ -21,7 +21,7 @@
         PositionalBinding = $true,
         ConfirmImpact = 'Medium')]
     param (
-        [Parameter(Mandatory = $true, 
+        [Parameter(Mandatory = $true,
             ValueFromPipeline = $false,
             ValueFromPipelineByPropertyName = $false,
             ValueFromRemainingArguments = $false,
@@ -69,15 +69,15 @@
     
     process {
         #-ResponseHeadersVariable status -StatusCodeVariable stauscode
-        Try {
-            $memberBody = @{
-                "@odata.type"     = "#microsoft.graph.aadUserConversationMember"
-                "roles"           = @('member')
-                "user@odata.bind" = "$($urlUsers)('$UserID')"
-            }
-            $jsonMemberBody = $memberBody | ConvertTo-Json
-            $teamOwnerResult = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $Token"} -Body $jsonMemberBody -ContentType "application/json"  -Method Post -Verbose -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError
-                Write-Output $teamOwnerResult
+            Try {
+                $memberBody = @{
+                    "@odata.type"     = "#microsoft.graph.aadUserConversationMember"
+                    "roles"           = @('member')
+                    "user@odata.bind" = "$($urlUsers)('$UserID')"
+                }
+                $jsonMemberBody = $memberBody | ConvertTo-Json
+                $teamOwnerResult = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $Token"} -Body $jsonMemberBody -ContentType "application/json"  -Method Post -Verbose -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError
+                $teamOwnerResult
             }
             catch {
                 $PSCmdlet.ThrowTerminatingError($PSItem)

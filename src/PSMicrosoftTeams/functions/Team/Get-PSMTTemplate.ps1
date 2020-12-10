@@ -82,8 +82,8 @@
                         if (-not $ownerList.Contains("$url/$($userResult.Id)")) {
                             #$ownerList.Add("$url/$($userResult.Id)")
                             $ownerList += "$url/$($userResult.Id)"
-                        } 
-                    }    
+                        }
+                    }
                 }
             }
                 
@@ -94,11 +94,10 @@
                 $teamsTemplate['owners@odata.bind'] = [array]$ownerList
             }
             [string]$jsonTeamsTemplate = $teamsTemplate | ConvertTo-Json | ForEach-Object { [System.Text.RegularExpressions.Regex]::Unescape($_) } 
-            Write-Output $jsonTeamsTemplate
+            $jsonTeamsTemplate
         }
         catch {
             $PSCmdlet.ThrowTerminatingError($PSItem)
         }
-         
     }
 }

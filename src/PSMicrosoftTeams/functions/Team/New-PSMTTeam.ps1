@@ -8,7 +8,7 @@
 		Create new team using JSON template
 	
 	.PARAMETER Token
-		Access Token for Graph Api .
+		Access Token for Graph Api.
 	
 	.PARAMETER JsonTemplateString
 		JSOn string with definition new team GRaph Api function.
@@ -47,7 +47,7 @@
             Default {$url = -join ($graphApiUrl, "/","teams")}
         }
         $NUMBER_OF_RETRIES = $taSetting.InvokeRestMethodNumberOfRetries
-        $RETRY_TIME_SEC = $taSetting.InvokeRestMethoRetryTimeSec   
+        $RETRY_TIME_SEC = $taSetting.InvokeRestMethoRetryTimeSec
 	}
 	process
 	{
