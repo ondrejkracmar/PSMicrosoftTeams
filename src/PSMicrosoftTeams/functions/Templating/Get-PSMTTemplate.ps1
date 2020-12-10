@@ -83,13 +83,13 @@
 	)
 	
 	begin
- {
+ 	{
 		Write-PSFMessage -Level InternalComment -Message "Bound parameters: $($PSBoundParameters.Keys -join ", ")" -Tag 'debug', 'start', 'param'
 		
 		$prospects = @()
 	}
 	process
- {
+ 	{
 		#region Scan folders
 		if (Test-PSFParameterBinding -ParameterName "Path")
 		{
@@ -134,7 +134,7 @@
 		#endregion Search Stores
 	}
 	end
- {
+ 	{
 		$filteredProspects = @()
 		
 		#region Apply filters

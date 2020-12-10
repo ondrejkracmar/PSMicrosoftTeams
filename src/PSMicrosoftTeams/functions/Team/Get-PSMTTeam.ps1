@@ -52,8 +52,8 @@
         #-ResponseHeadersVariable status -StatusCodeVariable stauscode
         $teamsDisplayName = -join ("'", $DisplayName, "'")
         Try {
-            $teamResult = Invoke-RestMethod -Uri "$($url)?filter=displayname eq $($teamsDisplayName)" -Headers @{Authorization = "Bearer $Token"} -Method Get -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError            
-            Write-Output $teamResult.value
+            $teamResult = Invoke-RestMethod -Uri "$($url)?filter=displayname eq $($teamsDisplayName)" -Headers @{Authorization = "Bearer $Token"} -Method Get -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError
+            $teamResult.value
         }
         catch {
             $PSCmdlet.ThrowTerminatingError($PSItem)
