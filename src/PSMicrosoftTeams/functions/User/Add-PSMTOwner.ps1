@@ -16,6 +16,7 @@
     .PARAMETER UserId
         Id of User
 #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]
     [CmdletBinding(DefaultParameterSetName = 'Token',
         SupportsShouldProcess = $false,
         PositionalBinding = $true,

@@ -17,7 +17,7 @@
         PositionalBinding = $true,
         ConfirmImpact = 'Medium')]
     param (
-        [Parameter(Mandatory = $true, 
+        [Parameter(Mandatory = $true,
             ValueFromPipeline = $false,
             ValueFromPipelineByPropertyName = $false,
             ValueFromRemainingArguments = $false,
@@ -45,7 +45,6 @@
         $NUMBER_OF_RETRIES = Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethodNumberOfRetries
         $RETRY_TIME_SEC = Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethoRetryTimeSec
     }
-
     process {
         #-ResponseHeadersVariable status -StatusCodeVariable stauscode
         Try {
@@ -68,7 +67,7 @@
                         } while ($null -ne $nextURL)
                     }
                 }
-                Write-Output $teamResult.value
+                $teamResult.value
             }
             catch {
                 $PSCmdlet.ThrowTerminatingError($PSItem)

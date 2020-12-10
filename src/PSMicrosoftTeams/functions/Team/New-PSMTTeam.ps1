@@ -14,6 +14,7 @@
 		JSOn string with definition new team GRaph Api function.
 	
 #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]
 	[CmdletBinding(DefaultParameterSetName = 'Token',
 		SupportsShouldProcess = $false,
 		PositionalBinding = $true,
