@@ -1,4 +1,4 @@
-function Invoke-PSMTTemplate
+﻿function Invoke-PSMTTemplate
 {
 	<#
 	.SYNOPSIS

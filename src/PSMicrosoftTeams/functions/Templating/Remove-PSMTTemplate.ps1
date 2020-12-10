@@ -1,4 +1,4 @@
-function Remove-PSMTTemplate
+﻿function Remove-PSMTTemplate
 {
 <#
 	.SYNOPSIS

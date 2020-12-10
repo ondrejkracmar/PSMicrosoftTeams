@@ -1,4 +1,4 @@
-function Get-PSMTTemplate 
+﻿function Get-PSMTTemplate 
 {
 <#
 	.SYNOPSIS

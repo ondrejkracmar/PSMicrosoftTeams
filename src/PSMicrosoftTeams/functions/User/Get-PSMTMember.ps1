@@ -1,4 +1,4 @@
-function Get-PSMTMember {
+﻿function Get-PSMTMember {
 <#
     .SYNOPSIS
         Get member(s) of team.

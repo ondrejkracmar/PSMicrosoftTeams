@@ -1,4 +1,4 @@
-function Add-PSMTMember {
+﻿function Add-PSMTMember {
 <#
     .SYNOPSIS
         Add meber to specified team.

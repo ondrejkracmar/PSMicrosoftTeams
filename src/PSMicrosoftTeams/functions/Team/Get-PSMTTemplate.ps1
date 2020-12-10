@@ -1,4 +1,4 @@
-function Get-PSMTTeamTemplate {
+﻿function Get-PSMTTeamTemplate {
 <#
 	.SYNOPSIS
 		Json string of template new team.

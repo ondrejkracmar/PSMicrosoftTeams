@@ -1,4 +1,4 @@
-function Get-PSMTOwner {
+﻿function Get-PSMTOwner {
     <#
 .SYNOPSIS
     Get owner(s) of team.

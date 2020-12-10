@@ -1,4 +1,4 @@
-function New-PSMTTemplate
+﻿function New-PSMTTemplate
 {
 <#
 	.SYNOPSIS

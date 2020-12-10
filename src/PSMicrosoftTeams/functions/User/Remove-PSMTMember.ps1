@@ -1,4 +1,4 @@
-function Remove-PSMTMember
+﻿function Remove-PSMTMember
 {
     <#
 .SYNOPSIS

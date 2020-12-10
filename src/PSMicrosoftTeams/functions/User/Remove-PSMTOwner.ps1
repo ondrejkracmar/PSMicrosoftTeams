@@ -1,4 +1,4 @@
-function Remove-PSMTOwner {
+﻿function Remove-PSMTOwner {
 <#
 	.SYNOPSIS
 		Json string of template new team.

@@ -1,4 +1,4 @@
-# The parameter identifier used to detect and insert parameters
+﻿# The parameter identifier used to detect and insert parameters
 Set-PSFConfig -Module 'PSMicrosoftTeams' -Name 'Template.Identifier' -Value 'þ' -Initialize -Validation 'string' -Description "The identifier used by the template system to detect and insert variables / scriptblock values"
 
 # The default values for common parameters

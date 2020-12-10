@@ -1,4 +1,4 @@
-function Add-PSMTOwner {
+﻿function Add-PSMTOwner {
 <#
     .SYNOPSIS
         Add owner to specified team.

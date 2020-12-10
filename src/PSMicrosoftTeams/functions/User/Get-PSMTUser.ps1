@@ -1,4 +1,4 @@
-function Get-PSMTUser
+﻿function Get-PSMTUser
 {
     <#
     .SYNOPSIS
