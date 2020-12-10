@@ -36,7 +36,6 @@
         [ValidateNotNullOrEmpty()]
         [string]$DisplayName
     )
-	
     begin {
         $graphApiUrl = -join ((Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiUrl), '/', (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiVersion))
         switch (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiVersion) {
@@ -47,7 +46,6 @@
         $NUMBER_OF_RETRIES = $taSetting.InvokeRestMethodNumberOfRetries
         $RETRY_TIME_SEC = $taSetting.InvokeRestMethoRetryTimeSec
     }
-    
     process {
         #-ResponseHeadersVariable status -StatusCodeVariable stauscode
         $teamsDisplayName = -join ("'", $DisplayName, "'")
