@@ -49,7 +49,7 @@
         #-ResponseHeadersVariable status -StatusCodeVariable stauscode
         Try {
             $urlMebbers = -join (($url), "/", $TeamId, "/", "owners")
-            $teamResult = Invoke-RestMethod -Uri $urlMebbers -Headers @{Authorization = "Bearer $Token"} -Method Get -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError            
+            $teamResult = Invoke-RestMethod -Uri $urlMebbers -Headers @{Authorization = "Bearer $Token"} -Method Get -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError
                 $propName = Get-Member -InputObject $teamResult
                 if (($propName.MemberType -eq "NoteProperty") -and ($propName.name -eq "@odata.nextLink")) {
                     $nextURL = $result."@odata.nextLink"

@@ -48,7 +48,7 @@
         [ValidateNotNullOrEmpty()]
         [string]$UserId
     )
-	
+
     begin
     {
         $graphApiUrl = -join ((Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiUrl), '/', (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiVersion))
@@ -70,7 +70,6 @@
         $NUMBER_OF_RETRIES = Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethodNumberOfRetries
         $RETRY_TIME_SEC = Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethoRetryTimeSec
     }
-    
     process
     {
         #-ResponseHeadersVariable status -StatusCodeVariable stauscode

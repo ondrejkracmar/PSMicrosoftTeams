@@ -69,7 +69,7 @@
 	
     begin {
         $taSetting = Get-TeamsAutomationSettings
-        $url = -join ($taSetting.GraphApiUrl, "/", $taSetting.GraphApiVersion, "/", "users")        
+        $url = -join ($taSetting.GraphApiUrl, "/", $taSetting.GraphApiVersion, "/", "users")
     }
     
     process {
@@ -93,7 +93,7 @@
             if ($ownerList.count -gt 0) {
                 $teamsTemplate['owners@odata.bind'] = [array]$ownerList
             }
-            [string]$jsonTeamsTemplate = $teamsTemplate | ConvertTo-Json | ForEach-Object { [System.Text.RegularExpressions.Regex]::Unescape($_) } 
+            [string]$jsonTeamsTemplate = $teamsTemplate | ConvertTo-Json | ForEach-Object { [System.Text.RegularExpressions.Regex]::Unescape($_)}
             $jsonTeamsTemplate
         }
         catch {
