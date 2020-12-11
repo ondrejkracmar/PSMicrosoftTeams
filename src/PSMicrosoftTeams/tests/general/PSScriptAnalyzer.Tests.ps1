@@ -1,4 +1,5 @@
-﻿[CmdletBinding()]
+﻿[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "")]
+[CmdletBinding()]
 Param (
 	[switch]
 	$SkipTest,

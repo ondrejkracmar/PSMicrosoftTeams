@@ -1,5 +1,4 @@
 ﻿# List of functions that should be ignored
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "")]
 $global:FunctionHelpTestExceptions = @(
     
 )
@@ -10,7 +9,6 @@ $global:FunctionHelpTestExceptions = @(
 
   "Sqlcollaborative.Dbatools.Connection.ManagementConnectionType[]"
 #>
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "")]
 $global:HelpTestEnumeratedArrays = @(
 	
 )
@@ -23,7 +21,6 @@ $global:HelpTestEnumeratedArrays = @(
 
   "Get-DbaCmObject"       = @("DoNotUse")
 #>
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "")]
 $global:HelpTestSkipParameterType = @{
     
 }

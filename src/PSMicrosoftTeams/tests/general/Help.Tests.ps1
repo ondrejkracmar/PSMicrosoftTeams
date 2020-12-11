@@ -30,6 +30,7 @@
 		These can be used to tweak the tests slightly in cases of need.
 		See the example file for explanations on each of these usage and effect.
 #>
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "")]
 [CmdletBinding()]
 Param (
 	[switch]
