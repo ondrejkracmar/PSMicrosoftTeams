@@ -66,12 +66,11 @@
             ParameterSetName = 'Token')]
         [array]$Owners
     )
-	
+
     begin {
         $taSetting = Get-TeamsAutomationSettings
         $url = -join ($taSetting.GraphApiUrl, "/", $taSetting.GraphApiVersion, "/", "users")
     }
-    
     process {
         Try {
             [array]$ownerList = @()

@@ -22,7 +22,7 @@
         PositionalBinding = $true,
         ConfirmImpact = 'Medium')]
     param (
-        [Parameter(Mandatory = $true, 
+        [Parameter(Mandatory = $true,
             ValueFromPipeline = $false,
             ValueFromPipelineByPropertyName = $false,
             ValueFromRemainingArguments = $false,
