@@ -68,7 +68,7 @@ if ($TestGeneral)
 	}
 }
 #endregion Run General Tests
-
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
 $global:__pester_data.ScriptAnalyzer | Out-Host
 
 #region Test Commands
