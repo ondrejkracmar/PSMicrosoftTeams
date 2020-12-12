@@ -25,6 +25,7 @@
 	
 		Establishes a connection to PSMicrosoftTeams
 #>
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseSingularNouns", "")]
 	[CmdletBinding()]
 	param (
 		[string]

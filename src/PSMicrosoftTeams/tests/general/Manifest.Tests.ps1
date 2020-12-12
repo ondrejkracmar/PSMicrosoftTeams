@@ -1,6 +1,6 @@
 ﻿Describe "Validating the module manifest" {
-	[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingInvokeExpression', '')]
 	$moduleRoot = (Resolve-Path "$global:testroot\..").Path
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingInvokeExpression', '')]
 	$manifest = ((Get-Content "$moduleRoot\PSMicrosoftTeams.psd1") -join "`n") | Invoke-Expression
 	Context "Basic resources validation" {
 		$files = Get-ChildItem "$moduleRoot\functions" -Recurse -File | Where-Object Name -like "*.ps1"

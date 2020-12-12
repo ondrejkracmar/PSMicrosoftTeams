@@ -24,6 +24,7 @@
 	.PARAMETER Force
 		The install script will overwrite an existing module.
 #>
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseSingularNouns", "")]
 [CmdletBinding()]
 Param (
 	[string]
