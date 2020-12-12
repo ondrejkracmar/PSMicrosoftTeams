@@ -38,7 +38,7 @@
             ValueFromPipeline = $false,
             ValueFromPipelineByPropertyName = $false,
             ValueFromRemainingArguments = $false,
-            Position = 1, 
+            Position = 1,
             ParameterSetName = 'Token')]
         [ValidateNotNullOrEmpty()]
         [string]$JsonTemplate,

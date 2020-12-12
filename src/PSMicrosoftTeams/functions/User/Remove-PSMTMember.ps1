@@ -53,7 +53,7 @@
     {
         $graphApiUrl = -join ((Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiUrl), '/', (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiVersion))
         switch (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiVersion)
-        {   
+        {
             'v1.0'
             {
                 $url = -join ($graphApiUrl, "/teams/$($TeamId)/", "members")

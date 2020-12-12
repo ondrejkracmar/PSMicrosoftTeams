@@ -81,6 +81,6 @@
         }
         catch {
                 $PSCmdlet.ThrowTerminatingError($PSItem)
-        }     
+        }
     }
 }
