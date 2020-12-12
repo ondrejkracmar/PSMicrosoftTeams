@@ -60,6 +60,7 @@ Describe "Verifying integrity of module files" {
 			
 			$tokens = $null
 			$parseErrors = $null
+			PSUseDeclaredVarsMoreThanAssignments
 			$ast = [System.Management.Automation.Language.Parser]::ParseFile($file.FullName, [ref]$tokens, [ref]$parseErrors)
 			
 			It "[$name] Should have no syntax errors" -TestCases @{ parseErrors = $parseErrors } {
