@@ -1,4 +1,5 @@
-﻿param (
+﻿[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
+param (
 	$TestGeneral = $true,
 	
 	$TestFunctions = $false,
@@ -16,9 +17,7 @@ Write-PSFMessage -Level Important -Message "Starting Tests"
 
 Write-PSFMessage -Level Important -Message "Importing Module"
 
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "")]
 $global:testroot = $PSScriptRoot
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "")]
 $global:__pester_data = @{ }
 
 Remove-Module PSMicrosoftTeams -ErrorAction Ignore

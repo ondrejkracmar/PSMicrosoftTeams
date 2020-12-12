@@ -1,4 +1,6 @@
-﻿# List of functions that should be ignored
+﻿
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
+# List of functions that should be ignored
 $global:FunctionHelpTestExceptions = @(
     
 )

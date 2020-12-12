@@ -1,4 +1,5 @@
-﻿$moduleRoot = (Resolve-Path "$global:testroot\..").Path
+﻿[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
+$moduleRoot = (Resolve-Path "$global:testroot\..").Path
 
 . "$global:testroot\general\FileIntegrity.Exceptions.ps1"
 

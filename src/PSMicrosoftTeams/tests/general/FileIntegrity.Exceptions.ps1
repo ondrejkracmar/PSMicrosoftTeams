@@ -1,4 +1,5 @@
-﻿# List of forbidden commands
+﻿[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
+# List of forbidden commands
 $global:BannedCommands = @(
 	'Write-Host'
 	'Write-Verbose'
