@@ -1,4 +1,5 @@
 ﻿Describe "Validating the module manifest" {
+	[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
 	$moduleRoot = (Resolve-Path "$global:testroot\..").Path
 	$manifest = ((Get-Content "$moduleRoot\PSMicrosoftTeams.psd1") -join "`n") | Invoke-Expression
 	Context "Basic resources validation" {

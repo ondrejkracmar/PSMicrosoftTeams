@@ -1,5 +1,4 @@
-﻿[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
-$moduleRoot = (Resolve-Path "$global:testroot\..").Path
+﻿$moduleRoot = (Resolve-Path "$global:testroot\..").Path
 
 . "$global:testroot\general\FileIntegrity.Exceptions.ps1"
 
@@ -17,6 +16,7 @@ Describe "Verifying integrity of module files" {
 			.PARAMETER Path
 				The file to test
 		#>
+			[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
 			[CmdletBinding()]
 			Param (
 				[Parameter(Mandatory = $True, ValueFromPipelineByPropertyName = $True)]
