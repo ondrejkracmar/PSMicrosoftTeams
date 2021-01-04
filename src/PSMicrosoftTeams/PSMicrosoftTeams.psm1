@@ -79,7 +79,6 @@ if ($importIndividualFiles)
 	return
 }
 #endregion Load individual files
-
 #region Load compiled code
 "<compile code into here>"
 #endregion Load compiled code

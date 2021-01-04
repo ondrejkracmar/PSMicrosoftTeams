@@ -10,6 +10,9 @@ After building the module, this file will be completely ignored, adding anything
 
 $moduleRoot = Split-Path (Split-Path $PSScriptRoot)
 
+# Load ConfigurationValidation
+(Get-ChildItem "$moduleRoot\internal\configurationvalidation\*.ps1" -ErrorAction Ignore).FullName
+
 # Load Configurations
 (Get-ChildItem "$moduleRoot\internal\configurations\*.ps1" -ErrorAction Ignore).FullName
 
@@ -24,3 +27,4 @@ $moduleRoot = Split-Path (Split-Path $PSScriptRoot)
 
 # Load License
 "$moduleRoot\internal\scripts\license.ps1"
+

@@ -77,8 +77,8 @@
                     "user@odata.bind" = "$($urlUsers)('$UserID')"
                 }
                 $jsonMemberBody = $memberBody | ConvertTo-Json
-                $teamOwnerResult = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $Token"} -Body $jsonMemberBody -ContentType "application/json"  -Method Post -Verbose -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError
-                $teamOwnerResult
+                $teamMemberResult = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $Token"} -Body $jsonMemberBody -ContentType "application/json"  -Method Post -Verbose -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError
+                $teamMemberResult
             }
             catch {
                 $PSCmdlet.ThrowTerminatingError($PSItem)
