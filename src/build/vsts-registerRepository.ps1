@@ -60,3 +60,4 @@ Register-PSRepository @registerParams
 
 # Check new PowerShell Repository is registered
 Get-PSRepository -Name $ArtifactRepositoryName
+
