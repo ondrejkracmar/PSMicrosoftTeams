@@ -83,5 +83,7 @@
             catch {
                 $PSCmdlet.ThrowTerminatingError($PSItem)
             }
-        }
-}
+        }}
+
+
+New-AdlAnalyticsAccount
