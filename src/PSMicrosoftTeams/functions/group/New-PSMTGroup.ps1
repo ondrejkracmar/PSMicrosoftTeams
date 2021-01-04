@@ -1,4 +1,4 @@
-function New-PSMTTeam
+﻿function New-PSMTTeam
 {
 <#
 	.SYNOPSIS

@@ -1,4 +1,4 @@
-function Get-GraphApiUriPath
+﻿function Get-GraphApiUriPath
 <# Joins uri to a child path#>
 {
     [CmdletBinding(DefaultParametersetName="Uri")]    

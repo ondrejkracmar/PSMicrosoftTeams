@@ -1,4 +1,4 @@
-function Join-UriPath
+﻿function Join-UriPath
 <# Joins uri to a child path#>
 {
     [CmdletBinding(DefaultParametersetName="Uri")]    
