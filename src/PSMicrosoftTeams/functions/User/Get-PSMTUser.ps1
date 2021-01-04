@@ -60,9 +60,9 @@
     
     process
     {
-        #-ResponseHeadersVariable status -StatusCodeVariable stauscode
         Try
         {
+            #-ResponseHeadersVariable status -StatusCodeVariable stauscode
             $user = Invoke-RestMethod -Uri "$url/$UserPrincipalName"-Headers @{Authorization = "Bearer $Token"} -Method Get -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError
             $user
             }
