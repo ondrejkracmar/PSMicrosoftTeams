@@ -1,12 +1,7 @@
-﻿function New-Team
+﻿function New-PSMTTeam
 {
 	[CmdletBinding(DefaultParameterSetName='CreateTeam')]
 	param(
-	    [Parameter(ParameterSetName='MigrateGroup', Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
-	    [ValidateNotNullOrEmpty()]
-	    [string]
-	    ${GroupId},
-	
 	    [Parameter(ParameterSetName='CreateTeam', Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
 	    [ValidateNotNullOrEmpty()]
 	    [string]
@@ -18,7 +13,11 @@
 	
 	    [Parameter(ParameterSetName='CreateTeam', ValueFromPipelineByPropertyName=$true)]
 	    [string]
-	    ${MailNickName},
+        ${MailNickName},
+        
+        [Parameter(ParameterSetName='CreateTeam', ValueFromPipelineByPropertyName=$true)]
+	    [System.Nullable[bool]]
+	    ${MailEnabled},
 	
 	    [Parameter(ParameterSetName='CreateTeam', ValueFromPipelineByPropertyName=$true)]
 	    [string]
@@ -40,8 +39,15 @@
         })]
 	    ${Template},
         
-        [Parameter(ParameterSetName='CreateTeam')]
-	    [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [Parameter(ParameterSetName='CreateTeam', ValueFromPipelineByPropertyName=$true)]
+        [ValidateScript({
+            try {
+                [System.Guid]::Parse($_) | Out-Null
+                $true
+            } catch {
+                $false
+            }
+        })]
 	    [string]
 	    ${Owner},
     
@@ -111,7 +117,7 @@
 	{
 	    try {
             $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "teams"
-            $authorizationToken = ''
+            $authorizationToken = Receive-PSMTAuthorizationToken
             $NUMBER_OF_RETRIES = (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryCount)
             $RETRY_TIME_SEC = (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryTimeSec)
 	    } catch {
@@ -120,6 +126,8 @@
         $requestBodyCreateTeamTemplateJSON = '{
             "template@odata.bind": "",
             "displayName": "",
+            "mailNickname" = "",
+            "mailEnabled": true,  
             "description": "",
             "visibility": "Public",
             "owners@odata.bind": [
@@ -160,16 +168,51 @@
 
             Switch ($PSCmdlet.ParameterSetName)
             {
-                'CreateTeamViaJson' {                    
+                'CreateTeamViaJson' {                               
                     $requestHashTableQuery = $JsonRequest | ConvertFrom-Json | ConvertTo-Hashtable
                 }
                 'CreateTeam' 
                 {
                     $requestHashTableQuery = $requestBodyCreateTeamTemplateJSON | ConvertFrom-Json | ConvertTo-Hashtable
-                }
-                'MigrateTeam'
-                {
-                    $requestHashTableQuery = $requestBodyCreateTeamTemplateJSON | ConvertFrom-Json | ConvertTo-Hashtable
+                    
+                    if(Test-PSFParameterBinding -Parameter Description)
+                    {
+                        $requestHashTableQuery['description'] = $Description
+                    }
+
+                    if(Test-PSFParameterBinding -Parameter MailNickName)
+                    {
+                        $requestHashTableQuery['mailNickName'] = $MailNickName
+                    }
+
+                    if(Test-PSFParameterBinding -Parameter MailEnabled)
+                    {
+                        $requestHashTableQuery['mailEnabled'] = $MailEnabled
+                    }
+
+                    if(Test-PSFParameterBinding -Parameter Visibility)
+                    {
+                        $requestHashTableQuery['visibility'] = $Visibility
+                    }
+
+                    if(Test-PSFParameterBinding -Parameter Template`)
+                    {
+                        #"https://graph.microsoft.com/v1.0/teamsTemplates(''$($Template)'')"
+                        $urlTemoplatge = Join-UriPath -Uri $url -ChildPath -JoimPath "teamsTemplates('$($Template)')"
+                        $requestHashTableQuery['template'] = $urlTemoplatge
+                    }
+                    else {
+                        $urlTemoplatge = Join-UriPath -Uri $url -ChildPath -JoimPath "teamsTemplates('standard')"
+                        $requestHashTableQuery['template'] = $urlTemoplatge
+                    }
+
+                    if(Test-PSFParameterBinding -Parameter Owner`)
+                    {
+                        [array]$ownerList = @()
+                        $urlOwner = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath (-join 'users','/',$owner)
+                        $ownerList+= $urlOwner
+                        $requestHashTableQuery['owners@odata.bind'] = [array]$ownerList
+                    }
                 }
                 'Default'
                 {
@@ -272,14 +315,14 @@
                 $requestHashTableQuery['discoverySettings']['showInTeamsSearchAndSuggestions'] = $ShowInTeamsSearchAndSuggestions
             }   
 
-            [string]$requestJSONQuery = $requestHashTableQuery | ConvertTo-Json | ForEach-Object { [System.Text.RegularExpressions.Regex]::Unescape($_)}
+            [string]$requestJSONQuery = $requestHashTableQuery | ConvertTo-Json -Depth 10 | ForEach-Object { [System.Text.RegularExpressions.Regex]::Unescape($_)}
             $newTeamResult = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $authorizationToken"} -Body ]$requestJSONQuery -Method Post -ContentType "application/json"  -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError -ResponseHeadersVariable responseHeaders
             
             if(Test-PSFParameterBinding -ParameterName $Status){
-                $newTeamResult                
+                return $newTeamResult                
             }
             else {
-                $responseHeaders
+                return $responseHeaders
             }
         } catch {
 	        $PSCmdlet.ThrowTerminatingError($PSItem)

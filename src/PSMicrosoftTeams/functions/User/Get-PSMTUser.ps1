@@ -6,56 +6,35 @@
                 
     .DESCRIPTION
         Get the properties of the specified user.
-
-    .PARAMETER Token
-        Access Token for Graph Api
                 
     .PARAMETER UserPrincipalName
         UserPrincipalName of user
 #>
-    [CmdletBinding(DefaultParameterSetName = 'Token',
+    [CmdletBinding(DefaultParameterSetName = 'User',
         SupportsShouldProcess = $false,
         PositionalBinding = $true,
         ConfirmImpact = 'Medium')]
     param (
         [Parameter(Mandatory = $true,
-            ValueFromPipeline = $false,
-            ValueFromPipelineByPropertyName = $false,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true,
             ValueFromRemainingArguments = $false,
             Position = 0,
-            ParameterSetName = 'Token')]
-        [ValidateNotNullOrEmpty()]
-        [string]$Token,
-        [Parameter(Mandatory = $true,
-            ValueFromPipeline = $false,
-            ValueFromPipelineByPropertyName = $false,
-            ValueFromRemainingArguments = $false,
-            Position = 1,
-            ParameterSetName = 'Token')]
+            ParameterSetName = 'User')]
         [ValidateNotNullOrEmpty()]
         [string]$UserPrincipalName
     )
               
     begin
     {
-        $graphApiUrl = -join ((Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiUrl), '/', (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiVersion))
-        switch (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiVersion)
-        {
-            'v1.0'
-            {
-                $url = -join ($graphApiUrl, "/", "users")
-            }
-            'beta'
-            {
-                $url = -join ($graphApiUrl, "/", "users")
-            }
-            Default
-            {
-                $url = -join ($graphApiUrl, "/", "users")
-            }
+        try {
+            $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "users"
+            $authorizationToken = Receive-PSMTAuthorizationToken
+            $NUMBER_OF_RETRIES = (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryCount)
+            $RETRY_TIME_SEC = (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryTimeSec)
+	    } catch {
+	        throw
         }
-        $NUMBER_OF_RETRIES = Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethodNumberOfRetries
-        $RETRY_TIME_SEC = Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethoRetryTimeSec
     }
     
     process
@@ -63,12 +42,13 @@
         Try
         {
             #-ResponseHeadersVariable status -StatusCodeVariable stauscode
-            $user = Invoke-RestMethod -Uri "$url/$UserPrincipalName"-Headers @{Authorization = "Bearer $Token"} -Method Get -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError
-            $user
-            }
-            catch
-            {
-                $PSCmdlet.ThrowTerminatingError($PSItem) #Get-ParseErrorForResponseBody($_)
-            }
+            $urlUser = Join-UriPath -Uri $url -ChildPath $UserPrincipalName
+            $userResult = Invoke-RestMethod -Uri $urlUser-Headers @{Authorization = "Bearer $authorizationToken"} -Method Get -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError
+            return $$userResult
         }
-    }
+        catch
+        {
+                $PSCmdlet.ThrowTerminatingError($PSItem) 
+        }
+        }
+}
