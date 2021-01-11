@@ -25,22 +25,11 @@
 	    [string]
 	    ${TeamId},
 	
-        [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
-        [ValidateScript({
-            try {
-                [System.Guid]::Parse($_) | Out-Null
-                $true
-            } catch {
-                $false
-            }
-        })]
-	    [string]
-	    ${UserId},
-	
 	    [Parameter(ValueFromPipelineByPropertyName=$true)]
 	    [ValidateSet('Member','Owner')]
 	    [string]
-        ${Role})
+        ${Role}
+    )
 	
 	begin
 	{
@@ -57,15 +46,19 @@
 	{
 	    try {
             $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "teams/$($TeamId)/members"            
-            Try {
-                $getUserTeamResult = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $authorizationToken"}  -Method Get -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError -ResponseHeadersVariable responseHeaders
-                return $getUserTeamResult 
+            $getUserTeamResult = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $authorizationToken"}  -Method Get -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError -ResponseHeadersVariable responseHeaders
+            if((Test-PSFParameterBinding -ParameterName Role) -or $Role -eq 'member')
+            {
+                return $getUserTeamResult
             }
-            catch {
-                $PSCmdlet.ThrowTerminatingError($PSItem)
+            else {
+                return $getUserTeamResult
             }
         }
-	}
+        catch {
+                $PSCmdlet.ThrowTerminatingError($PSItem)
+            }
+    }
 	
 	end
 	{

@@ -46,11 +46,12 @@
 	    [Parameter(ValueFromPipelineByPropertyName=$true)]
 	    [ValidateSet('Member','Owner')]
 	    [string]
-        ${Role})
+        ${Role},
         
         [switch]
         $Status
-	
+    )
+    
 	begin
 	{
 	    try {
@@ -58,12 +59,13 @@
             $NUMBER_OF_RETRIES = (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryCount)
             $RETRY_TIME_SEC = (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryTimeSec)
             $CONTENT_TYPE = (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.PostConrtentType)
-	    } catch {
+        } 
+        catch {
 	        $PSCmdlet.ThrowTerminatingError($PSItem)
         }
-	}
-	
-	process
+    }
+    
+    process
 	{
 	    try {
             $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "teams/$($TeamId)/members"
@@ -72,26 +74,23 @@
             {
                 $Role=''
             }
-            
-            Try {
-                $memberBody = @{
+             $memberBody = @{
                     "@odata.type"     = "#microsoft.graph.aadUserConversationMember"
                     "roles"           = @($Role)
                     "user@odata.bind" = $urlUser
-                }
-                [string]$requestJSONQuery = $memberBody | ConvertTo-Json
-                $addUserTeamResult = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $authorizationToken"} -Body ]$requestJSONQuery -Method Post -ContentType $CONTENT_TYPE  -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError -ResponseHeadersVariable responseHeaders
+             }
+             [string]$requestJSONQuery = $memberBody | ConvertTo-Json
+             $addUserTeamResult = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $authorizationToken"} -Body ]$requestJSONQuery -Method Post -ContentType $CONTENT_TYPE  -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError -ResponseHeadersVariable responseHeaders
             
-                if(Test-PSFParameterBinding -ParameterName $Status){
-                    return $addUserTeamResult                
-                }
-                else {
+             if(Test-PSFParameterBinding -ParameterName $Status){
+                return $addUserTeamResult                
+            }
+            else {
                     return $responseHeaders
-                }
             }
-            catch {
+        }
+        catch {
                 $PSCmdlet.ThrowTerminatingError($PSItem)
-            }
         }
 	}
 	
@@ -99,6 +98,4 @@
 	{
 	
 	}
-	
-	
 }

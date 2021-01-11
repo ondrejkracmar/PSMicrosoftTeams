@@ -40,15 +40,17 @@
 	
 	# Functions to export from this module
 	FunctionsToExport = @(
-		'Add-PSMTMember',
-		'Add-PSMTOwner',
-		'Get-PSMTOwner',
-		'Get-PSMTMember',
+		'Add-PSMTTeamUser',
+		'Get-PSMTTeam',
+		'Get-PSMTTeamUser',
+		'New-PSMTTeam',
 		'Get-PSMTUser',
-		'Remove-PSMTMember',
-		'Remove-PSMTOwner',
-		"Get-PSMTTeam",
-		'New-PSMTTeam'
+		'Remove-PSMTTeam',
+		'Remove-PSMTTeamUser',
+		"Get-PSMTRequestStatus",
+		'Receive-PSMTAuthorizationToken',
+		'Write-PSMTAuthorizationToken',
+		'Get-PSMTUser'
 	)
 	
 	# Cmdlets to export from this module

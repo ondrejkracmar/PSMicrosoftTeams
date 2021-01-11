@@ -44,7 +44,7 @@
             #-ResponseHeadersVariable status -StatusCodeVariable stauscode
             $urlUser = Join-UriPath -Uri $url -ChildPath $UserPrincipalName
             $userResult = Invoke-RestMethod -Uri $urlUser-Headers @{Authorization = "Bearer $authorizationToken"} -Method Get -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError
-            return $$userResult
+            return $userResult
         }
         catch
         {

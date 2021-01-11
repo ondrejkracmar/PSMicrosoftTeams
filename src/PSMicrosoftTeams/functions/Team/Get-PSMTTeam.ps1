@@ -1,60 +1,70 @@
 ﻿function Get-PSMTTeam
 {
-<#
-    .SYNOPSIS
-        Get the properties of the specified team.
+	[CmdletBinding()]
+	param(
+	    [Parameter(ParameterSetName='Filters', ValueFromPipelineByPropertyName=$true)]
+	    [Parameter(ParameterSetName='Identity')]
+	    [System.Nullable[bool]]
+	    ${Archived},
 	
-    .DESCRIPTION
-        Get the properties of the specified team.
-
-    .PARAMETER Token
-	    Access Token for Graph Api
+	    [Parameter(ParameterSetName='Filters', ValueFromPipelineByPropertyName=$true)]
+	    [Parameter(ParameterSetName='Identity')]
+	    [string]
+	    ${DisplayName},
 	
-    .PARAMETER TeamDisplayName
-        DisplayName of Team
-
-#>
-    [CmdletBinding(DefaultParameterSetName = 'Token',
-        SupportsShouldProcess = $false,
-        PositionalBinding = $true,
-        ConfirmImpact = 'Medium')]
-    param (
-        [Parameter(Mandatory = $true,
-            ValueFromPipeline = $false,
-            ValueFromPipelineByPropertyName = $false,
-            ValueFromRemainingArguments = $false,
-            Position = 0,
-            ParameterSetName = 'Token')]
-        [ValidateNotNullOrEmpty()]
-        [string]$Token,
-        [Parameter(Mandatory = $true,
-            ValueFromPipeline = $false,
-            ValueFromPipelineByPropertyName = $false,
-            ValueFromRemainingArguments = $false,
-            Position = 1,
-            ParameterSetName = 'Token')]
-        [ValidateNotNullOrEmpty()]
-        [string]$DisplayName
-    )
-    begin {
-        $graphApiUrl = -join ((Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiUrl), '/', (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiVersion))
-        switch (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiVersion) {
-            'v1.0' { $url = -join ($graphApiUrl, "/", "groups") }
-            'beta' { $url = -join ($graphApiUrl, "/", "groups") }
-            Default { $url = -join ($graphApiUrl, "/", "groups") }
+	    [Parameter(ParameterSetName='Identity', Mandatory=$true)]
+	    [string]
+	    ${TeamId},
+	
+	    [Parameter(ParameterSetName='Filters', ValueFromPipelineByPropertyName=$true)]
+	    [Parameter(ParameterSetName='Identity')]
+	    [string]
+	    ${MailNickName},
+	
+	    [Parameter(ParameterSetName='Filters', ValueFromPipelineByPropertyName=$true)]
+	    [Parameter(ParameterSetName='Identity')]
+	    [ValidateRange(1, 20)]
+	    [string]
+	    ${NumberOfThreads},
+	
+	    [Parameter(ParameterSetName='Filters', ValueFromPipelineByPropertyName=$true)]
+	    [Parameter(ParameterSetName='Identity')]
+	    [string]
+	    ${User},
+	
+	    [Parameter(ParameterSetName='Filters', ValueFromPipelineByPropertyName=$true)]
+	    [Parameter(ParameterSetName='Identity')]
+	    [string]
+	    ${Visibility})
+	
+	begin
+	{
+	    try {
+            $authorizationToken = Receive-PSMTAuthorizationToken
+            $NUMBER_OF_RETRIES = (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryCount)
+            $RETRY_TIME_SEC = (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryTimeSec)
+	    } catch {
+	        $PSCmdlet.ThrowTerminatingError($PSItem)
         }
-        $NUMBER_OF_RETRIES = $taSetting.InvokeRestMethodNumberOfRetries
-        $RETRY_TIME_SEC = $taSetting.InvokeRestMethoRetryTimeSec
-    }
-    process {
-        #-ResponseHeadersVariable status -StatusCodeVariable stauscode
-        $teamsDisplayName = -join ("'", $DisplayName, "'")
-        Try {
-            $teamResult = Invoke-RestMethod -Uri "$($url)?filter=displayname eq $($teamsDisplayName)" -Headers @{Authorization = "Bearer $Token"} -Method Get -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError
-            $teamResult.value
+	}
+	
+	process
+	{
+        try {
+            if(Test-PSFParameterBinding -Parameter MailNickName)
+            {
+                $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "teams/$($TeamId)"   
+            }    
+             $getUserTeamResult = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $authorizationToken"}  -Method Get -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError -ResponseHeadersVariable responseHeaders
+             return $getUserTeamResult 
         }
         catch {
-            $PSCmdlet.ThrowTerminatingError($PSItem)
+                $PSCmdlet.ThrowTerminatingError($PSItem)
         }
+	}
+
+	end
+	{
     }
+	
 }

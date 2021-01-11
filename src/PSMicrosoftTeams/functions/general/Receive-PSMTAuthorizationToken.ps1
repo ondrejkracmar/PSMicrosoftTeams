@@ -7,7 +7,7 @@ function Receive-PSMTAuthorizationToken
     begin
     {
         try{
-            $jwtToken = $AuthorizationToken | (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.AuthorizationToken)     
+            $jwtToken = (Get-PSFConfig -FullName 'PSMicrosoftTeams.Settings.AuthorizationToken')  | Get-JWTDetails   
             return $jwtToken
         }
         catch{

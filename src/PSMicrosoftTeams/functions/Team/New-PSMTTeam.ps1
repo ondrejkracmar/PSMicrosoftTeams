@@ -196,7 +196,7 @@
                         $requestHashTableQuery['visibility'] = $Visibility
                     }
 
-                    if(Test-PSFParameterBinding -Parameter Template`)
+                    if(Test-PSFParameterBinding -Parameter Template)
                     {
                         #"https://graph.microsoft.com/v1.0/teamsTemplates(''$($Template)'')"
                         $urlTemoplatge = Join-UriPath -Uri $url -ChildPath -JoimPath "teamsTemplates('$($Template)')"
@@ -207,7 +207,7 @@
                         $requestHashTableQuery['template'] = $urlTemoplatge
                     }
 
-                    if(Test-PSFParameterBinding -Parameter Owner`)
+                    if(Test-PSFParameterBinding -Parameter Owner)
                     {                     
                         $urlOwner = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath (-join 'users','/',$owner)                    
                         $requestHashTableQuery['owners@odata.bind'] = @($urlOwner)
