@@ -5,14 +5,14 @@ function Write-PSMTAuthorizationToken
         [Parameter(ParameterSetName="Token", Mandatory=$false, Position=0)]
         [string]$AuthorizationToken)
     
-    begin {
+    process {
         try{
             $jwtToken = $AuthorizationToken | Get-JWTDetails     
             Set-PSFConfig -Module 'PSMicrosoftTeams' -Name 'Settings.AuthorizationToken' -Value $AuthorizationToken
             return $jwtToken
         }
         catch{
-            $PSCmdlet.ThrowTerminatingError($PSItem)
+            Stop-PSFFunction -Message "Failed to write authorization token token." -ErrorRecord $_
         }
     }
 }

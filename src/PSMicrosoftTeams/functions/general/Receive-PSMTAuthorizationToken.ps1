@@ -20,7 +20,7 @@ function Receive-PSMTAuthorizationToken
             }
         }
         catch{
-            $PSCmdlet.ThrowTerminatingError($PSItem)
+            Stop-PSFFunction -Message "Failed to read authorization token token." -ErrorRecord $_
         }
     }
 }

@@ -5,7 +5,7 @@ function Get-PSMTRequestStatus
         [Parameter(ParameterSetName="Header", Mandatory=$false, Position=0)]
         [psobject]$RespopnseData)
     
-    begin {
+    process {
         try{
             $childPathdUrl = $responseData.Headers.Location
             $authorizationToken = Receive-PSMTAuthorizationToken
@@ -16,7 +16,7 @@ function Get-PSMTRequestStatus
             return $responseStatus
         }
         catch{
-            $PSCmdlet.ThrowTerminatingError($PSItem)
+            Stop-PSFFunction -Message "Failed to delete data from $childPathdUrl." -ErrorRecord $_
         }
     }
 }
