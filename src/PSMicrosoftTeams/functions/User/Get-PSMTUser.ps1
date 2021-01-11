@@ -1,6 +1,6 @@
 ﻿function Get-PSMTUser
 {
-    <#
+<#
     .SYNOPSIS
         Get the properties of the specified user.
                 
@@ -24,7 +24,7 @@
         [ValidateNotNullOrEmpty()]
         [string]$UserPrincipalName
     )
-              
+     
     begin
     {
         try {
@@ -33,7 +33,7 @@
             $NUMBER_OF_RETRIES = (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryCount)
             $RETRY_TIME_SEC = (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryTimeSec)
 	    } catch {
-	        throw
+	        $PSCmdlet.ThrowTerminatingError($PSItem)
         }
     }
     
@@ -48,7 +48,11 @@
         }
         catch
         {
+<<<<<<< HEAD
                 $PSCmdlet.ThrowTerminatingError($PSItem) 
+=======
+            $PSCmdlet.ThrowTerminatingError($PSItem)
+>>>>>>> c0f2597dc8565059cb7397e47abd0af6afdba090
         }
     }
 }
