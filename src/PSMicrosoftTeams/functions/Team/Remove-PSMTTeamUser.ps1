@@ -56,17 +56,18 @@
 	{
 	    try {
             $authorizationToken = Receive-PSMTAuthorizationToken
-            $NUMBER_OF_RETRIES = (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryCount)
-            $RETRY_TIME_SEC = (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryTimeSec)
-            $CONTENT_TYPE = (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.PostConrtentType)
+            $NUMBER_OF_RETRIES = (Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryCount)
+            $RETRY_TIME_SEC = (Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryTimeSec)
+            $CONTENT_TYPE = (Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.PostConrtentType)
 	    } catch {
-	        $PSCmdlet.ThrowTerminatingError($PSItem)
+	        Stop-PSFFunction -Message "Failed to receive uri $url" -ErrorRecord $_
         }
 	}
 	
 	process
 	{
-	    try {
+        if (Test-PSFFunctionInterrupt) { return }
+        try {
             if(Test-PSFParameterBinding -Parameter Role -Not)
             {
                 $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "group/$($TeamId)/members/$UserId/`$ref"
@@ -74,10 +75,13 @@
             else {
                 $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "group/$($TeamId)/owners/$UserId/`$ref"
             }
-                
-             $addUserTeamResult = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $authorizationToken"} -Method Delete -ContentType $CONTENT_TYPE  -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError -ResponseHeadersVariable responseHeaders
-            
-            if(Test-PSFParameterBinding -ParameterName $Status){
+            if(Test-PSFPowerShell -Edition Core){    
+                $addUserTeamResult = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $authorizationToken"} -Method Delete -ContentType $CONTENT_TYPE  -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError -ResponseHeadersVariable responseHeaders
+            }
+            else {
+                $addUserTeamResult = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $authorizationToken"} -Method Delete -ContentType $CONTENT_TYPE  #-MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError -ResponseHeadersVariable responseHeaders
+            }
+             if((Test-PSFParameterBinding -ParameterName $Status) -and (Test-PSFPowerShell -PSMinVersion 6.1)){
                 return $addUserTeamResult                
             }
             else {
@@ -85,7 +89,7 @@
                 }
         }
         catch {
-                $PSCmdlet.ThrowTerminatingError($PSItem)
+            Stop-PSFFunction -Message "Failed to delete data from $url." -ErrorRecord $_
         }
 	}
 	

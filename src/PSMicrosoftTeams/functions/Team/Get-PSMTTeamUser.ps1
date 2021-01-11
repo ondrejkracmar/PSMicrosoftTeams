@@ -35,29 +35,35 @@
 	{
 	    try {
             $authorizationToken = Receive-PSMTAuthorizationToken
-            $NUMBER_OF_RETRIES = (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryCount)
-            $RETRY_TIME_SEC = (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryTimeSec)
+            $NUMBER_OF_RETRIES = (Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryCount)
+            $RETRY_TIME_SEC = (Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryTimeSec)
 	    } catch {
-	        $PSCmdlet.ThrowTerminatingError($PSItem)
+	        Stop-PSFFunction -Message "Failed to receive uri $url" -ErrorRecord $_
         }
 	}
 	
 	process
 	{
+        if (Test-PSFFunctionInterrupt) { return }
 	    try {
-            $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "teams/$($TeamId)/members"            
-            $getUserTeamResult = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $authorizationToken"}  -Method Get -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError -ResponseHeadersVariable responseHeaders
-            if((Test-PSFParameterBinding -ParameterName Role) -or $Role -eq 'member')
-            {
-                return $getUserTeamResult
+            $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "teams/$($TeamId)/members"
+            if(Test-PSFPowerShell -Edition Core){    
+                $getUserTeamResult = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $authorizationToken"}  -Method Get -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError -ResponseHeadersVariable responseHeaders
             }
             else {
-                return $getUserTeamResult
+                $getUserTeamResult = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $authorizationToken"}  -Method Get #-MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError -ResponseHeadersVariable responseHeaders
+            }
+            if((Test-PSFParameterBinding -ParameterName Role) -or $Role -eq 'member')
+            {
+                return $getUserTeamResult #| Where-Object
+            }
+            else {
+                return $getUserTeamResult #| Where-Object
             }
         }
         catch {
-                $PSCmdlet.ThrowTerminatingError($PSItem)
-            }
+            Stop-PSFFunction -Message "Failed to get data from $urlUser." -ErrorRecord $_
+        }
     }
 	
 	end

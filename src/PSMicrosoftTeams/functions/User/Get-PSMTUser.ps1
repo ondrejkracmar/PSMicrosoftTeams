@@ -30,25 +30,31 @@
         try {
             $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "users"
             $authorizationToken = Receive-PSMTAuthorizationToken
-            $NUMBER_OF_RETRIES = (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryCount)
-            $RETRY_TIME_SEC = (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryTimeSec)
+            $NUMBER_OF_RETRIES = (Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryCount)
+            $RETRY_TIME_SEC = (Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryTimeSec)
 	    } catch {
-	        $PSCmdlet.ThrowTerminatingError($PSItem)
+            Stop-PSFFunction -Message "Failed to receive uri $url." -ErrorRecord $_
         }
     }
     
     process
     {
+        if (Test-PSFFunctionInterrupt) { return }
         Try
         {
             #-ResponseHeadersVariable status -StatusCodeVariable stauscode
             $urlUser = Join-UriPath -Uri $url -ChildPath $UserPrincipalName
-            $userResult = Invoke-RestMethod -Uri $urlUser-Headers @{Authorization = "Bearer $authorizationToken"} -Method Get -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError
+            if(Test-PSFPowerShell -Edition Core){
+                $userResult = Invoke-RestMethod -Uri $urlUser -Headers @{Authorization = "Bearer $authorizationToken"} -Method Get -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError
+            }
+            else {
+                $userResult = Invoke-RestMethod -Uri $urlUser -Headers @{Authorization = "Bearer $authorizationToken"} -Method Get
+            }
             return $userResult
         }
         catch
         {
-            $PSCmdlet.ThrowTerminatingError($PSItem)
+           Stop-PSFFunction -Message "Failed to get data from $urlUser." -ErrorRecord $_
         }
     }
 }

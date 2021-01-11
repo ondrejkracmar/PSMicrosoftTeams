@@ -8,7 +8,7 @@ function Write-PSMTAuthorizationToken
     begin {
         try{
             $jwtToken = $AuthorizationToken | Get-JWTDetails     
-            Set-PSFConfig -Module 'PSMicrosoftTeams' -Name 'Settings.AuthorizationToken' -Value $jwtToken.AccessToken
+            Set-PSFConfig -Module 'PSMicrosoftTeams' -Name 'Settings.AuthorizationToken' -Value $AuthorizationToken
             return $jwtToken
         }
         catch{

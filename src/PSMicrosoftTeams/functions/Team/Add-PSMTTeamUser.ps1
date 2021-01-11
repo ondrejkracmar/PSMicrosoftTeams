@@ -56,17 +56,18 @@
 	{
 	    try {
             $authorizationToken = Receive-PSMTAuthorizationToken
-            $NUMBER_OF_RETRIES = (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryCount)
-            $RETRY_TIME_SEC = (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryTimeSec)
-            $CONTENT_TYPE = (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.PostConrtentType)
+            $NUMBER_OF_RETRIES = (Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryCount)
+            $RETRY_TIME_SEC = (Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryTimeSec)
+            $CONTENT_TYPE = (Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.PostConrtentType)
         } 
         catch {
-	        $PSCmdlet.ThrowTerminatingError($PSItem)
+	        Stop-PSFFunction -Message "Failed to receive uri $url." -ErrorRecord $_
         }
     }
     
     process
 	{
+        if (Test-PSFFunctionInterrupt) { return }
 	    try {
             $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "teams/$($TeamId)/members"
             $urlUser = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "users/('$UserId')"
@@ -74,23 +75,28 @@
             {
                 $Role=''
             }
-             $memberBody = @{
+            $memberBody = @{
                     "@odata.type"     = "#microsoft.graph.aadUserConversationMember"
                     "roles"           = @($Role)
                     "user@odata.bind" = $urlUser
-             }
-             [string]$requestJSONQuery = $memberBody | ConvertTo-Json
-             $addUserTeamResult = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $authorizationToken"} -Body ]$requestJSONQuery -Method Post -ContentType $CONTENT_TYPE  -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError -ResponseHeadersVariable responseHeaders
-            
-             if(Test-PSFParameterBinding -ParameterName $Status){
+            }
+            [string]$requestJSONQuery = $memberBody | ConvertTo-Json
+
+            if(Test-PSFPowerShell -Edition Core){
+                $addUserTeamResult = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $authorizationToken"} -Body ]$requestJSONQuery -Method Post -ContentType $CONTENT_TYPE  -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError -ResponseHeadersVariable responseHeaders
+            }else{
+                $addUserTeamResult = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $authorizationToken"} -Body ]$requestJSONQuery -Method Post -ContentType $CONTENT_TYPE
+            }
+
+            if((Test-PSFParameterBinding -ParameterName $Status) -and (Test-PSFPowerShell -PSMinVersion 6.1)){
                 return $addUserTeamResult                
             }
             else {
-                    return $responseHeaders
+                return $responseHeaders
             }
         }
         catch {
-                $PSCmdlet.ThrowTerminatingError($PSItem)
+             Stop-PSFFunction -Message "Failed to new member $UserId with role $Role to team $TeamId." -ErrorRecord $_
         }
 	}
 	

@@ -41,25 +41,31 @@
 	{
 	    try {
             $authorizationToken = Receive-PSMTAuthorizationToken
-            $NUMBER_OF_RETRIES = (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryCount)
-            $RETRY_TIME_SEC = (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryTimeSec)
+            $NUMBER_OF_RETRIES = (Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryCount)
+            $RETRY_TIME_SEC = (Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryTimeSec)
 	    } catch {
-	        $PSCmdlet.ThrowTerminatingError($PSItem)
+	        Stop-PSFFunction -Message "Failed to receive uri $url." -ErrorRecord $_
         }
 	}
 	
 	process
 	{
+		if (Test-PSFFunctionInterrupt) { return }
         try {
             if(Test-PSFParameterBinding -Parameter MailNickName)
             {
                 $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "teams/$($TeamId)"   
-            }    
-             $getUserTeamResult = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $authorizationToken"}  -Method Get -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError -ResponseHeadersVariable responseHeaders
-             return $getUserTeamResult 
+			}
+			if(Test-PSFPowerShell -Edition Core){
+				$getUserTeamResult = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $authorizationToken"}  -Method Get -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError -ResponseHeadersVariable responseHeaders
+			}
+			else {
+				$getUserTeamResult = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $authorizationToken"}  -Method Get #-MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError -ResponseHeadersVariable responseHeaders
+			}
+            return $getUserTeamResult 
         }
         catch {
-                $PSCmdlet.ThrowTerminatingError($PSItem)
+			Stop-PSFFunction -Message "Failed to get data from $url." -ErrorRecord $_
         }
 	}
 

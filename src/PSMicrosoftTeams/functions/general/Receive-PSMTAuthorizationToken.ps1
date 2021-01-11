@@ -2,13 +2,22 @@ function Receive-PSMTAuthorizationToken
 {
     [CmdletBinding(DefaultParametersetName="Token")]    
     param(
+
+            [switch]
+            $AuthorizationTokenDetail
         )
  
-    begin
+    process
     {
         try{
-            $jwtToken = (Get-PSFConfig -FullName 'PSMicrosoftTeams.Settings.AuthorizationToken')  | Get-JWTDetails   
-            return $jwtToken
+            if(Test-PSFParameterBinding -ParameterName AuthorizationTokenDetail)
+            {
+                $jwtToken = (Get-PSFConfigValue -FullName 'PSMicrosoftTeams.Settings.AuthorizationToken')  | Get-JWTDetails
+                return  $jwtToken                
+            }
+            else {
+                return (Get-PSFConfigValue -FullName 'PSMicrosoftTeams.Settings.AuthorizationToken')
+            }
         }
         catch{
             $PSCmdlet.ThrowTerminatingError($PSItem)

@@ -118,11 +118,11 @@
 	    try {
             $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "teams"
             $authorizationToken = Receive-PSMTAuthorizationToken
-            $NUMBER_OF_RETRIES = (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryCount)
-            $RETRY_TIME_SEC = (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryTimeSec)
-            $CONTENT_TYPE = (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.PostConrtentType)
+            $NUMBER_OF_RETRIES = (Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryCount)
+            $RETRY_TIME_SEC = (Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryTimeSec)
+            $CONTENT_TYPE = (Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.PostConrtentType)
 	    } catch {
-	        $PSCmdlet.ThrowTerminatingError($PSItem)
+	        Stop-PSFFunction -Message "Failed to receive uri $url" -ErrorRecord $_
         }
         $requestBodyCreateTeamTemplateJSON = '{
             "template@odata.bind": "",
@@ -165,6 +165,7 @@
 	
 	process
 	{
+        if (Test-PSFFunctionInterrupt) { return }
 	    try {
 
             Switch ($PSCmdlet.ParameterSetName)
@@ -315,26 +316,26 @@
             }   
 
             [string]$requestJSONQuery = $requestHashTableQuery | ConvertTo-Json -Depth 10 | ForEach-Object { [System.Text.RegularExpressions.Regex]::Unescape($_)}
-            $newTeamResult = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $authorizationToken"} -Body ]$requestJSONQuery -Method Post -ContentType $CONTENT_TYPE -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError -ResponseHeadersVariable responseHeaders
-            
-            if(Test-PSFParameterBinding -ParameterName $Status){
+            if(Test-PSFPowerShell -Edition Core){
+                $newTeamResult = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $authorizationToken"} -Body ]$requestJSONQuery -Method Post -ContentType $CONTENT_TYPE -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError -ResponseHeadersVariable responseHeaders
+            }
+            else {
+                $newTeamResult = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $authorizationToken"} -Body ]$requestJSONQuery -Method Post -ContentType $CONTENT_TYPE #-MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError -ResponseHeadersVariable responseHeaders
+            }
+            if((Test-PSFParameterBinding -ParameterName $Status) -and (Test-PSFPowerShell -PSMinVersion 6.1)){
                 return $newTeamResult                
             }
             else {
                 return $responseHeaders
             }
         } catch {
-	        $PSCmdlet.ThrowTerminatingError($PSItem)
+	        Stop-PSFFunction -Message "Failed to post data from $url." -ErrorRecord $_
 	    }
 	}
 	
 	end
 	{
-	    try {
-	        
-	    } catch {
-	        $PSCmdlet.ThrowTerminatingError($PSItem)
-	    }
+
 	}
 	
 }

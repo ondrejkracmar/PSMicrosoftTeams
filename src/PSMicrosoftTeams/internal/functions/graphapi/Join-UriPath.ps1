@@ -1,12 +1,32 @@
-﻿function Join-UriPath
-<# Joins uri to a child path#>
-{
-    [CmdletBinding(DefaultParametersetName="Uri")]    
-    param(
-        [Parameter(ParameterSetName="Uri", Mandatory=$true, Position=0)]
-        [uri]$Uri, 
-        [Parameter(ParameterSetName="Uri", Mandatory=$true, Position=1)]
-        [string]$ChildPath)
-    $combinedPath = [System.Uri]::new($Uri, $ChildPath)
-    return New-Object uri $combinedPath
+﻿
+function Join-UriPath {
+    <#
+    .DESCRIPTION
+    Join-Path but for URL strings instead
+     
+    .PARAMETER Uri
+    Base path string
+     
+    .PARAMETER ChildPath
+    Child path or item name
+     
+    .EXAMPLE
+    Join-Url -Path "https://www.contoso.local" -ChildPath "foo.htm"
+    returns "https://www.contoso.local/foo.htm"
+ 
+    #>
+    param (
+        [parameter(Mandatory=$True, HelpMessage="Base Path")]
+        [ValidateNotNullOrEmpty()]
+        [string] $Uri,
+        [parameter(Mandatory=$True, HelpMessage="Child Path or Item Name")]
+        [ValidateNotNullOrEmpty()]
+        [string] $ChildPath
+    )
+    if ($Uri.EndsWith('/')) {
+        return -join ($Uri, $ChildPath)
+    }
+    else {
+        return -join ($Uri,"/",$ChildPath)
+    }
 }
