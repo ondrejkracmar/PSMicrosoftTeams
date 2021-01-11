@@ -120,8 +120,9 @@
             $authorizationToken = Receive-PSMTAuthorizationToken
             $NUMBER_OF_RETRIES = (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryCount)
             $RETRY_TIME_SEC = (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryTimeSec)
+            $CONTENT_TYPE = (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.PostConrtentType)
 	    } catch {
-	        throw
+	        $PSCmdlet.ThrowTerminatingError($PSItem)
         }
         $requestBodyCreateTeamTemplateJSON = '{
             "template@odata.bind": "",
@@ -207,11 +208,9 @@
                     }
 
                     if(Test-PSFParameterBinding -Parameter Owner`)
-                    {
-                        [array]$ownerList = @()
-                        $urlOwner = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath (-join 'users','/',$owner)
-                        $ownerList+= $urlOwner
-                        $requestHashTableQuery['owners@odata.bind'] = [array]$ownerList
+                    {                     
+                        $urlOwner = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath (-join 'users','/',$owner)                    
+                        $requestHashTableQuery['owners@odata.bind'] = @($urlOwner)
                     }
                 }
                 'Default'
@@ -316,7 +315,7 @@
             }   
 
             [string]$requestJSONQuery = $requestHashTableQuery | ConvertTo-Json -Depth 10 | ForEach-Object { [System.Text.RegularExpressions.Regex]::Unescape($_)}
-            $newTeamResult = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $authorizationToken"} -Body ]$requestJSONQuery -Method Post -ContentType "application/json"  -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError -ResponseHeadersVariable responseHeaders
+            $newTeamResult = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $authorizationToken"} -Body ]$requestJSONQuery -Method Post -ContentType $CONTENT_TYPE -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError -ResponseHeadersVariable responseHeaders
             
             if(Test-PSFParameterBinding -ParameterName $Status){
                 return $newTeamResult                
