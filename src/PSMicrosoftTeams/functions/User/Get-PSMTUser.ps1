@@ -50,5 +50,5 @@
         {
                 $PSCmdlet.ThrowTerminatingError($PSItem) 
         }
-        }
+    }
 }
