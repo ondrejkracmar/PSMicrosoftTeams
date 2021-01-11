@@ -48,11 +48,7 @@
         }
         catch
         {
-<<<<<<< HEAD
-                $PSCmdlet.ThrowTerminatingError($PSItem) 
-=======
             $PSCmdlet.ThrowTerminatingError($PSItem)
->>>>>>> c0f2597dc8565059cb7397e47abd0af6afdba090
         }
     }
 }
