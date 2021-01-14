@@ -23,17 +23,6 @@
 	
 	    [Parameter(ParameterSetName='Filters', ValueFromPipelineByPropertyName=$true)]
 	    [Parameter(ParameterSetName='Identity')]
-	    [ValidateRange(1, 20)]
-	    [string]
-	    ${NumberOfThreads},
-	
-	    [Parameter(ParameterSetName='Filters', ValueFromPipelineByPropertyName=$true)]
-	    [Parameter(ParameterSetName='Identity')]
-	    [string]
-	    ${User},
-	
-	    [Parameter(ParameterSetName='Filters', ValueFromPipelineByPropertyName=$true)]
-	    [Parameter(ParameterSetName='Identity')]
 	    [string]
 	    ${Visibility})
 	
@@ -52,9 +41,18 @@
 	{
 		if (Test-PSFFunctionInterrupt) { return }
         try {
-            if(Test-PSFParameterBinding -Parameter MailNickName)
+            if(Test-PSFParameterBinding -Parameter TeamId)
             {
-                $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "teams/$($TeamId)"   
+				$format = "?`$format=json"
+				$url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "teams/$($TeamId)$format" 
+			}
+			if(Test-PSFParameterBinding -Parameter MailNickName)
+            {
+				$filter = "`$filter=startswith(mail,'{0}')" -f [System.Net.WebUtility]::UrlEncode($MailNickName)
+				$format = "?`$format=json"
+				$queryString = (($format, $filter)) -join '&' 
+				$url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "groups$queryString" 
+				Write-Verbose $url
 			}
 			if(Test-PSFPowerShell -Edition Core){
 				$getUserTeamResult = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $authorizationToken"}  -Method Get -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError -ResponseHeadersVariable responseHeaders
