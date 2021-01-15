@@ -1,4 +1,4 @@
-Function Invoke-GraphApiQuery{
+﻿Function Invoke-GraphApiQuery{
     <#
 
     #>

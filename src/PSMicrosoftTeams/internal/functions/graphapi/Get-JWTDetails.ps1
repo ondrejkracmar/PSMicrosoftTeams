@@ -1,4 +1,4 @@
-function Get-JWTDetails {
+﻿function Get-JWTDetails {
     [cmdletbinding()]
     param(
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, Position = 0)]

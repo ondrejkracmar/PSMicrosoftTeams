@@ -1,4 +1,4 @@
-function ConvertTo-Hashtable {
+﻿function ConvertTo-Hashtable {
     [CmdletBinding()]
     [OutputType('hashtable')]
     param (
