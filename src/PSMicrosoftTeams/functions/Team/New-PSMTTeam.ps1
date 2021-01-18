@@ -127,7 +127,7 @@
         $requestBodyCreateTeamTemplateJSON = '{
             "template@odata.bind": "",
             "displayName": "",
-            "mailNickname" = "",
+            "mailNickname" : "",
             "mailEnabled": true,  
             "description": "",
             "visibility": "Public",
@@ -171,11 +171,11 @@
             Switch ($PSCmdlet.ParameterSetName)
             {
                 'CreateTeamViaJson' {                               
-                    $requestHashTableQuery = $JsonRequest | ConvertFrom-Json | ConvertTo-Hashtable
+                    $requestHashTableQuery = $JsonRequest | ConvertFrom-Json | ConvertTo-PSFHashtable
                 }
                 'CreateTeam' 
                 {
-                    $requestHashTableQuery = $requestBodyCreateTeamTemplateJSON | ConvertFrom-Json | ConvertTo-Hashtable
+                    $requestHashTableQuery = $requestBodyCreateTeamTemplateJSON | ConvertFrom-Json | ConvertTo-PSFHashtable
                     
                     if(Test-PSFParameterBinding -Parameter Description)
                     {
@@ -216,7 +216,7 @@
                 }
                 'Default'
                 {
-                    $requestHashTableQuery = $requestBodyCreateTeamTemplateJSON | ConvertFrom-Json | ConvertTo-Hashtable
+                    $requestHashTableQuery = $requestBodyCreateTeamTemplateJSON | ConvertFrom-Json | ConvertTo-PSFHashtable
                 }
             }
             
@@ -318,7 +318,7 @@
             [string]$requestJSONQuery = $requestHashTableQuery | ConvertTo-Json -Depth 10 | ForEach-Object { [System.Text.RegularExpressions.Regex]::Unescape($_)}
             
                 $newTeamResult = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $authorizationToken"} -Body ]$requestJSONQuery -Method Post -ContentType $CONTENT_TYPE -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError -ResponseHeadersVariable responseHeaders
-            }
+            
             else {
                 $newTeamResult = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $authorizationToken"} -Body ]$requestJSONQuery -Method Post -ContentType $CONTENT_TYPE #-MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError -ResponseHeadersVariable responseHeaders
             }
