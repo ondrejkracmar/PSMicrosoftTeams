@@ -15,7 +15,7 @@
         [string]$Method = "Get",
         [string]$Accept = 'application/json',
         [string]$ContentType = 'application/json',
-        [ValidateRange(5, 100)]
+        [ValidateRange(5, 1000)]
         [int]$Top,
         [ValidateRange(1, [int]::MaxValue)]
         #[ValidateRange("Positive")]
@@ -55,9 +55,13 @@
 
             if(Test-PSFParameterBinding -Parameter Format) {
                 $queryFormat = "`$format={0}" -f [System.Net.WebUtility]::UrlEncode($Format)
-            }           
+            }
+            
+            if(Test-PSFParameterBinding -Parameter Top) {
+                $queryTop = "`$top={0}" -f [System.Net.WebUtility]::UrlEncode($Top)
+            }
             
-            $queryString = (($queryFlter, $querySelect, $queryExpand, $queryFormat -ne $nul) -join "&")
+            $queryString = (($queryTop, $queryFlter, $querySelect, $queryExpand, $queryFormat -ne $nul) -join "&")
 
             if([string]::IsNullOrEmpty($queryString)){
                 $queryUri = $Uri
@@ -81,41 +85,40 @@
                 $queryParameters['ResponseHeadersVariable'] = 'responseHeaders'
             }
 
-            If(Test-PSFParameterBinding -Parameter Top) {
-                $queryParameters['Top'] = $Top
-            }
-
             If(Test-PSFParameterBinding -Parameter Body) {
                 $queryParameters['Body'] = $Body
             }
             
             $response = Invoke-RestMethod @queryParameters
-            if($null -ne $response.value)
+            if($response.PSobject.Properties.Name.Contains("value"))
             {
-                return $response.Value
+                $responseOutput = $response.value
             }
             else {
-                return $response
+                $responseOutput =  $response
             }
-             
-            If(-not (Test-PSFParameterBinding -Parameter All) -and $response.'@odata.nextLink'){
+            If(-not ($All.IsPresent) -and $response.PSobject.Properties.Name.Contains('@odata.nextLink')){
                 Write-PSFMessage -Level Warning -String 'QueryMoreData'
                 Start-Sleep 1
+                return $responseOutput
             }
-            if(Test-PSFParameterBinding -Parameter All){
-                while($null -ne $response.'@odata.nextLink')
-                {
-                    $nextURL = $response."@odata.nextLink"
-                    $queryParameters['Uri'] = $nextURL
-                    $queryParameters['ErrorAction'] = 'SilentlyContinue'
-                    $response = Invoke-RestMethod @queryParameters
-                    ifIf(Test-PSFParameterBinding -Parameter Top)
+            else {
+                if($All.IsPresent){
+                    $responseOutputList=[System.Collections.ArrayList]::new()
+                    $responseOutputList.AddRange($responseOutput )
+                    while($response.PSobject.Properties.Name.Contains('@odata.nextLink'))
                     {
-                        return $response | Select-PSFObject -Property * -TypeName 'User'
-                    } 
-                    else {
-                        
+                        $nextURL = $response."@odata.nextLink"
+                        $queryParameters['Uri'] = $nextURL
+                        $queryParameters['ErrorAction'] = 'SilentlyContinue'
+                        $response = Invoke-RestMethod @queryParameters
+                        $responseOutput = $response.value
+                        $responseOutputList.AddRange($responseOutput )
                     }
+                    return $responseOutputList
+                }
+                else {
+                    return $responseOutput
                 }
             }
         }

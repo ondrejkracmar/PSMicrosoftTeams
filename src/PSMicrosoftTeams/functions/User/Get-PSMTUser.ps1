@@ -22,7 +22,7 @@
             ParameterSetName = 'FilterByUserPrincipalName')]
         [ValidateNotNullOrEmpty()]
         [string]$UserPrincipalName,
-        [Parameter(Mandatory = $true,
+        [Parameter(Mandatory = $false,
             ValueFromPipeline = $false,
             ValueFromPipelineByPropertyName = $false,
             ValueFromRemainingArguments = $false,
@@ -36,17 +36,16 @@
             ParameterSetName = 'Filter')]
         [ValidateNotNullOrEmpty()]
         [string]$Filter,
-        [Parameter(Mandatory = $true,
+        [Parameter(Mandatory = $false,
             ValueFromPipeline = $false,
             ValueFromPipelineByPropertyName = $false,
-            ValueFromRemainingArguments = $false,
-            ParameterSetName = 'All')]
+            ValueFromRemainingArguments = $false)]
         [switch]$All,
         [Parameter(Mandatory = $false,
         ValueFromPipeline = $false,
         ValueFromPipelineByPropertyName = $false,
         ValueFromRemainingArguments = $false)]
-        [ValidateRange(5, 100)]
+        [ValidateRange(5, 1000)]
         [int]$PageSize
     )
      
@@ -55,9 +54,9 @@
         try {
             $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "users"
             $authorizationToken = Receive-PSMTAuthorizationToken
-            $select = (Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.GraphApiQuery.Select.User) -join ","
+            $property = Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.GraphApiQuery.Select.User
 	    } catch {
-            Stop-PSFFunction -Message "Failed to receive uri $url." -ErrorRecord $_
+            Stop-PSFFunction -String 'FailedGetUsers' -StringValues $graphApiParameters['Uri'] -ErrorRecord $_
         }
     }
     
@@ -69,42 +68,47 @@
             $graphApiParameters=@{
                 Method = 'Get'
                 AuthorizationToken = "Bearer $authorizationToken"
-                Select = $select
             }
 
             if(Test-PSFParameterBinding -Parameter UserPrincipalName) {
                 $urlUser = Join-UriPath -Uri $url -ChildPath $UserPrincipalName
                 $graphApiParameters['Uri'] = $urlUser
+                $graphApiParameters['Select'] = $property -join ","
+            }
+            else {
+                $graphApiParameters['Uri'] = $url
             }
 
             if(Test-PSFParameterBinding -Parameter Name) {
-                $graphApiParameters['Uri'] = $url
                 $graphApiParameters['Filter'] = ("startswith(displayName,'{0}') or startswith(givenName,'{0}') or startswith(surname,'{0}') or startswith(mail,'{0}') or startswith(userPrincipalName,'{0}')" -f $Name)
             }
 
             if(Test-PSFParameterBinding -Parameter Filter)
             {
-                $graphApiParameters['Uri'] = $url
                 $graphApiParameters['Filter'] = $Filter
             }
 
             if(Test-PSFParameterBinding -Parameter All)
             {
-                $graphApiParameters['Uri'] = $url
                 $graphApiParameters['All'] = $true
             }
 
-            if(Test-PSFParameterBinding -Parameter All PageSize)
+            if(Test-PSFParameterBinding -Parameter PageSize)
             {
                 $graphApiParameters['Top'] = $PageSize
             }
 
             $userResult = Invoke-GraphApiQuery @graphApiParameters
-            return $userResult | Select-PSFObject -Property * -ExcludeProperty '@odata*' -TypeName 'PSMicrosoftTeams.User'
+            return $userResult | Select-PSFObject -Property $property -ExcludeProperty '@odata*' -TypeName 'PSMicrosoftTeams.User'
         }
         catch
         {
-           Write-PSFMessage -Level Warning -String 'FailedGetUser' -StringValues $UserPrincipalName  -ErrorRecord $_
+            if(Test-PSFParameterBinding -Parameter UserPrincipalName) { 
+                Write-PSFMessage -Level Warning -String 'FailedGetUser' -StringValues $UserPrincipalName -Target $graphApiParameters['Uri'] -ErrorRecord $_
+            }
+            else {
+                Write-PSFMessage -Level Warning -String 'FailedGetUsers' -StringValues $graphApiParameters['Uri'] Target $graphApiParameters['Uri'] -ErrorRecord $_
+            }
         }
     }
 }
