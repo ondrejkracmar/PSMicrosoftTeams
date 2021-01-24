@@ -88,39 +88,44 @@
             If(Test-PSFParameterBinding -Parameter Body) {
                 $queryParameters['Body'] = $Body
             }
-            
+            $responseOutputList=[System.Collections.ArrayList]::new()
             $response = Invoke-RestMethod @queryParameters
             if($response.PSobject.Properties.Name.Contains("value"))
             {
-                $responseOutput = $response.value
+                [object[]]$responseOutput = $response.value
             }
             else {
-                $responseOutput =  $response
+                [object[]]$responseOutput =  $response
             }
             If(-not ($All.IsPresent) -and $response.PSobject.Properties.Name.Contains('@odata.nextLink')){
                 Write-PSFMessage -Level Warning -String 'QueryMoreData'
                 Start-Sleep 1
-                return $responseOutput
+                $responseOutputList.AddRange($responseOutput)
             }
             else {
                 if($All.IsPresent){
-                    $responseOutputList=[System.Collections.ArrayList]::new()
-                    $responseOutputList.AddRange($responseOutput )
+                    $responseOutputList.AddRange($responseOutput)
                     while($response.PSobject.Properties.Name.Contains('@odata.nextLink'))
                     {
                         $nextURL = $response."@odata.nextLink"
                         $queryParameters['Uri'] = $nextURL
                         $queryParameters['ErrorAction'] = 'SilentlyContinue'
                         $response = Invoke-RestMethod @queryParameters
-                        $responseOutput = $response.value
-                        $responseOutputList.AddRange($responseOutput )
+
+                        if($response.PSobject.Properties.Name.Contains("value")){
+                            $responseOutput = $response.value
+                        }
+                        else {
+                            $responseOutput =  $response
+                        }
+                        $responseOutputList.AddRange($responseOutput)
                     }
-                    return $responseOutputList
                 }
-                else {
-                    return $responseOutput
+                else{
+                    $responseOutputList.AddRange($responseOutput)
                 }
             }
+            return $responseOutputList
         }
         Catch{
             Stop-PSFFunction -String 'FailedInvokeRest' -Target $queryUri -StringValues $Method, $queryUri -ErrorRecord $_ -Continue -EnableException $True

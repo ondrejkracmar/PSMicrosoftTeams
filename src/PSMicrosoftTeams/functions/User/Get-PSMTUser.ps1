@@ -99,16 +99,17 @@
             }
 
             $userResult = Invoke-GraphApiQuery @graphApiParameters
-            return $userResult | Select-PSFObject -Property $property -ExcludeProperty '@odata*' -TypeName 'PSMicrosoftTeams.User'
+            $userResult | Select-PSFObject -Property $property -ExcludeProperty '@odata*' -TypeName 'PSMicrosoftTeams.User'
         }
         catch
         {
-            if(Test-PSFParameterBinding -Parameter UserPrincipalName) { 
-                Write-PSFMessage -Level Warning -String 'FailedGetUser' -StringValues $UserPrincipalName -Target $graphApiParameters['Uri'] -ErrorRecord $_
+            if(Test-PSFParameterBinding -Parameter UserPrincipalName) {
+                Stop-PSFFunction -String 'FailedGetUser' -StringValues $UserPrincipalName -Target $graphApiParameters['Uri'] -Continue -ErrorRecord $_
             }
-            else {
-                Write-PSFMessage -Level Warning -String 'FailedGetUsers' -StringValues $graphApiParameters['Uri'] Target $graphApiParameters['Uri'] -ErrorRecord $_
+            else{
+                Stop-PSFFunction -String 'FailedGetUsers' -StringValues $graphApiParameters['Uri'] -Target $graphApiParameters['Uri'] -Continue -ErrorRecord $_ 
             }
         }
+        Write-PSFMessage -Level InternalComment -String 'QueryCommandOutput' -StringValues $graphApiParameters['Uri'] -Target $graphApiParameters['Uri']
     }
 }

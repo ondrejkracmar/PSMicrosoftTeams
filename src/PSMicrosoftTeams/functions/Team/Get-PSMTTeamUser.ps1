@@ -10,10 +10,20 @@
     .PARAMETER TeamId
         Id of Team (unified group)
 
+    .PARAMETER Role
+        Type of Teams user Owner or Member
+
 #>
-	[CmdletBinding()]
+[CmdletBinding(DefaultParameterSetName = 'All',
+SupportsShouldProcess = $false,
+PositionalBinding = $true,
+ConfirmImpact = 'Medium')]
 	param(
-	    [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
+        [Parameter(Mandatory = $true,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true,
+            ValueFromRemainingArguments = $false,
+			ParameterSetName = 'Filters')]
 	    [ValidateScript({
             try {
                 [System.Guid]::Parse($_) | Out-Null
@@ -23,22 +33,28 @@
             }
         })]
 	    [string]
-	    ${TeamId},
-	
-	    [Parameter(ValueFromPipelineByPropertyName=$true)]
+	    $TeamId,
+        [Parameter(Mandatory = $false,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true,
+            ValueFromRemainingArguments = $false,
+            ParameterSetName = 'Role')]
+        [ValidateNotNullOrEmpty()]
+        [Parameter(ParameterSetName = 'All')]
 	    [ValidateSet('Member','Owner')]
 	    [string]
-        ${Role}
+        $Role
     )
 	
 	begin
 	{
 	    try {
+            $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "groups"
             $authorizationToken = Receive-PSMTAuthorizationToken
-            $NUMBER_OF_RETRIES = (Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryCount)
-            $RETRY_TIME_SEC = (Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryTimeSec)
-	    } catch {
-	        Stop-PSFFunction -Message "Failed to receive uri $url" -ErrorRecord $_
+            $property = Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.GraphApiQuery.Select.Group
+		} 
+		catch {
+            Stop-PSFFunction -String 'FailedGetUsers' -StringValues $graphApiParameters['Uri'] -ErrorRecord $_
         }
 	}
 	

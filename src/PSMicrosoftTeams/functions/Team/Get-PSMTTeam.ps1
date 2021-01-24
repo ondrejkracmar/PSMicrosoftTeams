@@ -1,74 +1,119 @@
 ﻿function Get-PSMTTeam
 {
-	[CmdletBinding()]
+	[CmdletBinding(DefaultParameterSetName = 'Filters',
+        SupportsShouldProcess = $false,
+        PositionalBinding = $true,
+        ConfirmImpact = 'Medium')]
 	param(
-	    [Parameter(ParameterSetName='Filters', ValueFromPipelineByPropertyName=$true)]
-	    [Parameter(ParameterSetName='Identity')]
-	    [System.Nullable[bool]]
-	    ${Archived},
-	
-	    [Parameter(ParameterSetName='Filters', ValueFromPipelineByPropertyName=$true)]
-	    [Parameter(ParameterSetName='Identity')]
+	    [Parameter(Mandatory = $false,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true,
+            ValueFromRemainingArguments = $false,
+			ParameterSetName = 'Filters')]
+		[Parameter(ParameterSetName = 'Displayname')]
+		[ValidateNotNullOrEmpty()]
 	    [string]
-	    ${DisplayName},
-	
-	    [Parameter(ParameterSetName='Identity', Mandatory=$true)]
+	    $DisplayName,
+	    [Parameter(Mandatory = $false,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true,
+            ValueFromRemainingArguments = $false,
+			ParameterSetName = 'Filters')]
+		[Parameter(ParameterSetName = 'MailNickName')]
+        [ValidateNotNullOrEmpty()]
 	    [string]
-	    ${TeamId},
-	
-	    [Parameter(ParameterSetName='Filters', ValueFromPipelineByPropertyName=$true)]
-	    [Parameter(ParameterSetName='Identity')]
+	    $MailNickName,
+	    [Parameter(Mandatory = $false,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true,
+            ValueFromRemainingArguments = $false,
+            ParameterSetName = 'Filters')]
+        [ValidateNotNullOrEmpty()]
+		[ValidateSet("Public", "Private")]
 	    [string]
-	    ${MailNickName},
-	
-	    [Parameter(ParameterSetName='Filters', ValueFromPipelineByPropertyName=$true)]
-	    [Parameter(ParameterSetName='Identity')]
-	    [string]
-	    ${Visibility})
-	
+		$Visibility,
+		[Parameter(Mandatory = $true,
+            ValueFromPipeline = $false,
+            ValueFromPipelineByPropertyName = $false,
+            ValueFromRemainingArguments = $false,
+            ParameterSetName = 'Filter')]
+        [ValidateNotNullOrEmpty()]
+        [string]$Filter,
+        [Parameter(Mandatory = $false,
+            ValueFromPipeline = $false,
+            ValueFromPipelineByPropertyName = $false,
+            ValueFromRemainingArguments = $false)]
+        [switch]$All,
+        [Parameter(Mandatory = $false,
+        ValueFromPipeline = $false,
+        ValueFromPipelineByPropertyName = $false,
+        ValueFromRemainingArguments = $false)]
+        [ValidateRange(5, 1000)]
+        [int]$PageSize
+	)
+
 	begin
 	{
 	    try {
+            $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "groups"
             $authorizationToken = Receive-PSMTAuthorizationToken
-            $NUMBER_OF_RETRIES = (Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryCount)
-            $RETRY_TIME_SEC = (Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryTimeSec)
-	    } catch {
-	        Stop-PSFFunction -Message "Failed to receive uri $url." -ErrorRecord $_
+            $property = Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.GraphApiQuery.Select.Group
+		} 
+		catch {
+            Stop-PSFFunction -String 'FailedGetUsers' -StringValues $graphApiParameters['Uri'] -ErrorRecord $_
         }
 	}
 	
 	process
 	{
 		if (Test-PSFFunctionInterrupt) { return }
-        try {
-            if(Test-PSFParameterBinding -Parameter TeamId)
-            {
-				$format = "?`$format=json"
-				$url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "teams/$($TeamId)$format" 
+        Try
+        {
+            $graphApiParameters=@{
+                Method = 'Get'
+				AuthorizationToken = "Bearer $authorizationToken"
+				Uri = $url
+				Filter = "(resourceProvisioningOptions/Any(x:x eq 'Team'))"
 			}
-			if(Test-PSFParameterBinding -Parameter MailNickName)
-            {
-				$filter = "`$filter=startswith(mail,'{0}')" -f [System.Net.WebUtility]::UrlEncode($MailNickName)
-				$format = "?`$format=json"
-				$queryString = (($format, $filter)) -join '&' 
-				$url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "groups$queryString" 
-				Write-Verbose $url
+			
+            if(Test-PSFParameterBinding -Parameter MailNickName) {
+                $graphApiParameters['Filter'] = '{0} {1}' -f $graphApiParameters['Filter'], ("and startswith(mailNickName,'{0}')" -f $MailNickName)
 			}
-			if(Test-PSFPowerShell -Edition Core){
-				$getUserTeamResult = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $authorizationToken"}  -Method Get -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError -ResponseHeadersVariable responseHeaders
+			
+			if(Test-PSFParameterBinding -Parameter DisplayName) {
+                $graphApiParameters['Filter'] = '{0} {1}' -f $graphApiParameters['Filter'], ("and startswith(displayName,'{0}')" -f $DisplayName)
+			}
+
+            if(Test-PSFParameterBinding -Parameter Filter)
+            {
+                $graphApiParameters['Filter'] = $Filter
+            }
+
+            if(Test-PSFParameterBinding -Parameter All)
+            {
+                $graphApiParameters['All'] = $true
+            }
+
+            if(Test-PSFParameterBinding -Parameter PageSize)
+            {
+                $graphApiParameters['Top'] = $PageSize
+            }
+			$teamResult = Invoke-GraphApiQuery @graphApiParameters
+
+			if(Test-PSFParameterBinding -Parameter Visibility) {
+				$teamResult | Where-Object {$_.Visibility -eq $Visibility} | Select-PSFObject -Property $property -ExcludeProperty '@odata*' -TypeName 'PSMicrosoftTeams.Team'
 			}
 			else {
-				$getUserTeamResult = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $authorizationToken"}  -Method Get #-MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError -ResponseHeadersVariable responseHeaders
+				$teamResult | Select-PSFObject -Property $property -ExcludeProperty '@odata*' -TypeName 'PSMicrosoftTeams.Team'	
 			}
-            return $getUserTeamResult 
         }
         catch {
-			Stop-PSFFunction -Message "Failed to get data from $url." -ErrorRecord $_
-        }
+			Stop-PSFFunction -String 'FailedGetUsers' -StringValues $graphApiParameters['Uri'] -Target $graphApiParameters['Uri'] -Continue -ErrorRecord $_
+		}
+        Write-PSFMessage -Level InternalComment -String 'QueryCommandOutput' -StringValues $graphApiParameters['Uri'] -Target $graphApiParameters['Uri']
 	}
 
 	end
 	{
     }
-	
 }
