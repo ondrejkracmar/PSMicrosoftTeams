@@ -7,4 +7,5 @@
 	'FailedInvokeRest' = "Failed to invoke rest method '{0}' from '{1}'."
 	'FailedGetUser' = "Failed to get user '{0}'."
 	'FailedGetUsers' = "Failed to receive uri '{0}'."
+	'FailedGetUri' = "Failed to receive uri '{0}'."
 }
