@@ -2,6 +2,16 @@
 {
 	[CmdletBinding(DefaultParameterSetName='CreateTeam')]
 	param(
+        [Parameter(ParameterSetName='CreateTeamFromGroup', Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
+	    [ValidateScript({
+            try {
+                [System.Guid]::Parse($_) | Out-Null
+                $true
+            } catch {
+                $false
+            }
+        })]
+	    $GroupId,
 	    [Parameter(ParameterSetName='CreateTeam', Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
 	    [ValidateNotNullOrEmpty()]
 	    [string]
@@ -22,7 +32,8 @@
 	    [ValidateSet('Public','Private','HiddenMembership')]
 	    [string]
 	    $Visibility,
-	    [Parameter(ParameterSetName='CreateTeam', ValueFromPipelineByPropertyName=$true)]
+        [Parameter(ParameterSetName='CreateTeam', ValueFromPipelineByPropertyName=$true)]
+        [Parameter(ParameterSetName='CreateTeamFromGroup', ValueFromPipelineByPropertyName=$true)]
 	    [ValidateScript({
             try {
                 [System.Guid]::Parse($_) | Out-Null
@@ -77,9 +88,6 @@
 	    $AllowChannelMentions,
         [System.Nullable[bool]]
 	    $ShowInTeamsSearchAndSuggestions,
-	    [Parameter(ParameterSetName='CreateTeam', ValueFromPipelineByPropertyName=$true)]
-	    [switch]
-        $RetainCreatedGroup,
         [Parameter(ParameterSetName='CreateTeamViaJson')]
 	    [string]
         $JsonRequest,
@@ -133,6 +141,37 @@
                 "showInTeamsSearchAndSuggestions": true
             }
         }'
+        $requestBodyCreateTeamFromGroupTemplateJSON = '{
+            "group@odata.bind":"",
+            "template@odata.bind": "",
+            "memberSettings": {
+                "allowCreateUpdateChannels": true,
+                "allowDeleteChannels": true,
+                "allowAddRemoveApps": true,
+                "allowCreateUpdateRemoveTabs": true,
+                "allowCreateUpdateRemoveConnectors": true
+            },
+            "guestSettings": {
+                "allowCreateUpdateChannels": true,
+                "allowDeleteChannels": true
+            },
+            "funSettings": {
+                "allowGiphy": true,
+                "giphyContentRating": "Moderate",
+                "allowStickersAndMemes": true,
+                "allowCustomMemes": true
+            },
+            "messagingSettings": {
+                "allowUserEditMessages": true,
+                "allowUserDeleteMessages": true,
+                "allowOwnerDeleteMessages": true,
+                "allowTeamMentions": true,
+                "allowChannelMentions": true
+            },
+            "discoverySettings": {
+                "showInTeamsSearchAndSuggestions": true
+            }
+        }'
 	}
 	
 	process
@@ -148,6 +187,17 @@
             {
                 'CreateTeamViaJson' {                               
                     $bodyParameters = $JsonRequest | ConvertFrom-Json | ConvertTo-PSFHashtable
+                }
+                'CreateTeamFromGroup'{
+                    $bodyParameters = $requestBodyCreateTeamFromGroupTemplateJSON  | ConvertFrom-Json | ConvertTo-PSFHashtable
+                    $bodyParameters['group@odata.bind'] = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "groups('$($GroupId)')"
+                    if(Test-PSFParameterBinding -Parameter Template)
+                    {
+                        $bodyParameters['template@odata.bind'] = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "teamsTemplates('$($Template)')"
+                    }
+                    else {
+                        $bodyParameters['template@odata.bind'] = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "teamsTemplates('standard')"
+                    }
                 }
                 'CreateTeam' 
                 {
@@ -285,9 +335,10 @@
              if(Test-PSFParameterBinding -Parameter showInTeamsSearchAndSuggestions)
             {
                 $bodyParametersy['discoverySettings']['showInTeamsSearchAndSuggestions'] = $ShowInTeamsSearchAndSuggestions
-            }   
+            }
 
             [string]$requestJSONQuery = $bodyParameters | ConvertTo-Json -Depth 10 | ForEach-Object { [System.Text.RegularExpressions.Regex]::Unescape($_)}
+            write-host $requestJSONQuery
             $graphApiParameters['body'] = $requestJSONQuery
             $newTeamResult = Invoke-GraphApiQuery @graphApiParameters
             If(-not ($Status.IsPresent -or ($responseHeaders)))

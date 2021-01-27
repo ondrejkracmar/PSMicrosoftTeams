@@ -1,4 +1,4 @@
-﻿function Get-PSMTTeam
+function Get-PSMTGroup
 {
 	[CmdletBinding(DefaultParameterSetName = 'Filters',
         SupportsShouldProcess = $false,
@@ -73,7 +73,7 @@
                 Method = 'Get'
 				AuthorizationToken = "Bearer $authorizationToken"
 				Uri = $url
-				Filter = "(resourceProvisioningOptions/Any(x:x eq 'Team'))"
+				#Filter = "(resourceProvisioningOptions/Any(x:x eq 'Team'))"
 			}
 			
             if(Test-PSFParameterBinding -Parameter MailNickName) {
@@ -101,14 +101,14 @@
 			$teamResult = Invoke-GraphApiQuery @graphApiParameters
 
 			if(Test-PSFParameterBinding -Parameter Visibility) {
-				$teamResult | Where-Object {$_.Visibility -eq $Visibility} | Select-PSFObject -Property $property -ExcludeProperty '@odata*' -TypeName 'PSMicrosoftTeams.Team'
+				$teamResult | Where-Object {$_.Visibility -eq $Visibility} | Select-PSFObject -Property $property -ExcludeProperty '@odata*' -TypeName 'PSMicrosoftTeams.Group'
 			}
 			else {
-				$teamResult | Select-PSFObject -Property $property -ExcludeProperty '@odata*' -TypeName 'PSMicrosoftTeams.Team'	
+				$teamResult | Select-PSFObject -Property $property -ExcludeProperty '@odata*' -TypeName 'PSMicrosoftTeams.Group'	
 			}
         }
         catch {
-			Stop-PSFFunction -String 'FailedGetTeam' -StringValues $graphApiParameters['Uri'] -Target $graphApiParameters['Uri'] -Continue -ErrorRecord $_ -Tag GraphApi,Get
+			Stop-PSFFunction -String 'FailedGetGroup' -StringValues $graphApiParameters['Uri'] -Target $graphApiParameters['Uri'] -Continue -ErrorRecord $_ -Tag GraphApi,Get
 		}
         Write-PSFMessage -Level InternalComment -String 'QueryCommandOutput' -StringValues $graphApiParameters['Uri'] -Target $graphApiParameters['Uri'] -Tag GraphApi,Get -Data $graphApiParameters
 	}

@@ -47,6 +47,8 @@
 		'Get-PSMTUser',
 		'Remove-PSMTTeam',
 		'Remove-PSMTTeamUser',
+		'New-PSMTGroup',
+		'Get-PSMTGroup',
 		"Get-PSMTRequestStatus",
 		'Receive-PSMTAuthorizationToken',
 		'Write-PSMTAuthorizationToken',
