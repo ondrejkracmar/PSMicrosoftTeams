@@ -88,8 +88,9 @@
             If(Test-PSFParameterBinding -Parameter Body) {
                 $queryParameters['Body'] = $Body
             }
-            $responseOutputList=[System.Collections.ArrayList]::new()
+            
             $response = Invoke-RestMethod @queryParameters
+            $responseOutputList=[System.Collections.ArrayList]::new()
             if($response.PSobject.Properties.Name.Contains("value"))
             {
                 [object[]]$responseOutput = $response.value

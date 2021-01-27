@@ -5,29 +5,23 @@
 	    [Parameter(ParameterSetName='CreateTeam', Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
 	    [ValidateNotNullOrEmpty()]
 	    [string]
-	    ${DisplayName},
-	
+	    $DisplayName,
 	    [Parameter(ParameterSetName='CreateTeam', ValueFromPipelineByPropertyName=$true)]
 	    [string]
-	    ${Description},
-	
+	    $Description,
 	    [Parameter(ParameterSetName='CreateTeam', ValueFromPipelineByPropertyName=$true)]
 	    [string]
-        ${MailNickName},
-        
+        $MailNickName,
         [Parameter(ParameterSetName='CreateTeam', ValueFromPipelineByPropertyName=$true)]
 	    [System.Nullable[bool]]
-	    ${MailEnabled},
-	
+	    $MailEnabled,
 	    [Parameter(ParameterSetName='CreateTeam', ValueFromPipelineByPropertyName=$true)]
 	    [string]
-	    ${Classification},
-	
+	    $Classification,
 	    [Parameter(ParameterSetName='CreateTeam', ValueFromPipelineByPropertyName=$true)]
 	    [ValidateSet('Public','Private','HiddenMembership')]
 	    [string]
-	    ${Visibility},
-	
+	    $Visibility,
 	    [Parameter(ParameterSetName='CreateTeam', ValueFromPipelineByPropertyName=$true)]
 	    [ValidateScript({
             try {
@@ -37,8 +31,7 @@
                 $false
             }
         })]
-	    ${Template},
-        
+	    $Template,
         [Parameter(ParameterSetName='CreateTeam', ValueFromPipelineByPropertyName=$true)]
         [ValidateScript({
             try {
@@ -49,67 +42,47 @@
             }
         })]
 	    [string]
-	    ${Owner},
-    
+	    $Owner,
 	    [System.Nullable[bool]]
-	    ${AllowGiphy},
-        
+	    $AllowGiphy,
         [string]
-	    ${GiphyContentRating},
-        
+	    $GiphyContentRating,
         [System.Nullable[bool]]
-	    ${AllowStickersAndMemes},
-    
+	    $AllowStickersAndMemes,
         [System.Nullable[bool]]
-	    ${AllowCustomMemes},
-        
+	    $AllowCustomMemes,
         [System.Nullable[bool]]
-	    ${AllowGuestCreateUpdateChannels},
-    
+	    $AllowGuestCreateUpdateChannels,
         [System.Nullable[bool]]
-	    ${AllowGuestDeleteChannels},
-    
+	    $AllowGuestDeleteChannels,
         [System.Nullable[bool]]
-	    ${AllowCreateUpdateChannels},
-    
+	    $AllowCreateUpdateChannels,
         [System.Nullable[bool]]
-	    ${AllowDeleteChannels},
-    
+	    $AllowDeleteChannels,
         [System.Nullable[bool]]
-	    ${AllowAddRemoveApps},
-        
+	    $AllowAddRemoveApps,
         [System.Nullable[bool]]
-	    ${AllowCreateUpdateRemoveTabs},
-    
+	    $AllowCreateUpdateRemoveTabs,
         [System.Nullable[bool]]
-	    ${AllowCreateUpdateRemoveConnectors},
-    
+	    $AllowCreateUpdateRemoveConnectors,
         [System.Nullable[bool]]
-	    ${AllowUserEditMessages},
-    
+	    $AllowUserEditMessages,
         [System.Nullable[bool]]
-	    ${AllowUserDeleteMessages},
-    
+	    $AllowUserDeleteMessages,
         [System.Nullable[bool]]
-	    ${AllowOwnerDeleteMessages},
-    
+	    $AllowOwnerDeleteMessages,
         [System.Nullable[bool]]
-	    ${AllowTeamMentions},
-    
+	    $AllowTeamMentions,
         [System.Nullable[bool]]
-	    ${AllowChannelMentions},
-    
+	    $AllowChannelMentions,
         [System.Nullable[bool]]
-	    ${ShowInTeamsSearchAndSuggestions},
-	
+	    $ShowInTeamsSearchAndSuggestions,
 	    [Parameter(ParameterSetName='CreateTeam', ValueFromPipelineByPropertyName=$true)]
 	    [switch]
-        ${RetainCreatedGroup},
-        
+        $RetainCreatedGroup,
         [Parameter(ParameterSetName='CreateTeamViaJson')]
 	    [string]
         $JsonRequest,
-
         [switch]
         $Status
     )
@@ -118,11 +91,10 @@
 	    try {
             $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "teams"
             $authorizationToken = Receive-PSMTAuthorizationToken
-            $NUMBER_OF_RETRIES = (Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryCount)
-            $RETRY_TIME_SEC = (Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryTimeSec)
-            $CONTENT_TYPE = (Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.PostConrtentType)
-	    } catch {
-	        Stop-PSFFunction -Message "Failed to receive uri $url" -ErrorRecord $_
+            #$property = Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.GraphApiQuery.Select.Group
+		} 
+		catch {
+            Stop-PSFFunction -String 'FailedGetUsers' -StringValues $graphApiParameters['Uri'] -ErrorRecord $_
         }
         $requestBodyCreateTeamTemplateJSON = '{
             "template@odata.bind": "",
@@ -167,175 +139,172 @@
 	{
         if (Test-PSFFunctionInterrupt) { return }
 	    try {
-
+            $graphApiParameters=@{
+                Method = 'Post'
+                AuthorizationToken = "Bearer $authorizationToken"
+                Uri = $url
+            }
             Switch ($PSCmdlet.ParameterSetName)
             {
                 'CreateTeamViaJson' {                               
-                    $requestHashTableQuery = $JsonRequest | ConvertFrom-Json | ConvertTo-PSFHashtable
+                    $bodyParameters = $JsonRequest | ConvertFrom-Json | ConvertTo-PSFHashtable
                 }
                 'CreateTeam' 
                 {
-                    $requestHashTableQuery = $requestBodyCreateTeamTemplateJSON | ConvertFrom-Json | ConvertTo-PSFHashtable
-                    
+                    $bodyParameters = $requestBodyCreateTeamTemplateJSON | ConvertFrom-Json | ConvertTo-PSFHashtable
+                    $bodyParameters['displayName'] = $DisplayName
                     if(Test-PSFParameterBinding -Parameter Description)
                     {
-                        $requestHashTableQuery['description'] = $Description
+                        $bodyParameters['description'] = $Description
                     }
 
                     if(Test-PSFParameterBinding -Parameter MailNickName)
                     {
-                        $requestHashTableQuery['mailNickName'] = $MailNickName
+                        $bodyParameters['mailNickName'] = $MailNickName
                     }
 
                     if(Test-PSFParameterBinding -Parameter MailEnabled)
                     {
-                        $requestHashTableQuery['mailEnabled'] = $MailEnabled
+                        $bodyParameters['mailEnabled'] = $MailEnabled
                     }
 
                     if(Test-PSFParameterBinding -Parameter Visibility)
                     {
-                        $requestHashTableQuery['visibility'] = $Visibility
+                        $bodyParameters['visibility'] = $Visibility
                     }
 
                     if(Test-PSFParameterBinding -Parameter Template)
                     {
-                        #"https://graph.microsoft.com/v1.0/teamsTemplates(''$($Template)'')"
-                        $urlTemoplatge = Join-UriPath -Uri $url -ChildPath -JoimPath "teamsTemplates('$($Template)')"
-                        $requestHashTableQuery['template'] = $urlTemoplatge
+                        $bodyParameters['template@odata.bind'] = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "teamsTemplates('$($Template)')"
                     }
                     else {
-                        $urlTemoplatge = Join-UriPath -Uri $url -ChildPath -JoimPath "teamsTemplates('standard')"
-                        $requestHashTableQuery['template'] = $urlTemoplatge
+                        $bodyParameters['template@odata.bind'] = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "teamsTemplates('standard')"
                     }
 
                     if(Test-PSFParameterBinding -Parameter Owner)
-                    {                     
-                        $urlOwner = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath (-join 'users','/',$owner)                    
-                        $requestHashTableQuery['owners@odata.bind'] = @($urlOwner)
+                    {                                         
+                        $bodyParameters['owners@odata.bind'] = @(Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "users('$($owner)')")
                     }
                 }
                 'Default'
                 {
-                    $requestHashTableQuery = $requestBodyCreateTeamTemplateJSON | ConvertFrom-Json | ConvertTo-PSFHashtable
+                    $bodyParameters = $requestBodyCreateTeamTemplateJSON | ConvertFrom-Json | ConvertTo-PSFHashtable
                 }
             }
             
             if(Test-PSFParameterBinding -Parameter allowCreateUpdateChannels)
             {
-                $requestHashTableQuery['memberSettings']['allowCreateUpdateChannels'] = $AllowCreateUpdateChannels
+                $bodyParameters['memberSettings']['allowCreateUpdateChannels'] = $AllowCreateUpdateChannels
             }
 
             if(Test-PSFParameterBinding -Parameter allowCreateUpdateChannels)
             {
-                $requestHashTableQuery['memberSettings']['allowCreateUpdateChannels'] = $AllowCreateUpdateChannels
+                $bodyParameters['memberSettings']['allowCreateUpdateChannels'] = $AllowCreateUpdateChannels
             }
 
             if(Test-PSFParameterBinding -Parameter allowDeleteChannels)
             {
-                $requestHashTableQuery['memberSettings']['allowDeleteChannels'] = $AllowDeleteChannels
+                $bodyParameters['memberSettings']['allowDeleteChannels'] = $AllowDeleteChannels
             }
 
             if(Test-PSFParameterBinding -Parameter allowAddRemoveApps)
             {
-                $requestHashTableQuery['memberSettings']['allowAddRemoveApps'] = $AllowAddRemoveApps
+                $bodyParameters['memberSettings']['allowAddRemoveApps'] = $AllowAddRemoveApps
             }
 
             if(Test-PSFParameterBinding -Parameter allowAddRemoveApps)
             {
-                $requestHashTableQuery['memberSettings']['allowCreateUpdateRemoveTabs'] = $AllowCreateUpdateRemoveTabs
+                $bodyParameters['memberSettings']['allowCreateUpdateRemoveTabs'] = $AllowCreateUpdateRemoveTabs
             }
 
             if(Test-PSFParameterBinding -Parameter allowCreateUpdateRemoveConnectors)
             {
-                $requestHashTableQuery['memberSettings']['allowCreateUpdateRemoveConnectors'] = $AllowCreateUpdateRemoveConnectors
+                $bodyParameters['memberSettings']['allowCreateUpdateRemoveConnectors'] = $AllowCreateUpdateRemoveConnectors
             }
 
             if(Test-PSFParameterBinding -Parameter allowCreateUpdateChannels)
             {
-                $requestHashTableQuery['guestSettings']['allowCreateUpdateChannels'] = $AllowCreateUpdateChannels
+                $bodyParameters['guestSettings']['allowCreateUpdateChannels'] = $AllowCreateUpdateChannels
             }
 
             if(Test-PSFParameterBinding -Parameter allowCreateUpdateChannels)
             {
-                $requestHashTableQuery['guestSettings']['allowCreateUpdateChannels'] = $AllowCreateUpdateChannels
+                $bodyParameters['guestSettings']['allowCreateUpdateChannels'] = $AllowCreateUpdateChannels
             }
 
             if(Test-PSFParameterBinding -Parameter allowDeleteChannels)
             {
-                $requestHashTableQuery['guestSettings']['allowDeleteChannels'] = $AllowDeleteChannels
+                $bodyParameters['guestSettings']['allowDeleteChannels'] = $AllowDeleteChannels
             }
             
             if(Test-PSFParameterBinding -Parameter allowGiphy)
             {
-                $requestHashTableQuery['funSettings']['allowGiphy'] = $AllowGiphy
+                $bodyParameters['funSettings']['allowGiphy'] = $AllowGiphy
             }
 
             if(Test-PSFParameterBinding -Parameter giphyContentRating)
             {
-                $requestHashTableQuery['funSettings']['giphyContentRating'] = $GiphyContentRating
+                $bodyParameters['funSettings']['giphyContentRating'] = $GiphyContentRating
             }
 
             if(Test-PSFParameterBinding -Parameter allowStickersAndMemes)
             {
-                $requestHashTableQuery['funSettings']['allowStickersAndMemes'] = $AllowStickersAndMemes
+                $bodyParameters['funSettings']['allowStickersAndMemes'] = $AllowStickersAndMemes
             }
 
             if(Test-PSFParameterBinding -Parameter allowCustomMemes)
             {
-                $requestHashTableQuery['funSettings']['allowCustomMemes'] = $AllowCustomMemes
+                $bodyParameters['funSettings']['allowCustomMemes'] = $AllowCustomMemes
             }
             
             if(Test-PSFParameterBinding -Parameter allowUserEditMessages)
             {
-                $requestHashTableQuery['messagingSettings']['allowUserEditMessages'] = $allowUserEditMessages
+                $bodyParameters['messagingSettings']['allowUserEditMessages'] = $allowUserEditMessages
             }
             
             if(Test-PSFParameterBinding -Parameter allowUserDeleteMessages)
             {
-                $requestHashTableQuery['messagingSettings']['allowUserDeleteMessages'] = $AllowUserDeleteMessages
+                $bodyParameters['messagingSettings']['allowUserDeleteMessages'] = $AllowUserDeleteMessages
             }
 
             if(Test-PSFParameterBinding -Parameter allowOwnerDeleteMessages)
             {
-                $requestHashTableQuery['messagingSettings']['allowOwnerDeleteMessages'] = $AllowOwnerDeleteMessages
+                $bodyParameters['messagingSettings']['allowOwnerDeleteMessages'] = $AllowOwnerDeleteMessages
             }
 
             if(Test-PSFParameterBinding -Parameter allowTeamMentions)
             {
-                $requestHashTableQuery['messagingSettings']['allowTeamMentions'] = $AllowTeamMentions
+                $bodyParameters['messagingSettings']['allowTeamMentions'] = $AllowTeamMentions
             }
 
             if(Test-PSFParameterBinding -Parameter allowChannelMentions)
             {
-                $requestHashTableQuery['messagingSettings']['allowChannelMentions'] = $AllowChannelMentions
+                $bodyParameters['messagingSettings']['allowChannelMentions'] = $AllowChannelMentions
             }
 
              if(Test-PSFParameterBinding -Parameter showInTeamsSearchAndSuggestions)
             {
-                $requestHashTableQuery['discoverySettings']['showInTeamsSearchAndSuggestions'] = $ShowInTeamsSearchAndSuggestions
+                $bodyParametersy['discoverySettings']['showInTeamsSearchAndSuggestions'] = $ShowInTeamsSearchAndSuggestions
             }   
 
-            [string]$requestJSONQuery = $requestHashTableQuery | ConvertTo-Json -Depth 10 | ForEach-Object { [System.Text.RegularExpressions.Regex]::Unescape($_)}
-            
-                $newTeamResult = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $authorizationToken"} -Body ]$requestJSONQuery -Method Post -ContentType $CONTENT_TYPE -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError -ResponseHeadersVariable responseHeaders
-            
-            else {
-                $newTeamResult = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $authorizationToken"} -Body ]$requestJSONQuery -Method Post -ContentType $CONTENT_TYPE #-MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError -ResponseHeadersVariable responseHeaders
-            }
-            if((Test-PSFParameterBinding -ParameterName $Status) -and (Test-PSFPowerShell -PSMinVersion 6.1)){
-                return $newTeamResult                
+            [string]$requestJSONQuery = $bodyParameters | ConvertTo-Json -Depth 10 | ForEach-Object { [System.Text.RegularExpressions.Regex]::Unescape($_)}
+            $graphApiParameters['body'] = $requestJSONQuery
+            $newTeamResult = Invoke-GraphApiQuery @graphApiParameters
+            If(-not ($Status.IsPresent -or ($responseHeaders)))
+            {
+                $newTeamResult
             }
             else {
-                return $responseHeaders
+                $responseHeaders
             }
-        } catch {
-	        Stop-PSFFunction -Message "Failed to post data from $url." -ErrorRecord $_
-	    }
+        } 
+        catch {
+          Stop-PSFFunction -String 'FailedNewTeam' -StringValues $graphApiParameters['Uri'] -Target $graphApiParameters['Uri'] -Continue -ErrorRecord $_ -Tag GraphApi,Post
+        }
+        Write-PSFMessage -Level InternalComment -String 'QueryCommandOutput' -StringValues $graphApiParameters['Uri'] -Target $graphApiParameters['Uri'] -Tag GraphApi,Get -Data $graphApiParameters
 	}
-	
 	end
 	{
 
 	}
-	
 }
