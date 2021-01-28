@@ -29,8 +29,7 @@
             }
         })]
 	    [string]
-	    ${TeamId},
-	
+	    $TeamId,
         [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
         [ValidateScript({
             try {
@@ -41,13 +40,11 @@
             }
         })]
 	    [string]
-	    ${UserId},
-	
+	    $UserId,
 	    [Parameter(ValueFromPipelineByPropertyName=$true)]
 	    [ValidateSet('Member','Owner')]
 	    [string]
-        ${Role},
-        
+        $Role,
         [switch]
         $Status
     )

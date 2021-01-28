@@ -11,5 +11,6 @@
 	'FailedNewGroup' = "Failed to create Office 365 group '{0}'."
 	'FailedGetGroup' = "Failed to get Office 365 group '{0}'."
 	'FailedGetUsers' = "Failed to receive uri '{0}'."
+	'FailedAddMember' = "Failed to add UserId '{0}' to TeamId {1}."
 	'FailedGetUri' = "Failed to receive uri '{0}'."
 }

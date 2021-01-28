@@ -30,7 +30,6 @@
         })]
 	    [string]
 	    ${TeamId},
-	
         [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
         [ValidateScript({
             try {
@@ -42,62 +41,65 @@
         })]
 	    [string]
 	    ${UserId},
-	
-	    [Parameter(ValueFromPipelineByPropertyName=$true)]
+	    [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
 	    [ValidateSet('Member','Owner')]
 	    [string]
         ${Role},
-        
         [switch]
         $Status
     )
     
 	begin
 	{
-	    try {
-            $authorizationToken = Receive-PSMTAuthorizationToken
-            $NUMBER_OF_RETRIES = (Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryCount)
-            $RETRY_TIME_SEC = (Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryTimeSec)
-            $CONTENT_TYPE = (Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.PostConrtentType)
+        try {
+            $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "teams"
+            authorizationToken = Receive-PSMTAuthorizationToken
+            #$property = Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.GraphApiQuery.Select.Group
         } 
         catch {
-	        Stop-PSFFunction -Message "Failed to receive uri $url." -ErrorRecord $_
+            Stop-PSFFunction -String 'FailedGetUsers' -StringValues $graphApiParameters['Uri'] -ErrorRecord $_
         }
+        
     }
     
     process
 	{
         if (Test-PSFFunctionInterrupt) { return }
 	    try {
-            $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "teams/$($TeamId)/members"
-            $urlUser = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "users/('$UserId')"
-            if(Test-PSFParameterBinding -Parameter Role -Not)
+            $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "$($TeamId)/members"
+            $urlUser = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "users('$($UserId)')"
+            $graphApiParameters=@{
+                Method = 'Post'
+				AuthorizationToken = "Bearer $authorizationToken"
+				Uri = $url
+            }
+            $bodyParameters-@{
+                '@odata.type' = "#microsoft.graph.aadUserConversationMember"
+                roles = @() 
+                'user@odata.bind' = $urlUser
+            }
+            
+            if(Test-PSFParameterBinding -Parameter Role)
             {
-                $Role=''
+                if($riole -eq 'Owner'){
+                    $bodyParameters['roles'] = @($Role)
+                }
             }
-            $memberBody = @{
-                    "@odata.type"     = "#microsoft.graph.aadUserConversationMember"
-                    "roles"           = @($Role)
-                    "user@odata.bind" = $urlUser
-            }
-            [string]$requestJSONQuery = $memberBody | ConvertTo-Json
-
-            if(Test-PSFPowerShell -Edition Core){
-                $addUserTeamResult = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $authorizationToken"} -Body ]$requestJSONQuery -Method Post -ContentType $CONTENT_TYPE  -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError -ResponseHeadersVariable responseHeaders
-            }else{
-                $addUserTeamResult = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Bearer $authorizationToken"} -Body ]$requestJSONQuery -Method Post -ContentType $CONTENT_TYPE
-            }
-
-            if((Test-PSFParameterBinding -ParameterName $Status) -and (Test-PSFPowerShell -PSMinVersion 6.1)){
-                return $addUserTeamResult                
+            [string]$requestJSONQuery = $bodyParameters | ConvertTo-Json -Depth 10 | ForEach-Object { [System.Text.RegularExpressions.Regex]::Unescape($_)}
+            $graphApiParameters['body'] = $requestJSONQuery
+            $addTeamMemberesult = Invoke-GraphApiQuery @graphApiParameters
+            If(-not ($Status.IsPresent -or ($responseHeaders)))
+            {
+                $addTeamMemberesult
             }
             else {
-                return $responseHeaders
+                $responseHeaders
             }
         }
         catch {
-             Stop-PSFFunction -Message "Failed to new member $UserId with role $Role to team $TeamId." -ErrorRecord $_
+            Stop-PSFFunction -String 'FailedAddMember' -StringValues $UserId,$TeamId -Target $graphApiParameters['Uri'] -Continue -ErrorRecord $_ -Tag GraphApi,Get
         }
+        Write-PSFMessage -Level InternalComment -String 'QueryCommandOutput' -StringValues $graphApiParameters['Uri'] -Target $graphApiParameters['Uri'] -Tag GraphApi,Get -Data $graphApiParameters
 	}
 	
 	end

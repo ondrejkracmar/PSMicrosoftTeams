@@ -338,7 +338,6 @@
             }
 
             [string]$requestJSONQuery = $bodyParameters | ConvertTo-Json -Depth 10 | ForEach-Object { [System.Text.RegularExpressions.Regex]::Unescape($_)}
-            write-host $requestJSONQuery
             $graphApiParameters['body'] = $requestJSONQuery
             $newTeamResult = Invoke-GraphApiQuery @graphApiParameters
             If(-not ($Status.IsPresent -or ($responseHeaders)))
