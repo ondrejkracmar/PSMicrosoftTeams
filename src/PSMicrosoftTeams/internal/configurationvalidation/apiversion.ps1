@@ -1,4 +1,4 @@
-Register-PSFConfigValidation -Name "PSMicrosoftTeams.apiversion"  -ScriptBlock {
+﻿Register-PSFConfigValidation -Name "PSMicrosoftTeams.apiversion"  -ScriptBlock {
 	Param (
 		$Value
 	)

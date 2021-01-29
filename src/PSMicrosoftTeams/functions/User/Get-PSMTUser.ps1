@@ -1,74 +1,115 @@
 ﻿function Get-PSMTUser
 {
-    <#
+<#
     .SYNOPSIS
         Get the properties of the specified user.
                 
     .DESCRIPTION
         Get the properties of the specified user.
-
-    .PARAMETER Token
-        Access Token for Graph Api
                 
     .PARAMETER UserPrincipalName
-        UserPrincipalName of user
+        UserPrincipalName
 #>
-    [CmdletBinding(DefaultParameterSetName = 'Token',
+    [CmdletBinding(DefaultParameterSetName = 'FilterByName',
         SupportsShouldProcess = $false,
         PositionalBinding = $true,
         ConfirmImpact = 'Medium')]
     param (
         [Parameter(Mandatory = $true,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true,
+            ValueFromRemainingArguments = $false,
+            ParameterSetName = 'FilterByUserPrincipalName')]
+        [ValidateNotNullOrEmpty()]
+        [string]$UserPrincipalName,
+        [Parameter(Mandatory = $false,
             ValueFromPipeline = $false,
             ValueFromPipelineByPropertyName = $false,
             ValueFromRemainingArguments = $false,
-            Position = 0,
-            ParameterSetName = 'Token')]
+            ParameterSetName = 'FilterByName')]
         [ValidateNotNullOrEmpty()]
-        [string]$Token,
+        [string]$Name,
         [Parameter(Mandatory = $true,
             ValueFromPipeline = $false,
             ValueFromPipelineByPropertyName = $false,
             ValueFromRemainingArguments = $false,
-            Position = 1,
-            ParameterSetName = 'Token')]
+            ParameterSetName = 'Filter')]
         [ValidateNotNullOrEmpty()]
-        [string]$UserPrincipalName
+        [string]$Filter,
+        [Parameter(Mandatory = $false,
+            ValueFromPipeline = $false,
+            ValueFromPipelineByPropertyName = $false,
+            ValueFromRemainingArguments = $false)]
+        [switch]$All,
+        [Parameter(Mandatory = $false,
+        ValueFromPipeline = $false,
+        ValueFromPipelineByPropertyName = $false,
+        ValueFromRemainingArguments = $false)]
+        [ValidateRange(5, 1000)]
+        [int]$PageSize
     )
-              
+     
     begin
     {
-        $graphApiUrl = -join ((Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiUrl), '/', (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiVersion))
-        switch (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.GraphApiVersion)
-        {
-            'v1.0'
-            {
-                $url = -join ($graphApiUrl, "/", "users")
-            }
-            'beta'
-            {
-                $url = -join ($graphApiUrl, "/", "users")
-            }
-            Default
-            {
-                $url = -join ($graphApiUrl, "/", "users")
-            }
+        try {
+            $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "users"
+            $authorizationToken = Receive-PSMTAuthorizationToken
+            $property = Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.GraphApiQuery.Select.User
+	    } catch {
+            Stop-PSFFunction -String 'FailedGetUsers' -StringValues $graphApiParameters['Uri'] -ErrorRecord $_
         }
-        $NUMBER_OF_RETRIES = Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethodNumberOfRetries
-        $RETRY_TIME_SEC = Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethoRetryTimeSec
     }
     
     process
     {
+        if (Test-PSFFunctionInterrupt) { return }
         Try
         {
-            #-ResponseHeadersVariable status -StatusCodeVariable stauscode
-            $user = Invoke-RestMethod -Uri "$url/$UserPrincipalName"-Headers @{Authorization = "Bearer $Token"} -Method Get -MaximumRetryCount $NUMBER_OF_RETRIES -RetryIntervalSec $RETRY_TIME_SEC -ErrorVariable responseError
-            $user
+            $graphApiParameters=@{
+                Method = 'Get'
+                AuthorizationToken = "Bearer $authorizationToken"
             }
-            catch
+
+            if(Test-PSFParameterBinding -Parameter UserPrincipalName) {
+                $urlUser = Join-UriPath -Uri $url -ChildPath $UserPrincipalName
+                $graphApiParameters['Uri'] = $urlUser
+                $graphApiParameters['Select'] = $property -join ","
+            }
+            else {
+                $graphApiParameters['Uri'] = $url
+            }
+
+            if(Test-PSFParameterBinding -Parameter Name) {
+                $graphApiParameters['Filter'] = ("startswith(displayName,'{0}') or startswith(givenName,'{0}') or startswith(surname,'{0}') or startswith(mail,'{0}') or startswith(userPrincipalName,'{0}')" -f $Name)
+            }
+
+            if(Test-PSFParameterBinding -Parameter Filter)
             {
-                $PSCmdlet.ThrowTerminatingError($PSItem) #Get-ParseErrorForResponseBody($_)
+                $graphApiParameters['Filter'] = $Filter
+            }
+
+            if(Test-PSFParameterBinding -Parameter All)
+            {
+                $graphApiParameters['All'] = $true
+            }
+
+            if(Test-PSFParameterBinding -Parameter PageSize)
+            {
+                $graphApiParameters['Top'] = $PageSize
+            }
+
+            $userResult = Invoke-GraphApiQuery @graphApiParameters
+            $userResult | Select-PSFObject -Property $property -ExcludeProperty '@odata*' -TypeName 'PSMicrosoftTeams.User'
+        }
+        catch
+        {
+            if(Test-PSFParameterBinding -Parameter UserPrincipalName) {
+                Stop-PSFFunction -String 'FailedGetUser' -StringValues $UserPrincipalName -Target $graphApiParameters['Uri'] -Continue -ErrorRecord $_ -Tag GraphApi,Get
+            }
+            else{
+                Stop-PSFFunction -String 'FailedGetUsers' -StringValues $graphApiParameters['Uri'] -Target $graphApiParameters['Uri'] -Continue -ErrorRecord $_ -Tag GraphApi,Get 
             }
         }
+        Write-PSFMessage -Level InternalComment -String 'QueryCommandOutput' -StringValues $graphApiParameters['Uri'] -Target $graphApiParameters['Uri'] -Tag GraphApi,Get -Data $graphApiParameters
     }
+}

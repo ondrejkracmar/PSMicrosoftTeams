@@ -3,13 +3,17 @@
 	<ViewDefinitions>
 		<!-- Foo.Bar -->
 		<View>
-			<Name>Foo.Bar</Name>
+			<Name>PSMicrosoftTeams.User</Name>
 			<ViewSelectedBy>
-				<TypeName>Foo.Bar</TypeName>
+				<TypeName>PSMicrosoftTeams.User</TypeName>
 			</ViewSelectedBy>
 			<TableControl>
 				<AutoSize/>
 				<TableHeaders>
+					<TableColumnHeader/>
+					<TableColumnHeader/>
+					<TableColumnHeader/>
+					<TableColumnHeader/>
 					<TableColumnHeader/>
 					<TableColumnHeader/>
 				</TableHeaders>
@@ -17,10 +21,22 @@
 					<TableRowEntry>
 						<TableColumnItems>
 							<TableColumnItem>
-								<PropertyName>Foo</PropertyName>
+								<PropertyName>Id</PropertyName>
 							</TableColumnItem>
 							<TableColumnItem>
-								<PropertyName>Bar</PropertyName>
+								<PropertyName>UserPrincipalName</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>GivenName</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>Surname</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>DisplayName</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>CompanyName</PropertyName>
 							</TableColumnItem>
 						</TableColumnItems>
 					</TableRowEntry>

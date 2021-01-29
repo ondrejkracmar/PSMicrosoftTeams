@@ -2,17 +2,17 @@
 <Types>
   <!-- Foo.Bar -->
   <Type>
-    <Name>Deserialized.Foo.Bar</Name>
+    <Name>Deserialized.PSMicrosoftTeams.User</Name>
     <Members>
       <MemberSet>
         <Name>PSStandardMembers</Name>
         <Members>
           <NoteProperty>
             <Name>
-              TargetTypeForDeserialization
+              System.String
             </Name>
             <Value>
-              Foo.Bar
+              Id
             </Value>
           </NoteProperty>
         </Members>
@@ -20,7 +20,7 @@
     </Members>
   </Type>
   <Type>
-    <Name>Foo.Bar</Name>
+    <Name>PSMicrosoftTeams.User</Name>
     <Members>
       <CodeProperty IsHidden="true">
         <Name>SerializationData</Name>

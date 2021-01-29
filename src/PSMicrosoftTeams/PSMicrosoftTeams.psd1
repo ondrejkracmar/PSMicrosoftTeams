@@ -9,13 +9,13 @@
 	GUID = '68aff6a6-275a-40e9-adc0-f2ff32ce35b5'
 	
 	# Author of this module
-	Author = 'KracmarOndrej'
+	Author = 'Ondrej Kracmar'
 	
 	# Company or vendor of this module
-	CompanyName = 'MyCompany'
+	CompanyName = 'Ondrej Kracmar'
 	
 	# Copyright statement for this module
-	Copyright = 'Copyright (c) 2020 KracmarOndrej'
+	Copyright = 'Copyright (c) 2020 Ondrej Kracmar'
 	
 	# Description of the functionality provided by this module
 	Description = 'Powershell module for managing Microsoft Teams'
@@ -33,22 +33,26 @@
 	# RequiredAssemblies = @('bin\PSMicrosoftTeams.dll')
 	
 	# Type files (.ps1xml) to be loaded when importing this module
-	# TypesToProcess = @('xml\PSMicrosoftTeams.Types.ps1xml')
+	#TypesToProcess = @('xml\PSMicrosoftTeams.Types.ps1xml')
 	
 	# Format files (.ps1xml) to be loaded when importing this module
-	# FormatsToProcess = @('xml\PSMicrosoftTeams.Format.ps1xml')
+	FormatsToProcess = @('xml\PSMicrosoftTeams.Format.ps1xml')
 	
 	# Functions to export from this module
 	FunctionsToExport = @(
-		'Add-PSMTMember',
-		'Add-PSMTOwner',
-		'Get-PSMTOwner',
-		'Get-PSMTMember',
+		'Add-PSMTTeamUser',
+		'Get-PSMTTeam',
+		'Get-PSMTTeamUser',
+		'New-PSMTTeam',
 		'Get-PSMTUser',
-		'Remove-PSMTMember',
-		'Remove-PSMTOwner',
-		"Get-PSMTTeam",
-		'New-PSMTTeam'
+		'Remove-PSMTTeam',
+		'Remove-PSMTTeamUser',
+		'New-PSMTGroup',
+		'Get-PSMTGroup',
+		"Get-PSMTRequestStatus",
+		'Receive-PSMTAuthorizationToken',
+		'Write-PSMTAuthorizationToken',
+		'Get-PSMTUser'
 	)
 	
 	# Cmdlets to export from this module
