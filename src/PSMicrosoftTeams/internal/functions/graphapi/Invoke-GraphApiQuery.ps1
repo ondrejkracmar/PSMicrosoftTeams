@@ -11,7 +11,7 @@
         [Parameter(Mandatory=$true,ParameterSetName='Default')]
         [string]$AuthorizationToken,
         [Parameter(Mandatory=$false,ParameterSetName='Default')]
-        [ValidateSet('Get','Post','Put','Patch','Delete')]
+        [ValidateSet('Get','Post','Put','Patch','Delete','Merge')]
         [string]$Method = "Get",
         [string]$Accept = 'application/json',
         [string]$ContentType = 'application/json',
@@ -126,10 +126,11 @@
                     $responseOutputList.AddRange($responseOutput)
                 }
             }
-            return $responseOutputList
+            $responseOutputList
         }
         Catch{
             Stop-PSFFunction -String 'FailedInvokeRest' -Target $queryUri -StringValues $Method, $queryUri -ErrorRecord $_ -Continue -EnableException $True
         }
+        Write-PSFMessage -Level InternalComment -String 'QueryCommandOutput' -StringValues $queryUri -Target $queryUri -Tag GraphApi -Data $queryParameters
     }
 }

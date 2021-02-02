@@ -1,4 +1,4 @@
-﻿function Remove-PSMTTeam
+function Remove-PSMTGroup
 {
 <#
     .SYNOPSIS
@@ -27,7 +27,7 @@
         })]
         [Alias("Id")]
 	    [string]
-	    $TeamId,
+	    $GroupId,
         [switch]
         $Status
     )
@@ -64,7 +64,7 @@
             }
         }
         catch {
-            Stop-PSFFunction -String 'FailedRemoveTeam' -StringValues $graphApiParameters['Uri'] -Target $graphApiParameters['Uri'] -Continue -ErrorRecord $_ -Tag GraphApi,Delete
+            Stop-PSFFunction -String 'FailedRemoveGroup' -StringValues $graphApiParameters['Uri'] -Target $graphApiParameters['Uri'] -Continue -ErrorRecord $_ -Tag GraphApi,Delete
           }
           Write-PSFMessage -Level InternalComment -String 'QueryCommandOutput' -StringValues $graphApiParameters['Uri'] -Target $graphApiParameters['Uri'] -Tag GraphApi,Delete -Data $graphApiParameters
 	}

@@ -28,6 +28,7 @@
                 $false
             }
         })]
+        [Alias("Id")]
 	    [string]
 	    $TeamId,
         [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]

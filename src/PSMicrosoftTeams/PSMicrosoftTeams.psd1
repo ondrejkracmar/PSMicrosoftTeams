@@ -26,7 +26,7 @@
 	# Modules that must be imported into the global environment prior to importing
 	# this module
 	RequiredModules = @(
-		@{ ModuleName='PSFramework'; ModuleVersion='1.5.168' }
+		@{ ModuleName='PSFramework'; ModuleVersion='1.5.170' }
 	)
 	
 	# Assemblies that must be loaded prior to importing this module
@@ -49,6 +49,7 @@
 		'Remove-PSMTTeamUser',
 		'New-PSMTGroup',
 		'Get-PSMTGroup',
+		'Remove-PSMTGroup',
 		"Get-PSMTRequestStatus",
 		'Receive-PSMTAuthorizationToken',
 		'Write-PSMTAuthorizationToken',

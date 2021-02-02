@@ -32,6 +32,7 @@ ConfirmImpact = 'Medium')]
                 $false
             }
         })]
+        [Alias("Id")]
 	    [string]
 	    $TeamId,
         [Parameter(Mandatory = $false,

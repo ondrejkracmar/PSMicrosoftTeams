@@ -11,6 +11,7 @@
                 $false
             }
         })]
+        [Alias("Id")]
 	    $GroupId,
 	    [Parameter(ParameterSetName='CreateTeam', Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
 	    [ValidateNotNullOrEmpty()]
@@ -24,7 +25,7 @@
         $MailNickName,
         [Parameter(ParameterSetName='CreateTeam', ValueFromPipelineByPropertyName=$true)]
 	    [System.Nullable[bool]]
-	    $MailEnabled,
+	    $MailEnabled=$true,
 	    [Parameter(ParameterSetName='CreateTeam', ValueFromPipelineByPropertyName=$true)]
 	    [string]
 	    $Classification,
@@ -52,6 +53,7 @@
                 $false
             }
         })]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
 	    [string]
 	    $Owner,
 	    [System.Nullable[bool]]
@@ -102,7 +104,7 @@
             #$property = Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.GraphApiQuery.Select.Group
 		} 
 		catch {
-            Stop-PSFFunction -String 'FailedGetUsers' -StringValues $graphApiParameters['Uri'] -ErrorRecord $_
+            Stop-PSFFunction -String 'FailedGetTeam' -StringValues $graphApiParameters['Uri'] -ErrorRecord $_
         }
         $requestBodyCreateTeamTemplateJSON = '{
             "template@odata.bind": "",
@@ -183,6 +185,7 @@
                 AuthorizationToken = "Bearer $authorizationToken"
                 Uri = $url
             }
+                        
             Switch ($PSCmdlet.ParameterSetName)
             {
                 'CreateTeamViaJson' {                               
@@ -336,22 +339,23 @@
             {
                 $bodyParametersy['discoverySettings']['showInTeamsSearchAndSuggestions'] = $ShowInTeamsSearchAndSuggestions
             }
-
-            [string]$requestJSONQuery = $bodyParameters | ConvertTo-Json -Depth 10 | ForEach-Object { [System.Text.RegularExpressions.Regex]::Unescape($_)}
-            $graphApiParameters['body'] = $requestJSONQuery
-            $newTeamResult = Invoke-GraphApiQuery @graphApiParameters
-            If(-not ($Status.IsPresent -or ($responseHeaders)))
-            {
-                $newTeamResult
-            }
+        
             else {
-                $responseHeaders
+                [string]$requestJSONQuery = $bodyParameters | ConvertTo-Json -Depth 10 | ForEach-Object { [System.Text.RegularExpressions.Regex]::Unescape($_)}
+                $graphApiParameters['body'] = $requestJSONQuery
+                $newTeamResult = Invoke-GraphApiQuery @graphApiParameters
+                If(-not ($Status.IsPresent -or ($responseHeaders))){
+                    $newTeamResult
+                }
+                else {
+                    $responseHeaders
+                }
             }
         } 
         catch {
-          Stop-PSFFunction -String 'FailedNewTeam' -StringValues $graphApiParameters['Uri'] -Target $graphApiParameters['Uri'] -Continue -ErrorRecord $_ -Tag GraphApi,Post
+            Stop-PSFFunction -String 'FailedNewTeam' -StringValues $graphApiParameters['Uri'] -Target $graphApiParameters['Uri'] -Continue -ErrorRecord $_ -Tag GraphApi,Post
         }
-        Write-PSFMessage -Level InternalComment -String 'QueryCommandOutput' -StringValues $graphApiParameters['Uri'] -Target $graphApiParameters['Uri'] -Tag GraphApi,Get -Data $graphApiParameters
+        Write-PSFMessage -Level InternalComment -String 'QueryCommandOutput' -StringValues $graphApiParameters['Uri'] -Target $graphApiParameters['Uri'] -Tag GraphApi,Post -Data $graphApiParameters
 	}
 	end
 	{
