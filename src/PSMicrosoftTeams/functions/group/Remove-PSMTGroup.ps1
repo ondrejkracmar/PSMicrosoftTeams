@@ -37,6 +37,10 @@ function Remove-PSMTGroup
 	    try {
             $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "groups"
             $authorizationToken = Receive-PSMTAuthorizationToken
+            $graphApiParameters=@{
+                Method = 'Delete'
+                AuthorizationToken = "Bearer $authorizationToken"
+            }
             #$property = Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.GraphApiQuery.Select.Group
 		} 
 		catch {
@@ -48,19 +52,14 @@ function Remove-PSMTGroup
 	{
         if (Test-PSFFunctionInterrupt) { return }
 	    try {
-            $graphApiParameters=@{
-                Method = 'Delete'
-                AuthorizationToken = "Bearer $authorizationToken"
-                Uri = Join-UriPath -Uri $url -ChildPath "$TeamId"
-            }
-            
-            $deleteTeamResult = Invoke-GraphApiQuery @graphApiParameters
+            $graphApiParameters['Uri'] = Join-UriPath -Uri $url -ChildPath "$GroupId"
+            $deleteGroupResult = Invoke-GraphApiQuery @graphApiParameters
             If(-not ($Status.IsPresent -or ($responseHeaders)))
             {
-                $deleteTeamResult
+                $deleteGroupResult
             }
             else {
-                $deleteTeamResult
+                $responseHeaders
             }
         }
         catch {

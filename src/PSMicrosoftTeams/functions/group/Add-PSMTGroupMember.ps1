@@ -1,4 +1,4 @@
-﻿function Add-PSMTTeamUser
+function Add-PSMTGroupMember
 {
 <#
     .SYNOPSIS
@@ -7,7 +7,7 @@
     .DESCRIPTION
         This cmdlet adds an owner or member to the team, and to the unified group which backs the team.
               
-    .PARAMETER TeamId
+    .PARAMETER Groupd
         Id of Team (unified group)
 
     .PARAMETER UserId
@@ -17,9 +17,10 @@
         Switch response header or result
 
 #>
-	[CmdletBinding()]
+	[CmdletBinding(DefaultParameterSetName='AddSingleMember')]
 	param(
-	    [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
+        [Parameter(ParameterSetName='AddSingleMember',Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
+        [Parameter(ParameterSetName='AddBulkMebers',Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
 	    [ValidateScript({
             try {
                 [System.Guid]::Parse($_) | Out-Null
@@ -29,8 +30,8 @@
             }
         })]
 	    [string]
-	    ${TeamId},
-        [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
+        $TeamId,
+        [Parameter(ParameterSetName='AddSingleMember',Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
         [ValidateScript({
             try {
                 [System.Guid]::Parse($_) | Out-Null
@@ -39,58 +40,57 @@
                 $false
             }
         })]
+        [Alias("Id")]
 	    [string]
-	    ${UserId},
-	    [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
+	    $UserId,
+	    [Parameter(ParameterSetName='AddSingleMember', ValueFromPipelineByPropertyName=$true)]
 	    [ValidateSet('Member','Owner')]
 	    [string]
-        ${Role},
+        $Role,
         [switch]
         $Status
     )
     
 	begin
 	{
-        try {
-            $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "teams"
-            authorizationToken = Receive-PSMTAuthorizationToken
+       try {
+            $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "groups"
+            $authorizationToken = Receive-PSMTAuthorizationToken
+            $graphApiParameters=@{
+                Method = 'Post'
+                AuthorizationToken = "Bearer $authorizationToken"
+                
+            }
             #$property = Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.GraphApiQuery.Select.Group
         } 
         catch {
-            Stop-PSFFunction -String 'FailedGetUsers' -StringValues $graphApiParameters['Uri'] -ErrorRecord $_
-        }
-        
+            Stop-PSFFunction -String 'FailedAddMember' -StringValues $graphApiParameters['Uri'] -ErrorRecord $_
+        }  
     }
     
     process
 	{
         if (Test-PSFFunctionInterrupt) { return }
-	    try {
-            $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "$($TeamId)/members"
-            $urlUser = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "users('$($UserId)')"
-            $graphApiParameters=@{
-                Method = 'Post'
-				AuthorizationToken = "Bearer $authorizationToken"
-				Uri = $url
+        try {   
+            $urlMembers = Join-UriPath -Uri $url -ChildPath "$($GroupId)/members"
+            $graphApiParameters['Uri'] = Join-UriPath -Uri $urlMembers -ChildPath '$ref'
+            $bodyParameters=@{
+                "@odata.id"= Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "directoryObjects('$($UserId)')"
             }
-            $bodyParameters-@{
-                '@odata.type' = "#microsoft.graph.aadUserConversationMember"
-                roles = @() 
-                'user@odata.bind' = $urlUser
-            }
-            
+                        
             if(Test-PSFParameterBinding -Parameter Role)
             {
-                if($riole -eq 'Owner'){
-                    $bodyParameters['roles'] = @($Role)
+                $urlOwners = Join-UriPath -Uri $url -ChildPath "$($GroupId)/owners"
+                $graphApiParameters['Uri'] = Join-UriPath -Uri $urlOwners -ChildPath '$ref'
+                $bodyParameters=@{
+                    "@odata.id"= Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "users/$($UserId)"
                 }
             }
             [string]$requestJSONQuery = $bodyParameters | ConvertTo-Json -Depth 10 | ForEach-Object { [System.Text.RegularExpressions.Regex]::Unescape($_)}
             $graphApiParameters['body'] = $requestJSONQuery
-            $addTeamMemberesult = Invoke-GraphApiQuery @graphApiParameters
-            If(-not ($Status.IsPresent -or ($responseHeaders)))
-            {
-                $addTeamMemberesult
+            $addTeamMembeResult = Invoke-GraphApiQuery @graphApiParameters
+            If(-not ($Status.IsPresent -or ($responseHeaders))){
+                $addTeamMembeResult
             }
             else {
                 $responseHeaders

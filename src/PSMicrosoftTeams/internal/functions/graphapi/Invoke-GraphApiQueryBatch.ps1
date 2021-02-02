@@ -5,7 +5,7 @@ Function Invoke-GraphApiQueryBatch{
     [CmdletBinding(DefaultParametersetname="Default")]
     Param(
         [Parameter(Mandatory=$false,ParameterSetName='Default')]
-        [array[HashTable]]$RequestList,
+        [HashTable[]]$RequestList,
         [Parameter(Mandatory=$true,ParameterSetName='Default')]
         [string]$AuthorizationToken,
         [string]$Accept = 'application/json',

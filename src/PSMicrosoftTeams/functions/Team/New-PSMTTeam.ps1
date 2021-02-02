@@ -101,6 +101,11 @@
 	    try {
             $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "teams"
             $authorizationToken = Receive-PSMTAuthorizationToken
+            $graphApiParameters=@{
+                Method = 'Post'
+                AuthorizationToken = "Bearer $authorizationToken"
+                Uri = $url
+            }
             #$property = Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.GraphApiQuery.Select.Group
 		} 
 		catch {
@@ -180,12 +185,7 @@
 	{
         if (Test-PSFFunctionInterrupt) { return }
 	    try {
-            $graphApiParameters=@{
-                Method = 'Post'
-                AuthorizationToken = "Bearer $authorizationToken"
-                Uri = $url
-            }
-                        
+                    
             Switch ($PSCmdlet.ParameterSetName)
             {
                 'CreateTeamViaJson' {                               

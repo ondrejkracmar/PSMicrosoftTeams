@@ -65,6 +65,11 @@ function New-PSMTGroup
 	    try {
             $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "groups"
             $authorizationToken = Receive-PSMTAuthorizationToken
+            $graphApiParameters=@{
+                Method = 'Post'
+                AuthorizationToken = "Bearer $authorizationToken"
+                Uri = $url
+            }
             #$property = Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.GraphApiQuery.Select.Group
 		} 
 		catch {
@@ -85,11 +90,6 @@ function New-PSMTGroup
 	{
         if (Test-PSFFunctionInterrupt) { return }
 	    try {
-            $graphApiParameters=@{
-                Method = 'Post'
-                AuthorizationToken = "Bearer $authorizationToken"
-                Uri = $url
-            }
             Switch ($PSCmdlet.ParameterSetName)
             {
                 'CreateGroupViaJson' {                               

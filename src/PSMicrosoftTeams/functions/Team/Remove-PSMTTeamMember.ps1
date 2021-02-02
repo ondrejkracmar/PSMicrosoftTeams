@@ -1,4 +1,4 @@
-﻿function Remove-PSMTTeamUser
+﻿function Remove-PSMTTeamMember
 {
 <#
     .SYNOPSIS

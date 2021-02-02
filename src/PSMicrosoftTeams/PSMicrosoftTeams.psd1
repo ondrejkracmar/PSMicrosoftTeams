@@ -40,13 +40,14 @@
 	
 	# Functions to export from this module
 	FunctionsToExport = @(
-		'Add-PSMTTeamUser',
+		'Add-PSMTTeamMember',
 		'Get-PSMTTeam',
-		'Get-PSMTTeamUser',
+		'Get-PSMTTeamMember',
 		'New-PSMTTeam',
 		'Get-PSMTUser',
 		'Remove-PSMTTeam',
-		'Remove-PSMTTeamUser',
+		'Remove-PSMTTeamMember',
+		'Add-PSMTGroupMember',
 		'New-PSMTGroup',
 		'Get-PSMTGroup',
 		'Remove-PSMTGroup',

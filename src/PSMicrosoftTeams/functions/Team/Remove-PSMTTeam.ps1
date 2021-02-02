@@ -60,7 +60,7 @@
                 $deleteTeamResult
             }
             else {
-                $deleteTeamResult
+                $responseHeaders
             }
         }
         catch {

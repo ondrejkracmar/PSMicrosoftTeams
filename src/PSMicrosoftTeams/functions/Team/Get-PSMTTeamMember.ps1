@@ -1,4 +1,4 @@
-﻿function Get-PSMTTeamUser
+﻿function Get-PSMTTeamMember
 {
 <#
     .SYNOPSIS
@@ -63,7 +63,12 @@ ConfirmImpact = 'Medium')]
             $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "teams"
             $authorizationToken = Receive-PSMTAuthorizationToken
             $property = Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.GraphApiQuery.Select.Group
-		} 
+            $graphApiParameters=@{
+                Method = 'Get'
+                AuthorizationToken = "Bearer $authorizationToken"
+
+            }
+        } 
 		catch {
             Stop-PSFFunction -String 'FailedGetUsers' -StringValues $graphApiParameters['Uri'] -ErrorRecord $_
         }
@@ -73,26 +78,13 @@ ConfirmImpact = 'Medium')]
 	{
         if (Test-PSFFunctionInterrupt) { return }
 	    try {
-            $graphApiParameters=@{
-                Method = 'Get'
-                AuthorizationToken = "Bearer $authorizationToken"
-            }
-
-            if(Test-PSFParameterBinding -Parameter Role) {
-                if($Role -eq 'Members') {
-                    $urlUser = Join-UriPath -Uri $url -ChildPath "$($TeamId)/members"
-                    $graphApiParameters['Uri'] = $urlUser
-                    $graphApiParameters['Filter'] = "(roles/Any(x:x ne 'owner'))"
-                }
-                if($Role -eq 'Owners') {
-                    $urlUser = Join-UriPath -Uri $url -ChildPath "$($TeamId)/members"
-                    $graphApiParameters['Uri'] = $urlUser
-                    $graphApiParameters['Filter'] = "(roles/Any(x:x eq 'owner'))"
-                }
-                #$graphApiParameters['Select'] = $property -join ","
-                #$graphApiParameters['Expand'] = 'roles'
-            }
             
+            $graphApiParameters['Uri'] = Join-UriPath -Uri $url -ChildPath "$($GroupId)/members"
+            if(Test-PSFParameterBinding -Parameter Role) {
+                if($Role -eq 'Owners') {
+                    $graphApiParameters['Uri'] = Join-UriPath -Uri $url -ChildPath "$($GroupId)/owners"
+                }
+            }
             if(Test-PSFParameterBinding -Parameter All) {
                 $graphApiParameters['All'] = $true
             }
