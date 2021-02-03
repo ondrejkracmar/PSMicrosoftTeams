@@ -36,7 +36,7 @@ ConfirmImpact = 'Medium')]
 	    [string]
 	    $TeamId,
         [Parameter(Mandatory = $false,
-            ValueFromPipeline = $true,
+            ValueFromPipeline = $false,
             ValueFromPipelineByPropertyName = $true,
             ValueFromRemainingArguments = $false,
             ParameterSetName = 'Default')]
