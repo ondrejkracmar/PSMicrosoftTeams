@@ -64,7 +64,7 @@ function Add-PSMTGroupMember
             #$property = Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.GraphApiQuery.Select.Group
         } 
         catch {
-            Stop-PSFFunction -String 'FailedAddMember' -StringValues $graphApiParameters['Uri'] -ErrorRecord $_
+            Stop-PSFFunction -String 'StringAssemblyError' -StringValues $url -ErrorRecord $_
         }  
     }
     

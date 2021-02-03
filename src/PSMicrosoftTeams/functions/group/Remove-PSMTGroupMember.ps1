@@ -1,4 +1,4 @@
-﻿function Remove-PSMTTeamMember
+function Remove-PSMTGroupMember
 {
 <#
     .SYNOPSIS
@@ -29,10 +29,19 @@
             }
         })]
 	    [string]
-	    $TeamId,
+	    $GroupId,
+        [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
+        [ValidateScript({
+            try {
+                [System.Guid]::Parse($_) | Out-Null
+                $true
+            } catch {
+                $false
+            }
+        })]
         [Alias("Id")]
 	    [string]
-	    $MembershipId,
+	    $UserId,
         [switch]
         $Status
     )
@@ -40,7 +49,7 @@
 	begin
 	{
 	    try {
-            $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "teams"
+            $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "groups"
             $authorizationToken = Receive-PSMTAuthorizationToken
             $graphApiParameters=@{
                 Method = 'Delete'
@@ -56,16 +65,18 @@
 	{
         if (Test-PSFFunctionInterrupt) { return }
         try {
-            $graphApiParameters['Uri'] = Join-UriPath -Uri $url -ChildPath "$($TeamId)/members/$($MembershipId)"
-            $removeTeamMemberResult = Invoke-GraphApiQuery @graphApiParameters
+            $urlMembers = Join-UriPath -Uri $url -ChildPath "$($GroupId)/members/$($UserId)" 
+            $graphApiParameters['Uri'] = Join-UriPath -Uri $urlMembers -ChildPath '$ref'
+
+            $removeGroupMemberResult = Invoke-GraphApiQuery @graphApiParameters
             If(-not ($Status.IsPresent -or ($responseHeaders))){
-                $removeTeamMemberResult
+                $removeGroupMemberResult
             }
             else {
-                $removeTeamMemberResult            }
+                $removeGroupMemberResult            }
         }
         catch {
-            Stop-PSFFunction -String 'FailedRemoveMember' -StringValues $UserId,$TeamId -Target $graphApiParameters['Uri'] -Continue -ErrorRecord $_ -Tag GraphApi,Delete
+            Stop-PSFFunction -String 'FailedRemoveMember' -StringValues $UserId,$GroupId -Target $graphApiParameters['Uri'] -Continue -ErrorRecord $_ -Tag GraphApi,Delete
         }
         Write-PSFMessage -Level InternalComment -String 'QueryCommandOutput' -StringValues $graphApiParameters['Uri'] -Target $graphApiParameters['Uri'] -Tag GraphApi,Delete -Data $graphApiParameters
 

@@ -104,88 +104,86 @@
             $graphApiParameters=@{
                 Method = 'Post'
                 AuthorizationToken = "Bearer $authorizationToken"
-                Uri = $url
             }
-            #$property = Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.GraphApiQuery.Select.Group
+            $requestBodyCreateTeamTemplateJSON = '{
+                "template@odata.bind": "",
+                "displayName": "",
+                "mailNickname" : "",
+                "mailEnabled": true,  
+                "description": "",
+                "visibility": "Public",
+                "owners@odata.bind": [
+                ],
+                "memberSettings": {
+                    "allowCreateUpdateChannels": true,
+                    "allowDeleteChannels": true,
+                    "allowAddRemoveApps": true,
+                    "allowCreateUpdateRemoveTabs": true,
+                    "allowCreateUpdateRemoveConnectors": true
+                },
+                "guestSettings": {
+                    "allowCreateUpdateChannels": true,
+                    "allowDeleteChannels": true
+                },
+                "funSettings": {
+                    "allowGiphy": true,
+                    "giphyContentRating": "Moderate",
+                    "allowStickersAndMemes": true,
+                    "allowCustomMemes": true
+                },
+                "messagingSettings": {
+                    "allowUserEditMessages": true,
+                    "allowUserDeleteMessages": true,
+                    "allowOwnerDeleteMessages": true,
+                    "allowTeamMentions": true,
+                    "allowChannelMentions": true
+                },
+                "discoverySettings": {
+                    "showInTeamsSearchAndSuggestions": true
+                }
+            }'
+            $requestBodyCreateTeamFromGroupTemplateJSON = '{
+                "group@odata.bind":"",
+                "template@odata.bind": "",
+                "memberSettings": {
+                    "allowCreateUpdateChannels": true,
+                    "allowDeleteChannels": true,
+                    "allowAddRemoveApps": true,
+                    "allowCreateUpdateRemoveTabs": true,
+                    "allowCreateUpdateRemoveConnectors": true
+                },
+                "guestSettings": {
+                    "allowCreateUpdateChannels": true,
+                    "allowDeleteChannels": true
+                },
+                "funSettings": {
+                    "allowGiphy": true,
+                    "giphyContentRating": "Moderate",
+                    "allowStickersAndMemes": true,
+                    "allowCustomMemes": true
+                },
+                "messagingSettings": {
+                    "allowUserEditMessages": true,
+                    "allowUserDeleteMessages": true,
+                    "allowOwnerDeleteMessages": true,
+                    "allowTeamMentions": true,
+                    "allowChannelMentions": true
+                },
+                "discoverySettings": {
+                    "showInTeamsSearchAndSuggestions": true
+                }
+            }'
 		} 
 		catch {
-            Stop-PSFFunction -String 'FailedGetTeam' -StringValues $graphApiParameters['Uri'] -ErrorRecord $_
+            Stop-PSFFunction -String 'StringAssemblyError' -StringValues $url -ErrorRecord $_
         }
-        $requestBodyCreateTeamTemplateJSON = '{
-            "template@odata.bind": "",
-            "displayName": "",
-            "mailNickname" : "",
-            "mailEnabled": true,  
-            "description": "",
-            "visibility": "Public",
-            "owners@odata.bind": [
-            ],
-            "memberSettings": {
-                "allowCreateUpdateChannels": true,
-                "allowDeleteChannels": true,
-                "allowAddRemoveApps": true,
-                "allowCreateUpdateRemoveTabs": true,
-                "allowCreateUpdateRemoveConnectors": true
-            },
-            "guestSettings": {
-                "allowCreateUpdateChannels": true,
-                "allowDeleteChannels": true
-            },
-            "funSettings": {
-                "allowGiphy": true,
-                "giphyContentRating": "Moderate",
-                "allowStickersAndMemes": true,
-                "allowCustomMemes": true
-            },
-            "messagingSettings": {
-                "allowUserEditMessages": true,
-                "allowUserDeleteMessages": true,
-                "allowOwnerDeleteMessages": true,
-                "allowTeamMentions": true,
-                "allowChannelMentions": true
-            },
-            "discoverySettings": {
-                "showInTeamsSearchAndSuggestions": true
-            }
-        }'
-        $requestBodyCreateTeamFromGroupTemplateJSON = '{
-            "group@odata.bind":"",
-            "template@odata.bind": "",
-            "memberSettings": {
-                "allowCreateUpdateChannels": true,
-                "allowDeleteChannels": true,
-                "allowAddRemoveApps": true,
-                "allowCreateUpdateRemoveTabs": true,
-                "allowCreateUpdateRemoveConnectors": true
-            },
-            "guestSettings": {
-                "allowCreateUpdateChannels": true,
-                "allowDeleteChannels": true
-            },
-            "funSettings": {
-                "allowGiphy": true,
-                "giphyContentRating": "Moderate",
-                "allowStickersAndMemes": true,
-                "allowCustomMemes": true
-            },
-            "messagingSettings": {
-                "allowUserEditMessages": true,
-                "allowUserDeleteMessages": true,
-                "allowOwnerDeleteMessages": true,
-                "allowTeamMentions": true,
-                "allowChannelMentions": true
-            },
-            "discoverySettings": {
-                "showInTeamsSearchAndSuggestions": true
-            }
-        }'
 	}
 	
 	process
 	{
         if (Test-PSFFunctionInterrupt) { return }
 	    try {
-                    
+            $graphApiParameters['uri'] = $url
             Switch ($PSCmdlet.ParameterSetName)
             {
                 'CreateTeamViaJson' {                               

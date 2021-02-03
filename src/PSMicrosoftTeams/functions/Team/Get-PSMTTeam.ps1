@@ -58,9 +58,14 @@
             $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "groups"
             $authorizationToken = Receive-PSMTAuthorizationToken
             $property = Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.GraphApiQuery.Select.Group
-		} 
+            $graphApiParameters=@{
+                Method = 'Get'
+				AuthorizationToken = "Bearer $authorizationToken"
+				Filter = "(resourceProvisioningOptions/Any(x:x eq 'Team'))"
+			}
+        } 
 		catch {
-            Stop-PSFFunction -String 'FailedGetUsers' -StringValues $graphApiParameters['Uri'] -ErrorRecord $_
+            Stop-PSFFunction -String 'StringAssemblyError' -StringValues $url -ErrorRecord $_
         }
 	}
 	
@@ -69,12 +74,7 @@
 		if (Test-PSFFunctionInterrupt) { return }
         Try
         {
-            $graphApiParameters=@{
-                Method = 'Get'
-				AuthorizationToken = "Bearer $authorizationToken"
-				Uri = $url
-				Filter = "(resourceProvisioningOptions/Any(x:x eq 'Team'))"
-			}
+            $graphApiParameters['Uri'] = $url
 			
             if(Test-PSFParameterBinding -Parameter MailNickName) {
                 $graphApiParameters['Filter'] = '{0} {1}' -f $graphApiParameters['Filter'], ("and startswith(mailNickName,'{0}')" -f $MailNickName)

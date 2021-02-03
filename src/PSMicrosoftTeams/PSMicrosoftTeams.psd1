@@ -48,6 +48,7 @@
 		'Remove-PSMTTeam',
 		'Remove-PSMTTeamMember',
 		'Add-PSMTGroupMember',
+		'Remove-PSMTGroupMember',
 		'New-PSMTGroup',
 		'Get-PSMTGroup',
 		'Remove-PSMTGroup',

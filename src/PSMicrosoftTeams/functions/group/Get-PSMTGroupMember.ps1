@@ -62,12 +62,10 @@ ConfirmImpact = 'Medium')]
 	    try {
             $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "groups"
             $authorizationToken = Receive-PSMTAuthorizationToken
-            $property = Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.GraphApiQuery.Select.Group
+            $property = Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.GraphApiQuery.Select.Team
             $graphApiParameters=@{
                 Method = 'Get'
-                Uri = Join-UriPath -Uri $url -ChildPath "$($GroupId)/members"
                 AuthorizationToken = "Bearer $authorizationToken"
-
             }
         } 
 		catch {
@@ -79,6 +77,7 @@ ConfirmImpact = 'Medium')]
 	{
         if (Test-PSFFunctionInterrupt) { return }
 	    try {
+            Uri = Join-UriPath -Uri $url -ChildPath "$($GroupId)/members"
             if(Test-PSFParameterBinding -Parameter Role) {
                 if($Role -eq 'Owners') {
                     $graphApiParameters['Filter'] = "(roles/Any(x:x eq 'owner'))"

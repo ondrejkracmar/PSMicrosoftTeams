@@ -65,7 +65,7 @@
             #$property = Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.GraphApiQuery.Select.Group
         } 
         catch {
-            Stop-PSFFunction -String 'FailedAddMember' -StringValues $graphApiParameters['Uri'] -ErrorRecord $_
+            Stop-PSFFunction -String 'StringAssemblyError' -StringValues $url -ErrorRecord $_
         }  
     }
     
@@ -91,7 +91,6 @@
                                 $bodyParameters['roles'] = @($Role)
                         }
                     }
-
                 }
                 'AddBulkMebers'
                 {
@@ -126,9 +125,9 @@
             }
         }
         catch {
-            Stop-PSFFunction -String 'FailedAddMember' -StringValues $UserId,$TeamId -Target $graphApiParameters['Uri'] -Continue -ErrorRecord $_ -Tag GraphApi,Get
+            Stop-PSFFunction -String 'FailedAddMember' -StringValues $UserId,$TeamId -Target $graphApiParameters['Uri'] -Continue -ErrorRecord $_ -Tag GraphApi,Post
         }
-        Write-PSFMessage -Level InternalComment -String 'QueryCommandOutput' -StringValues $graphApiParameters['Uri'] -Target $graphApiParameters['Uri'] -Tag GraphApi,Get -Data $graphApiParameters
+        Write-PSFMessage -Level InternalComment -String 'QueryCommandOutput' -StringValues $graphApiParameters['Uri'] -Target $graphApiParameters['Uri'] -Tag GraphApi,Post -Data $graphApiParameters
 	}
 	
 	end

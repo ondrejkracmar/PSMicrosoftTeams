@@ -66,11 +66,10 @@ ConfirmImpact = 'Medium')]
             $graphApiParameters=@{
                 Method = 'Get'
                 AuthorizationToken = "Bearer $authorizationToken"
-
             }
         } 
 		catch {
-            Stop-PSFFunction -String 'FailedGetUsers' -StringValues $graphApiParameters['Uri'] -ErrorRecord $_
+            Stop-PSFFunction -String 'StringAssemblyError' -StringValues $url -ErrorRecord $_
         }
 	}
 	
@@ -79,10 +78,10 @@ ConfirmImpact = 'Medium')]
         if (Test-PSFFunctionInterrupt) { return }
 	    try {
             
-            $graphApiParameters['Uri'] = Join-UriPath -Uri $url -ChildPath "$($GroupId)/members"
+            $graphApiParameters['Uri'] = Join-UriPath -Uri $url -ChildPath "$($TeamId)/members"
             if(Test-PSFParameterBinding -Parameter Role) {
                 if($Role -eq 'Owners') {
-                    $graphApiParameters['Uri'] = Join-UriPath -Uri $url -ChildPath "$($GroupId)/owners"
+                    $graphApiParameters['Uri'] = Join-UriPath -Uri $url -ChildPath "$($TeamId)/owners"
                 }
             }
             if(Test-PSFParameterBinding -Parameter All) {

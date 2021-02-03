@@ -60,7 +60,7 @@ function Get-PSMTGroup
             $property = Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.GraphApiQuery.Select.Group
 		} 
 		catch {
-            Stop-PSFFunction -String 'FailedGetUsers' -StringValues $graphApiParameters['Uri'] -ErrorRecord $_
+            Stop-PSFFunction -String 'StringAssemblyError' -StringValues $url -ErrorRecord $_
         }
 	}
 	
@@ -77,11 +77,11 @@ function Get-PSMTGroup
 			}
 			
             if(Test-PSFParameterBinding -Parameter MailNickName) {
-                $graphApiParameters['Filter'] = '{0} {1}' -f $graphApiParameters['Filter'], ("and startswith(mailNickName,'{0}')" -f $MailNickName)
+                $graphApiParameters['Filter'] = '{0} {1}' -f $graphApiParameters['Filter'], ("startswith(mailNickName,'{0}')" -f $MailNickName)
 			}
 			
 			if(Test-PSFParameterBinding -Parameter DisplayName) {
-                $graphApiParameters['Filter'] = '{0} {1}' -f $graphApiParameters['Filter'], ("and startswith(displayName,'{0}')" -f $DisplayName)
+                $graphApiParameters['Filter'] = '{0} {1}' -f $graphApiParameters['Filter'], ("startswith(displayName,'{0}')" -f $DisplayName)
 			}
 
             if(Test-PSFParameterBinding -Parameter Filter)
