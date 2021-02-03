@@ -1,4 +1,4 @@
-function Get-PSMTGroup
+﻿function Get-PSMTGroup
 {
 	[CmdletBinding(DefaultParameterSetName = 'Filters',
         SupportsShouldProcess = $false,

@@ -1,4 +1,4 @@
-function Get-PSMTGroupMember
+﻿function Get-PSMTGroupMember
 {
 <#
     .SYNOPSIS

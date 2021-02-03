@@ -1,4 +1,4 @@
-function New-PSMTGroup
+﻿function New-PSMTGroup
 {
 	[CmdletBinding(DefaultParameterSetName='CreateTeam')]
 	param(

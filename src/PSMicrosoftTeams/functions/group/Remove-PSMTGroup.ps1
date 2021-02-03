@@ -1,4 +1,4 @@
-function Remove-PSMTGroup
+﻿function Remove-PSMTGroup
 {
 <#
     .SYNOPSIS
