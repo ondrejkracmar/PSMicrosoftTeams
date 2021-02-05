@@ -14,6 +14,7 @@
 	'FailedDeleteGroup' 		= "Failed to delete Office 365 group '{0}'."
 	'FailedGetGroup' 			= "Failed to get Office 365 group '{0}'."
 	'FailedGetUsers' 			= "Failed to receive uri '{0}'."
+	'FailedGetUser' 			= "Failed to receive Id of  UserPrincipalName '{0}'."
 	'FailedAddMember' 			= "Failed to add UserId '{0}' to TeamId {1}."
 	'FailedRemoveMember'		= "Failed to remove MembershipId '{0}' from TeamId {1}."
 	'FailedGetUri' 				= "Failed to receive uri '{0}'."
