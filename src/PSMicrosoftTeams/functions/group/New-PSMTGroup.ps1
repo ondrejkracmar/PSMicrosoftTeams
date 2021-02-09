@@ -152,14 +152,12 @@
     
             [string]$requestJSONQuery = $bodyParameters | ConvertTo-Json -Depth 10 | ForEach-Object { [System.Text.RegularExpressions.Regex]::Unescape($_)}
             $graphApiParameters['body'] = $requestJSONQuery
+            
+            If($Status.IsPresent){
+                $graphApiParameters['Status'] = $true
+            }
             $newGroupResult = Invoke-GraphApiQuery @graphApiParameters
-            If(-not ($Status.IsPresent -or ($responseHeaders)))
-            {
-                $newGroupResult
-            }
-            else {
-                $responseHeaders
-            }
+            $newGroupResult
         } 
         catch {
           Stop-PSFFunction -String 'FailedNewGroup' -StringValues $graphApiParameters['Uri'] -Target $graphApiParameters['Uri'] -Continue -ErrorRecord $_ -Tag GraphApi,Post

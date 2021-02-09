@@ -116,13 +116,12 @@
             }
             [string]$requestJSONQuery = $bodyParameters | ConvertTo-Json -Depth 10 | ForEach-Object { [System.Text.RegularExpressions.Regex]::Unescape($_)}
             $graphApiParameters['body'] = $requestJSONQuery
+    
+            If($Status.IsPresent){
+                $graphApiParameters['Status'] = $true
+            }
             $addTeamMembeResult = Invoke-GraphApiQuery @graphApiParameters
-            If(-not ($Status.IsPresent -or ($responseHeaders))){
-                $addTeamMembeResult
-            }
-            else {
-                $responseHeaders
-            }
+            $addTeamMembeResult
         }
         catch {
             Stop-PSFFunction -String 'FailedAddMember' -StringValues $UserId,$TeamId -Target $graphApiParameters['Uri'] -Continue -ErrorRecord $_ -Tag GraphApi,Post

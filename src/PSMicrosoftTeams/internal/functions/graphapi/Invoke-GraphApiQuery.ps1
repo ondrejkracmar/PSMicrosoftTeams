@@ -15,6 +15,7 @@
         [string]$Method = "Get",
         [string]$Accept = 'application/json',
         [string]$ContentType = 'application/json',
+        [swttch]$Status,
         [ValidateRange(5, 1000)]
         [int]$Top,
         [ValidateRange(1, [int]::MaxValue)]
@@ -126,7 +127,14 @@
                     $responseOutputList.AddRange($responseOutput)
                 }
             }
-            $responseOutputList
+            if((Test-PSFParameterBinding -Parameter Status) -and (Test-PSFPowerShell -PSMinVersion '7.0.0'))
+            {
+                $responseHeaders
+            }
+            else {
+                $responseOutputList    
+            }
+            
         }
         Catch{
             Stop-PSFFunction -String 'FailedInvokeRest' -Target $queryUri -StringValues $Method, $queryUri -ErrorRecord $_ -Continue -EnableException $True

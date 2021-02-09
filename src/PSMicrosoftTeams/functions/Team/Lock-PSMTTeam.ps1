@@ -1,17 +1,16 @@
-﻿function Remove-PSMTTeamMember
+function Lock-PSMTTeamMember
 {
 <#
     .SYNOPSIS
-        Remove an owner or member from the team, and to the unified group which backs the team.
+        Archive the specified team.
               
     .DESCRIPTION
-        This cmdlet removes an owner or member from the team, and to the unified group which backs the team.
+        Archive the specified team.
+        hen a team is archived, users can no longer send or like messages on any channel in the team, edit the team's name, description, or other settings, or in general make most changes to the team.
+        Membership changes to the team continue to be allowed.
               
     .PARAMETER TeamId
         Id of Team (unified group)
-
-    .PARAMETER UserId
-        Id of User
 
     .PARAMETER Status
         Switch response header or result
@@ -28,11 +27,9 @@
                 $false
             }
         })]
-	    [string]
-	    $TeamId,
+        [string]
         [Alias("Id")]
-	    [string]
-	    $MembershipId,
+	    $TeamId,
         [switch]
         $Status
     )
@@ -43,7 +40,7 @@
             $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "teams"
             $authorizationToken = Receive-PSMTAuthorizationToken
             $graphApiParameters=@{
-                Method = 'Delete'
+                Method = 'Post'
                 AuthorizationToken = "Bearer $authorizationToken"
             }
         } 
@@ -56,13 +53,14 @@
 	{
         if (Test-PSFFunctionInterrupt) { return }
         try {
-            $graphApiParameters['Uri'] = Join-UriPath -Uri $url -ChildPath "$($TeamId)/members/$($MembershipId)"
+            $graphApiParameters['Uri'] = Join-UriPath -Uri $url -ChildPath "$($TeamId)/archive"
             
             If($Status.IsPresent){
                 $graphApiParameters['Status'] = $true
             }
-            $removeTeamMemberResult = Invoke-GraphApiQuery @graphApiParameters
-            $removeTeamMemberResult
+            $archiveTeamResult = Invoke-GraphApiQuery @graphApiParameters
+            $archiveTeamResult
+        }
         catch {
             Stop-PSFFunction -String 'FailedRemoveMember' -StringValues $UserId,$TeamId -Target $graphApiParameters['Uri'] -Continue -ErrorRecord $_ -Tag GraphApi,Delete
         }

@@ -54,14 +54,11 @@
                 Uri = Join-UriPath -Uri $url -ChildPath "$TeamId"
             }
             
+            If($Status.IsPresent){
+                $graphApiParameters['Status'] = $true
+            }
             $deleteTeamResult = Invoke-GraphApiQuery @graphApiParameters
-            If(-not ($Status.IsPresent -or ($responseHeaders)))
-            {
-                $deleteTeamResult
-            }
-            else {
-                $responseHeaders
-            }
+            $deleteTeamResult
         }
         catch {
             Stop-PSFFunction -String 'FailedRemoveTeam' -StringValues $graphApiParameters['Uri'] -Target $graphApiParameters['Uri'] -Continue -ErrorRecord $_ -Tag GraphApi,Delete

@@ -65,16 +65,14 @@
 	{
         if (Test-PSFFunctionInterrupt) { return }
         try {
-            $urlMembers = Join-UriPath -Uri $url -ChildPath "$($GroupId)/members/$($UserId)" 
-            $graphApiParameters['Uri'] = Join-UriPath -Uri $urlMembers -ChildPath '$ref'
-
-            $removeGroupMemberResult = Invoke-GraphApiQuery @graphApiParameters
-            If(-not ($Status.IsPresent -or ($responseHeaders))){
+                $urlMembers = Join-UriPath -Uri $url -ChildPath "$($GroupId)/members/$($UserId)" 
+                $graphApiParameters['Uri'] = Join-UriPath -Uri $urlMembers -ChildPath '$ref'
+                If($Status.IsPresent){
+                    $graphApiParameters['Status'] = $true
+                }
+                $removeGroupMemberResult = Invoke-GraphApiQuery @graphApiParameters
                 $removeGroupMemberResult
             }
-            else {
-                $removeGroupMemberResult            }
-        }
         catch {
             Stop-PSFFunction -String 'FailedRemoveMember' -StringValues $UserId,$GroupId -Target $graphApiParameters['Uri'] -Continue -ErrorRecord $_ -Tag GraphApi,Delete
         }

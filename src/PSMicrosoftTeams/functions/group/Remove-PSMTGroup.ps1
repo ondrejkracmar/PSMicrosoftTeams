@@ -53,14 +53,11 @@
         if (Test-PSFFunctionInterrupt) { return }
 	    try {
             $graphApiParameters['Uri'] = Join-UriPath -Uri $url -ChildPath "$GroupId"
+            If($Status.IsPresent){
+                $graphApiParameters['Status'] = $true
+            }
             $deleteGroupResult = Invoke-GraphApiQuery @graphApiParameters
-            If(-not ($Status.IsPresent -or ($responseHeaders)))
-            {
-                $deleteGroupResult
-            }
-            else {
-                $responseHeaders
-            }
+            $deleteGroupResult
         }
         catch {
             Stop-PSFFunction -String 'FailedRemoveGroup' -StringValues $graphApiParameters['Uri'] -Target $graphApiParameters['Uri'] -Continue -ErrorRecord $_ -Tag GraphApi,Delete

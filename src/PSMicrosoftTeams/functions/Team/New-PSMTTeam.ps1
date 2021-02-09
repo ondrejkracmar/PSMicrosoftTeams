@@ -341,13 +341,12 @@
             else {
                 [string]$requestJSONQuery = $bodyParameters | ConvertTo-Json -Depth 10 | ForEach-Object { [System.Text.RegularExpressions.Regex]::Unescape($_)}
                 $graphApiParameters['body'] = $requestJSONQuery
+                
+                If($Status.IsPresent){
+                    $graphApiParameters['Status'] = $true
+                }
                 $newTeamResult = Invoke-GraphApiQuery @graphApiParameters
-                If(-not ($Status.IsPresent -or ($responseHeaders))){
-                    $newTeamResult
-                }
-                else {
-                    $responseHeaders
-                }
+                $newTeamResult
             }
         } 
         catch {
