@@ -15,7 +15,7 @@
         [string]$Method = "Get",
         [string]$Accept = 'application/json',
         [string]$ContentType = 'application/json',
-        [swttch]$Status,
+        [switch]$Status,
         [ValidateRange(5, 1000)]
         [int]$Top,
         [ValidateRange(1, [int]::MaxValue)]
@@ -127,8 +127,7 @@
                     $responseOutputList.AddRange($responseOutput)
                 }
             }
-            if((Test-PSFParameterBinding -Parameter Status) -and (Test-PSFPowerShell -PSMinVersion '7.0.0'))
-            {
+            if((Test-PSFParameterBinding -Parameter Status) -and (Test-PSFPowerShell -PSMinVersion '7.0.0')){
                 $responseHeaders
             }
             else {

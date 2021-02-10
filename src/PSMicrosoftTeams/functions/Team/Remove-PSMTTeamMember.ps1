@@ -63,6 +63,7 @@
             }
             $removeTeamMemberResult = Invoke-GraphApiQuery @graphApiParameters
             $removeTeamMemberResult
+        }
         catch {
             Stop-PSFFunction -String 'FailedRemoveMember' -StringValues $UserId,$TeamId -Target $graphApiParameters['Uri'] -Continue -ErrorRecord $_ -Tag GraphApi,Delete
         }

@@ -1,4 +1,4 @@
-function Lock-PSMTTeamMember
+function Lock-PSMTTeam
 {
 <#
     .SYNOPSIS
@@ -11,6 +11,10 @@ function Lock-PSMTTeamMember
               
     .PARAMETER TeamId
         Id of Team (unified group)
+    
+    .PARAMETER SPOSiteReadOnly
+        This optional parameter defines whether to set permissions for team members to read-only on the SharePoint Online site associated with the team.
+        Setting it to false or omitting the body altogether will result in this step being skipped.
 
     .PARAMETER Status
         Switch response header or result
@@ -29,7 +33,8 @@ function Lock-PSMTTeamMember
         })]
         [string]
         [Alias("Id")]
-	    $TeamId,
+        $TeamId,
+        [switch]$SPOSiteReadOnly,
         [switch]
         $Status
     )
@@ -55,6 +60,11 @@ function Lock-PSMTTeamMember
         try {
             $graphApiParameters['Uri'] = Join-UriPath -Uri $url -ChildPath "$($TeamId)/archive"
             
+            if($SPOSiteReadOnly.IsPresent)
+            {
+                $graphApiParameters['Body'] = @{'shouldSetSpoSiteReadOnlyForMembers'=$true}
+            }
+
             If($Status.IsPresent){
                 $graphApiParameters['Status'] = $true
             }
