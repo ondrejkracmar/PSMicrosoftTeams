@@ -102,7 +102,7 @@
             If(-not ($All.IsPresent) -and $response.PSobject.Properties.Name.Contains('@odata.nextLink')){
                 Write-PSFMessage -Level Warning -String 'QueryMoreData'
                 Start-Sleep 1
-                $responseOutputList.AddRange($responseOutput)
+                [void]$responseOutputList.AddRange($responseOutput)
             }
             else {
                 if($All.IsPresent){
@@ -131,12 +131,12 @@
                 $responseHeaders
             }
             else {
-                $responseOutputList    
+                $responseOutputList
             }
             
         }
         Catch{
-            Stop-PSFFunction -String 'FailedInvokeRest' -Target $queryUri -StringValues $Method, $queryUri -ErrorRecord $_ -Continue -EnableException $True
+            Stop-PSFFunction -String 'FailedInvokeRest' -Target $queryUri -StringValues $Method, $queryUri -ErrorRecord $_ -SilentlyContinue -EnableException $True
         }
         Write-PSFMessage -Level InternalComment -String 'QueryCommandOutput' -StringValues $queryUri -Target $queryUri -Tag GraphApi -Data $queryParameters
     }

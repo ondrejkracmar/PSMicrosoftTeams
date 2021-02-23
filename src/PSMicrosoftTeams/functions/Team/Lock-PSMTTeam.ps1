@@ -68,8 +68,7 @@ function Lock-PSMTTeam
             If($Status.IsPresent){
                 $graphApiParameters['Status'] = $true
             }
-            $archiveTeamResult = Invoke-GraphApiQuery @graphApiParameters
-            $archiveTeamResult
+            Invoke-GraphApiQuery @graphApiParameters
         }
         catch {
             Stop-PSFFunction -String 'FailedRemoveMember' -StringValues $UserId,$TeamId -Target $graphApiParameters['Uri'] -Continue -ErrorRecord $_ -Tag GraphApi,Delete

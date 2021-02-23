@@ -156,11 +156,10 @@
             If($Status.IsPresent){
                 $graphApiParameters['Status'] = $true
             }
-            $newGroupResult = Invoke-GraphApiQuery @graphApiParameters
-            $newGroupResult
+            Invoke-GraphApiQuery @graphApiParameters
         } 
         catch {
-          Stop-PSFFunction -String 'FailedNewGroup' -StringValues $graphApiParameters['Uri'] -Target $graphApiParameters['Uri'] -Continue -ErrorRecord $_ -Tag GraphApi,Post
+            Stop-PSFFunction -String 'FailedNewGroup' -StringValues $graphApiParameters['Uri'] -Target $graphApiParameters['Uri'] -Continue -ErrorRecord $_ -Tag GraphApi,Post
         }
         Write-PSFMessage -Level InternalComment -String 'QueryCommandOutput' -StringValues $graphApiParameters['Uri'] -Target $graphApiParameters['Uri'] -Tag GraphApi,Get -Data $graphApiParameters
 	}

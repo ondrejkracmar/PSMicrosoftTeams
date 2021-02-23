@@ -70,8 +70,7 @@
                 If($Status.IsPresent){
                     $graphApiParameters['Status'] = $true
                 }
-                $removeGroupMemberResult = Invoke-GraphApiQuery @graphApiParameters
-                $removeGroupMemberResult
+                Invoke-GraphApiQuery @graphApiParameters
             }
         catch {
             Stop-PSFFunction -String 'FailedRemoveMember' -StringValues $UserId,$GroupId -Target $graphApiParameters['Uri'] -Continue -ErrorRecord $_ -Tag GraphApi,Delete

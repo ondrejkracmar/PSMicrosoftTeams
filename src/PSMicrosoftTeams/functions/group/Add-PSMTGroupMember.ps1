@@ -92,8 +92,7 @@
             If($Status.IsPresent){
                 $graphApiParameters['Status'] = $true
             }
-            $addTeamMembeResult = Invoke-GraphApiQuery @graphApiParameters
-            $addTeamMembeResult
+            Invoke-GraphApiQuery @graphApiParameters
         }
         catch {
             Stop-PSFFunction -String 'FailedAddMember' -StringValues $UserId,$TeamId -Target $graphApiParameters['Uri'] -Continue -ErrorRecord $_ -Tag GraphApi,Get

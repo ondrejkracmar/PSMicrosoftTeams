@@ -345,8 +345,7 @@
                 If($Status.IsPresent){
                     $graphApiParameters['Status'] = $true
                 }
-                $newTeamResult = Invoke-GraphApiQuery @graphApiParameters
-                $newTeamResult
+                Invoke-GraphApiQuery @graphApiParameters
             }
         } 
         catch {

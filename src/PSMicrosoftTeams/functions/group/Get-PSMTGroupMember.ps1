@@ -92,8 +92,7 @@ ConfirmImpact = 'Medium')]
             {
                 $graphApiParameters['Top'] = $PageSize
             }
-            $userResult = Invoke-GraphApiQuery @graphApiParameters
-            $userResult
+            Invoke-GraphApiQuery @graphApiParameters
         }
         catch {
             Stop-PSFFunction -String 'FailedGetUsers' -StringValues $graphApiParameters['Uri'] -Target $graphApiParameters['Uri'] -Continue -ErrorRecord $_ -Tag GraphApi,Get
