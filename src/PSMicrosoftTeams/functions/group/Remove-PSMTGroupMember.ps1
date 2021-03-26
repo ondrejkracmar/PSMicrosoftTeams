@@ -73,7 +73,7 @@
                 Invoke-GraphApiQuery @graphApiParameters
             }
         catch {
-            Stop-PSFFunction -String 'FailedRemoveMember' -StringValues $UserId,$GroupId -Target $graphApiParameters['Uri'] -Continue -ErrorRecord $_ -Tag GraphApi,Delete
+            Stop-PSFFunction -String 'FailedRemoveMember' -StringValues $UserId,$GroupId -Target $graphApiParameters['Uri'] -SilentlyContinue -ErrorRecord $_ -Tag GraphApi,Delete
         }
         Write-PSFMessage -Level InternalComment -String 'QueryCommandOutput' -StringValues $graphApiParameters['Uri'] -Target $graphApiParameters['Uri'] -Tag GraphApi,Delete -Data $graphApiParameters
 

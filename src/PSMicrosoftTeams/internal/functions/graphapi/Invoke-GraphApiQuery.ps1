@@ -136,7 +136,7 @@
             
         }
         Catch{
-            Stop-PSFFunction -String 'FailedInvokeRest' -Target $queryUri -StringValues $Method, $queryUri -ErrorRecord $_ -SilentlyContinue -EnableException $True
+            Stop-PSFFunction -String 'FailedInvokeRest' -Target $queryUri -StringValues $Method, $queryUri -ErrorRecord $_ -SilentlyContinue
         }
         Write-PSFMessage -Level InternalComment -String 'QueryCommandOutput' -StringValues $queryUri -Target $queryUri -Tag GraphApi -Data $queryParameters
     }
