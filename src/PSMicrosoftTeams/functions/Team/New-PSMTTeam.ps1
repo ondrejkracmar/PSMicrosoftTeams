@@ -189,7 +189,14 @@
                     $bodyParameters = $JsonRequest | ConvertFrom-Json | ConvertTo-PSFHashtable
                 }
                 'CreateTeamFromGroup' {
-                    $bodyParameters = $requestBodyCreateTeamFromGroupTemplateJSON | ConvertFrom-Json -AsHashtable -Depth 4 #| ConvertTo-PSFHashtable
+                    if(Test-PSFPowerShell -PSMinVersion '7.0.0')
+                    {
+                        $bodyParameters = $requestBodyCreateTeamFromGroupTemplateJSON | ConvertFrom-Json -AsHashtable -Depth 4 #| ConvertTo-PSFHashtable
+                    }
+                    else {
+                        $bodyParameters = $requestBodyCreateTeamFromGroupTemplateJSON | ConvertTo-Hashtable
+                    }
+                    
                     $bodyParameters['group@odata.bind'] = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "groups('$($GroupId)')"
                     if (Test-PSFParameterBinding -Parameter Template) {
                         $bodyParameters['template@odata.bind'] = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "teamsTemplates('$($Template)')"
