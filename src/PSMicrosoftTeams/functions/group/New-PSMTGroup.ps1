@@ -153,7 +153,7 @@
                             $userIdUriPath = Join-UriPath -Uri $userUriPath -ChildPath $member
                             [void]($userIdUriPathList.Add($userIdUriPath))
                         }                                   
-                        $bodyParameters['owners@odata.bind'] = [array]$userIdUriPathList
+                        $bodyParameters['members@odata.bind'] = [array]$userIdUriPathList
                     }
                 }
                 'Default'
