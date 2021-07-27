@@ -3,7 +3,7 @@
 	RootModule = 'PSMicrosoftTeams.psm1'
 	
 	# Version number of this module.
-	ModuleVersion = '1.0.1.2'
+	ModuleVersion = '1.0.1.3'
 	
 	# ID used to uniquely identify this module
 	GUID = '68aff6a6-275a-40e9-adc0-f2ff32ce35b5'
@@ -21,7 +21,7 @@
 	Description = 'Powershell module for managing Microsoft Teams'
 	
 	# Minimum version of the Windows PowerShell engine required by this module
-	PowerShellVersion = '5.0'
+	PowerShellVersion = '5.1'
 	
 	# Modules that must be imported into the global environment prior to importing
 	# this module
