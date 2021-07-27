@@ -30,7 +30,7 @@
             }
         })]
 	    [string]
-        $TeamId,
+        $GroupId,
         [Parameter(ParameterSetName='AddSingleMember',Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
         [ValidateScript({
             try {

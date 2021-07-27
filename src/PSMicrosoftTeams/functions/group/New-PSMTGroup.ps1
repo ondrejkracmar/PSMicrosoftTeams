@@ -135,13 +135,25 @@
                     }
 
                     if(Test-PSFParameterBinding -Parameter Owners)
-                    {                                         
-                        $bodyParameters['owners@odata.bind'] = @(Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "users('$($owners)')")
+                    { 
+                        $userIdUriPathList = [System.Collections.ArrayList]::new()
+                        foreach ($owner in $Owners) {
+                            $userUriPath = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath 'users'
+                            $userIdUriPath = Join-UriPath -Uri $userUriPath -ChildPath $owner
+                            [void]($userIdUriPathList.Add($userIdUriPath))
+                        }                        
+                        $bodyParameters['owners@odata.bind'] = [array]$userIdUriPathList 
                     }
 
                     if(Test-PSFParameterBinding -Parameter Members)
-                    {                                         
-                        $bodyParameters['owners@odata.bind'] = @(Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "users('$($owners)')")
+                    {   
+                        $userIdUriPathList = [System.Collections.ArrayList]::new()
+                        foreach ($member in $Members) {
+                            $userUriPath = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath 'users'
+                            $userIdUriPath = Join-UriPath -Uri $userUriPath -ChildPath $member
+                            [void]($userIdUriPathList.Add($userIdUriPath))
+                        }                                   
+                        $bodyParameters['owners@odata.bind'] = [array]$userIdUriPathList
                     }
                 }
                 'Default'

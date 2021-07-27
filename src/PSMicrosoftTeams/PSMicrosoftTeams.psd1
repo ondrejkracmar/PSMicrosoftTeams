@@ -3,7 +3,7 @@
 	RootModule = 'PSMicrosoftTeams.psm1'
 	
 	# Version number of this module.
-	ModuleVersion = '1.0.1'
+	ModuleVersion = '1.0.1.1'
 	
 	# ID used to uniquely identify this module
 	GUID = '68aff6a6-275a-40e9-adc0-f2ff32ce35b5'
