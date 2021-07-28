@@ -61,8 +61,7 @@ ConfirmImpact = 'Medium')]
 	{
 	    try {
             $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "groups"
-            $authorizationToken = Receive-PSMTAuthorizationToken
-            $property = Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.GraphApiQuery.Select.Team
+            $authorizationToken = Receive-PSMTAuthorizationToken            
             $graphApiParameters=@{
                 Method = 'Get'
                 AuthorizationToken = "Bearer $authorizationToken"

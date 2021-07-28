@@ -116,15 +116,15 @@
                 "owners@odata.bind": [
                 ],
                 "memberSettings": {
-                    "allowCreateUpdateChannels": true,
-                    "allowDeleteChannels": true,
-                    "allowAddRemoveApps": true,
-                    "allowCreateUpdateRemoveTabs": true,
-                    "allowCreateUpdateRemoveConnectors": true
+                    "allowCreateUpdateChannels": false,
+                    "allowDeleteChannels": false,
+                    "allowAddRemoveApps": false,
+                    "allowCreateUpdateRemoveTabs": false,
+                    "allowCreateUpdateRemoveConnectors": false
                 },
                 "guestSettings": {
-                    "allowCreateUpdateChannels": true,
-                    "allowDeleteChannels": true
+                    "allowCreateUpdateChannels": false,
+                    "allowDeleteChannels": false
                 },
                 "funSettings": {
                     "allowGiphy": true,
@@ -140,22 +140,22 @@
                     "allowChannelMentions": true
                 },
                 "discoverySettings": {
-                    "showInTeamsSearchAndSuggestions": true
+                    "showInTeamsSearchAndSuggestions": tfalse
                 }
             }'
             $requestBodyCreateTeamFromGroupTemplateJSON = '{
                 "group@odata.bind":"",
                 "template@odata.bind": "",
                 "memberSettings": {
-                    "allowCreateUpdateChannels": true,
-                    "allowDeleteChannels": true,
-                    "allowAddRemoveApps": true,
-                    "allowCreateUpdateRemoveTabs": true,
-                    "allowCreateUpdateRemoveConnectors": true
+                    "allowCreateUpdateChannels": false,
+                    "allowDeleteChannels": false,
+                    "allowAddRemoveApps": false,
+                    "allowCreateUpdateRemoveTabs": false,
+                    "allowCreateUpdateRemoveConnectors": false
                 },
                 "guestSettings": {
-                    "allowCreateUpdateChannels": true,
-                    "allowDeleteChannels": true
+                    "allowCreateUpdateChannels": false,
+                    "allowDeleteChannels": false
                 },
                 "funSettings": {
                     "allowGiphy": true,
@@ -171,7 +171,7 @@
                     "allowChannelMentions": true
                 },
                 "discoverySettings": {
-                    "showInTeamsSearchAndSuggestions": true
+                    "showInTeamsSearchAndSuggestions": false
                 }
             }'
         } 
