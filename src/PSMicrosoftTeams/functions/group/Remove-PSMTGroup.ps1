@@ -1,6 +1,5 @@
-﻿function Remove-PSMTGroup
-{
-<#
+﻿function Remove-PSMTGroup {
+    <#
     .SYNOPSIS
         Removed Team (Office 365 unified group).
               
@@ -14,58 +13,52 @@
         Switch response header or result
 
 #>
-	[CmdletBinding()]
-	param(
-	    [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
-	    [ValidateScript({
-            try {
-                [System.Guid]::Parse($_) | Out-Null
-                $true
-            } catch {
-                $false
-            }
-        })]
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
+        [ValidateScript( {
+                try {
+                    [System.Guid]::Parse($_) | Out-Null
+                    $true
+                }
+                catch {
+                    $false
+                }
+            })]
         [Alias("Id")]
-	    [string]
-	    $GroupId,
+        [string]
+        $GroupId,
         [switch]
         $Status
     )
 
-	begin
-	{
-	    try {
+    begin {
+        try {
             $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "groups"
-            $authorizationToken = Receive-PSMTAuthorizationToken
-            $graphApiParameters=@{
-                Method = 'Delete'
+            $authorizationToken = Get-PSMTAuthorizationToken
+            $graphApiParameters = @{
+                Method             = 'Delete'
                 AuthorizationToken = "Bearer $authorizationToken"
             }
             #$property = Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.GraphApiQuery.Select.Group
-		} 
-		catch {
+        } 
+        catch {
             Stop-PSFFunction -String 'StringAssemblyError' -StringValues $url -ErrorRecord $_
         }
-	}
+    }
 	
-	process
-	{
+    process {
         if (Test-PSFFunctionInterrupt) { return }
-	    try {
-            $graphApiParameters['Uri'] = Join-UriPath -Uri $url -ChildPath "$GroupId"
-            If($Status.IsPresent){
-                $graphApiParameters['Status'] = $true
-            }
-            Invoke-GraphApiQuery @graphApiParameters
+
+        $graphApiParameters['Uri'] = Join-UriPath -Uri $url -ChildPath "$GroupId"
+        If ($Status.IsPresent) {
+            $graphApiParameters['Status'] = $true
         }
-        catch {
-            Stop-PSFFunction -String 'FailedRemoveGroup' -StringValues $graphApiParameters['Uri'] -Target $graphApiParameters['Uri'] -SilentlyContinue -ErrorRecord $_ -Tag GraphApi,Delete
-          }
-          Write-PSFMessage -Level InternalComment -String 'QueryCommandOutput' -StringValues $graphApiParameters['Uri'] -Target $graphApiParameters['Uri'] -Tag GraphApi,Delete -Data $graphApiParameters
-	}
+        Invoke-GraphApiQuery @graphApiParameters
+    
+    }
 	
-	end
-	{
+    end {
 	
-	}
+    }
 }

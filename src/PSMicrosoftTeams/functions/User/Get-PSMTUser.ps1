@@ -53,7 +53,7 @@
     {
         try {
             $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "users"
-            $authorizationToken = Receive-PSMTAuthorizationToken
+            $authorizationToken = Get-PSMTAuthorizationToken
             $property = Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.GraphApiQuery.Select.User
 	    } catch {
             Stop-PSFFunction -String 'FailedGetUsers' -StringValues $graphApiParameters['Uri'] -ErrorRecord $_

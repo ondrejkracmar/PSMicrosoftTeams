@@ -1,6 +1,5 @@
-﻿function Remove-PSMTGroupMember
-{
-<#
+﻿function Remove-PSMTGroupMember {
+    <#
     .SYNOPSIS
         Remove an owner or member from the team, and to the unified group which backs the team.
               
@@ -17,70 +16,63 @@
         Switch response header or result
 
 #>
-	[CmdletBinding()]
-	param(
-	    [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
-	    [ValidateScript({
-            try {
-                [System.Guid]::Parse($_) | Out-Null
-                $true
-            } catch {
-                $false
-            }
-        })]
-	    [string]
-	    $GroupId,
-        [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
-        [ValidateScript({
-            try {
-                [System.Guid]::Parse($_) | Out-Null
-                $true
-            } catch {
-                $false
-            }
-        })]
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
+        [ValidateScript( {
+                try {
+                    [System.Guid]::Parse($_) | Out-Null
+                    $true
+                }
+                catch {
+                    $false
+                }
+            })]
+        [string]
+        $GroupId,
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
+        [ValidateScript( {
+                try {
+                    [System.Guid]::Parse($_) | Out-Null
+                    $true
+                }
+                catch {
+                    $false
+                }
+            })]
         [Alias("Id")]
-	    [string]
-	    $UserId,
+        [string]
+        $UserId,
         [switch]
         $Status
     )
 
-	begin
-	{
-	    try {
+    begin {
+        try {
             $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "groups"
-            $authorizationToken = Receive-PSMTAuthorizationToken
-            $graphApiParameters=@{
-                Method = 'Delete'
+            $authorizationToken = Get-PSMTAuthorizationToken
+            $graphApiParameters = @{
+                Method             = 'Delete'
                 AuthorizationToken = "Bearer $authorizationToken"
             }
         } 
-		catch {
+        catch {
             Stop-PSFFunction -String 'StringAssemblyError' -StringValues $url -ErrorRecord $_
         }
-	}
+    }
 	
-	process
-	{
+    process {
         if (Test-PSFFunctionInterrupt) { return }
-        try {
-                $urlMembers = Join-UriPath -Uri $url -ChildPath "$($GroupId)/members/$($UserId)" 
-                $graphApiParameters['Uri'] = Join-UriPath -Uri $urlMembers -ChildPath '$ref'
-                If($Status.IsPresent){
-                    $graphApiParameters['Status'] = $true
-                }
-                Invoke-GraphApiQuery @graphApiParameters
-            }
-        catch {
-            Stop-PSFFunction -String 'FailedRemoveMember' -StringValues $UserId,$GroupId -Target $graphApiParameters['Uri'] -SilentlyContinue -ErrorRecord $_ -Tag GraphApi,Delete
-        }
-        Write-PSFMessage -Level InternalComment -String 'QueryCommandOutput' -StringValues $graphApiParameters['Uri'] -Target $graphApiParameters['Uri'] -Tag GraphApi,Delete -Data $graphApiParameters
 
-	}
+        $urlMembers = Join-UriPath -Uri $url -ChildPath "$($GroupId)/members/$($UserId)" 
+        $graphApiParameters['Uri'] = Join-UriPath -Uri $urlMembers -ChildPath '$ref'
+        If ($Status.IsPresent) {
+            $graphApiParameters['Status'] = $true
+        }
+        Invoke-GraphApiQuery @graphApiParameters
+    }
 	
-	end
-	{
+    end {
 	
-	}
+    }
 }

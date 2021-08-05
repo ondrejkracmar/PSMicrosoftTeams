@@ -1,6 +1,5 @@
-function Lock-PSMTTeam
-{
-<#
+function Lock-PSMTTeam {
+    <#
     .SYNOPSIS
         Archive the specified team.
               
@@ -20,17 +19,18 @@ function Lock-PSMTTeam
         Switch response header or result
 
 #>
-	[CmdletBinding()]
-	param(
-	    [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
-	    [ValidateScript({
-            try {
-                [System.Guid]::Parse($_) | Out-Null
-                $true
-            } catch {
-                $false
-            }
-        })]
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
+        [ValidateScript( {
+                try {
+                    [System.Guid]::Parse($_) | Out-Null
+                    $true
+                }
+                catch {
+                    $false
+                }
+            })]
         [string]
         [Alias("Id")]
         $TeamId,
@@ -39,46 +39,35 @@ function Lock-PSMTTeam
         $Status
     )
 
-	begin
-	{
-	    try {
+    begin {
+        try {
             $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "teams"
-            $authorizationToken = Receive-PSMTAuthorizationToken
-            $graphApiParameters=@{
-                Method = 'Post'
+            $authorizationToken = Get-PSMTAuthorizationToken
+            $graphApiParameters = @{
+                Method             = 'Post'
                 AuthorizationToken = "Bearer $authorizationToken"
             }
         } 
-		catch {
+        catch {
             Stop-PSFFunction -String 'StringAssemblyError' -StringValues $url -ErrorRecord $_
         }
-	}
+    }
 	
-	process
-	{
+    process {
         if (Test-PSFFunctionInterrupt) { return }
-        try {
-            $graphApiParameters['Uri'] = Join-UriPath -Uri $url -ChildPath "$($TeamId)/archive"
+
+        $graphApiParameters['Uri'] = Join-UriPath -Uri $url -ChildPath "$($TeamId)/archive"
             
-            if($SPOSiteReadOnly.IsPresent)
-            {
-                $graphApiParameters['Body'] = @{'shouldSetSpoSiteReadOnlyForMembers'=$true}
-            }
-
-            If($Status.IsPresent){
-                $graphApiParameters['Status'] = $true
-            }
-            Invoke-GraphApiQuery @graphApiParameters
+        if ($SPOSiteReadOnly.IsPresent) {
+            $graphApiParameters['Body'] = @{'shouldSetSpoSiteReadOnlyForMembers' = $true }
         }
-        catch {
-            Stop-PSFFunction -String 'FailedRemoveMember' -StringValues $UserId,$TeamId -Target $graphApiParameters['Uri'] -SilentlyContinue -ErrorRecord $_ -Tag GraphApi,Delete
-        }
-        Write-PSFMessage -Level InternalComment -String 'QueryCommandOutput' -StringValues $graphApiParameters['Uri'] -Target $graphApiParameters['Uri'] -Tag GraphApi,Delete -Data $graphApiParameters
 
-	}
+        If ($Status.IsPresent) {
+            $graphApiParameters['Status'] = $true
+        }
+        Invoke-GraphApiQuery @graphApiParameters
+    }	
+    end {
 	
-	end
-	{
-	
-	}
+    }
 }

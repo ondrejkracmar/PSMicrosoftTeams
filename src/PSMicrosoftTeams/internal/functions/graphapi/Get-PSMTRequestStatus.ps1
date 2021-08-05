@@ -8,7 +8,7 @@ function Get-PSMTRequestStatus
     process {
         try{
             $childPathdUrl = $responseData.Headers.Location
-            $authorizationToken = Receive-PSMTAuthorizationToken
+            $authorizationToken = Get-PSMTAuthorizationToken
             $NUMBER_OF_RETRIES = (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryCount)
             $RETRY_TIME_SEC = (Get-PSFConfig -FullName PSMicrosoftTeams.Settings.InvokeRestMethodRetryTimeSec)
             $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath $childPathdUrl

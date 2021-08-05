@@ -52,9 +52,8 @@
 		'New-PSMTGroup',
 		'Get-PSMTGroup',
 		'Remove-PSMTGroup',
-		"Get-PSMTRequestStatus",
-		'Receive-PSMTAuthorizationToken',
-		'Write-PSMTAuthorizationToken',
+		'Connect-PSMTMicrosoftTeams',
+		'Disconnect-PSMTMicrosoftTeams',
 		'Get-PSMTUser'
 	)
 	
