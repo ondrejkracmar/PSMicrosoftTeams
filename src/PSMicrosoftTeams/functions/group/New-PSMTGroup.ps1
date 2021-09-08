@@ -24,7 +24,7 @@
         [string]
         $Classification,
         [Parameter(ParameterSetName = 'CreateGroup', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
-        [ValidateSet('Unified', 'Dynamic')]
+        [ValidateSet('Unified', 'DynamicMembership')]
         [string[]]
         $GroupTypes,
         [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
@@ -55,7 +55,18 @@
             })]
         [string[]]
         $Members,
+        [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]        
+        [string]
+        $MembersmembershipRule,
+        [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]        
+        [string]
+        [ValidateSet('On', 'Paused')]
+        $MembershipRuleProcessingState,
         [Parameter(ParameterSetName = 'CreateGroupViaJson')]
+        [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
+        [ValidateSet('AllowOnlyMembersToPost', 'HideGroupInOutlook', 'HideGroupInOutlook','SubscribeNewGroupMembers','WelcomeEmailDisabled')]
+        [string[]]
+        $ResourceBehaviorOptions,
         [string]
         $JsonRequest,
         [switch]
@@ -142,6 +153,21 @@
                         [void]($userIdUriPathList.Add($userIdUriPath))
                     }                                   
                     $bodyParameters['members@odata.bind'] = [array]$userIdUriPathList
+                }
+
+                if (Test-PSFParameterBinding -Parameter MembersmembershipRule) {
+                    $bodyParameters['membershipRule'] = $MembersmembershipRule
+                    $bodyParameters['membershipRuleProcessingState'] = 'On'
+                    $bodyParameters['resourceBehaviorOptions'] = 'WelcomeEmailDisabled'
+                }
+
+                if (Test-PSFParameterBinding -Parameter MembershipRuleProcessingState) {
+                    $bodyParameters['membershipRuleProcessingState'] = $MembershipRuleProcessingState
+                }
+
+                if(Test-PSFParameterBinding -Parameter ResourceBehaviorOptions)
+                {
+                    $bodyParameters['resourceBehaviorOptions'] = $ResourceBehaviorOptions
                 }
             }
             'Default' {
