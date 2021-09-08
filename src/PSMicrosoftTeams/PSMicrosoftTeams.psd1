@@ -3,7 +3,7 @@
 	RootModule = 'PSMicrosoftTeams.psm1'
 	
 	# Version number of this module.
-	ModuleVersion = '1.0.1.5'
+	ModuleVersion = '1.0.1.6'
 	
 	# ID used to uniquely identify this module
 	GUID = '68aff6a6-275a-40e9-adc0-f2ff32ce35b5'
@@ -49,6 +49,7 @@
 		'Lock-PSMTTeam',
 		'Add-PSMTGroupMember',
 		'Remove-PSMTGroupMember',
+		'Get-PSMTGroupMember'
 		'New-PSMTGroup',
 		'Get-PSMTGroup',
 		'Remove-PSMTGroup',
