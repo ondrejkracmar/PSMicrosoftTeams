@@ -67,14 +67,14 @@
             }
         } 
         catch {
-            Stop-PSFFunction -String 'FailedGetUsers' -StringValues $graphApiParameters['Uri'] -ErrorRecord $_
+            Stop-PSFFunction -String 'FailedGetUsers' -StringValues $url -ErrorRecord $_
         }
     }
 	
     process {
         if (Test-PSFFunctionInterrupt) { return }
 	    
-        Uri = Join-UriPath -Uri $url -ChildPath "$($GroupId)/members"
+        $graphApiParameters['Uri'] = Join-UriPath -Uri $url -ChildPath "$($GroupId)/members"
         if (Test-PSFParameterBinding -Parameter Role) {
             if ($Role -eq 'Owners') {
                 $graphApiParameters['Filter'] = "(roles/Any(x:x eq 'owner'))"
@@ -89,7 +89,7 @@
             $graphApiParameters['Top'] = $PageSize
         }
         Invoke-GraphApiQuery @graphApiParameters
-    
+
     }
     end {
 	
