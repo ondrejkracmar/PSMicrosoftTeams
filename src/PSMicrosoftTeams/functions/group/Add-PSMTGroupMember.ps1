@@ -11,6 +11,9 @@
 
     .PARAMETER UserId
         Id of User
+    
+    .PARAMETER Role
+        user's role
 
     .PARAMETER Status
         Switch response header or result
@@ -69,18 +72,37 @@
     }
     
     process {
-        if (Test-PSFFunctionInterrupt) { return }
-        $urlMembers = Join-UriPath -Uri $url -ChildPath "$($GroupId)/members"
-        $graphApiParameters['Uri'] = Join-UriPath -Uri $urlMembers -ChildPath '$ref'
-        $bodyParameters = @{
-            "@odata.id" = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "directoryObjects('$($UserId)')"
-        }
-                        
+        if (Test-PSFFunctionInterrupt) { return }                            
         if (Test-PSFParameterBinding -Parameter Role) {
-            $urlOwners = Join-UriPath -Uri $url -ChildPath "$($GroupId)/owners"
-            $graphApiParameters['Uri'] = Join-UriPath -Uri $urlOwners -ChildPath '$ref'
+            switch ($Role) {
+                'Owner' {
+                    $urlOwners = Join-UriPath -Uri $url -ChildPath "$($GroupId)/owners"
+                    $graphApiParameters['Uri'] = Join-UriPath -Uri $urlOwners -ChildPath '$ref'
+                    $bodyParameters = @{
+                        "@odata.id" = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "users/$($UserId)"
+                    }
+                }                
+                'Member' {
+                    $urlMembers = Join-UriPath -Uri $url -ChildPath "$($GroupId)/members"
+                    $graphApiParameters['Uri'] = Join-UriPath -Uri $urlMembers -ChildPath '$ref'
+                    $bodyParameters = @{
+                        "@odata.id" = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "directoryObjects('$($UserId)')"
+                    }
+                }
+                Default {
+                    $urlMembers = Join-UriPath -Uri $url -ChildPath "$($GroupId)/members"
+                    $graphApiParameters['Uri'] = Join-UriPath -Uri $urlMembers -ChildPath '$ref'
+                    $bodyParameters = @{
+                        "@odata.id" = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "directoryObjects('$($UserId)')"
+                    }
+                }
+            }            
+        }
+        else {
+            $urlMembers = Join-UriPath -Uri $url -ChildPath "$($GroupId)/members"
+            $graphApiParameters['Uri'] = Join-UriPath -Uri $urlMembers -ChildPath '$ref'
             $bodyParameters = @{
-                "@odata.id" = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "users/$($UserId)"
+                "@odata.id" = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "directoryObjects('$($UserId)')"
             }
         }
         [string]$requestJSONQuery = $bodyParameters | ConvertTo-Json -Depth 10 | ForEach-Object { [System.Text.RegularExpressions.Regex]::Unescape($_) }
@@ -89,8 +111,7 @@
         If ($Status.IsPresent) {
             $graphApiParameters['Status'] = $true
         }
-        Invoke-GraphApiQuery @graphApiParameters
-    
+        Invoke-GraphApiQuery @graphApiParameters    
     }
 	
     end {

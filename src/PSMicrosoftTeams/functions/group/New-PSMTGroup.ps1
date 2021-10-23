@@ -41,6 +41,7 @@
                     $false
                 }
             })]
+        [ValidateRange(1,5)]
         [string[]]
         $Owners,
         [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
@@ -53,6 +54,7 @@
                     $false
                 }
             })]
+        [ValidateRange(1,5)]
         [string[]]
         $Members,
         [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]        
@@ -64,7 +66,7 @@
         $MembershipRuleProcessingState,
         [Parameter(ParameterSetName = 'CreateGroupViaJson')]
         [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
-        [ValidateSet('AllowOnlyMembersToPost', 'HideGroupInOutlook', 'HideGroupInOutlook','SubscribeNewGroupMembers','WelcomeEmailDisabled')]
+        [ValidateSet('AllowOnlyMembersToPost', 'HideGroupInOutlook', 'HideGroupInOutlook', 'SubscribeNewGroupMembers', 'WelcomeEmailDisabled')]
         [string[]]
         $ResourceBehaviorOptions,
         [string]
@@ -165,8 +167,7 @@
                     $bodyParameters['membershipRuleProcessingState'] = $MembershipRuleProcessingState
                 }
 
-                if(Test-PSFParameterBinding -Parameter ResourceBehaviorOptions)
-                {
+                if (Test-PSFParameterBinding -Parameter ResourceBehaviorOptions) {
                     $bodyParameters['resourceBehaviorOptions'] = $ResourceBehaviorOptions
                 }
             }
