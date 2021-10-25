@@ -41,7 +41,6 @@
                     $false
                 }
             })]
-        [ValidateRange(1,5)]
         [string[]]
         $Owners,
         [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]
@@ -54,12 +53,11 @@
                     $false
                 }
             })]
-        [ValidateRange(1,5)]
         [string[]]
         $Members,
         [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]        
         [string]
-        $MembersmembershipRule,
+        $MembershipRule,
         [Parameter(ParameterSetName = 'CreateGroup', ValueFromPipelineByPropertyName = $true)]        
         [string]
         [ValidateSet('On', 'Paused')]
@@ -157,10 +155,10 @@
                     $bodyParameters['members@odata.bind'] = [array]$userIdUriPathList
                 }
 
-                if (Test-PSFParameterBinding -Parameter MembersmembershipRule) {
-                    $bodyParameters['membershipRule'] = $MembersmembershipRule
+                if (Test-PSFParameterBinding -Parameter MembershipRule) {
+                    $bodyParameters['membershipRule'] = $MembershipRule
                     $bodyParameters['membershipRuleProcessingState'] = 'On'
-                    $bodyParameters['resourceBehaviorOptions'] = 'WelcomeEmailDisabled'
+                    #$bodyParameters['resourceBehaviorOptions'] = 'WelcomeEmailDisabled'
                 }
 
                 if (Test-PSFParameterBinding -Parameter MembershipRuleProcessingState) {
@@ -176,14 +174,13 @@
             }
         }
     
-        [string]$requestJSONQuery = $bodyParameters | ConvertTo-Json -Depth 10 | ForEach-Object { [System.Text.RegularExpressions.Regex]::Unescape($_) }
+        [string]$requestJSONQuery = $bodyParameters | ConvertTo-Json -Depth 10 #| ForEach-Object { [System.Text.RegularExpressions.Regex]::Unescape($_) }
         $graphApiParameters['body'] = $requestJSONQuery
             
         If ($Status.IsPresent) {
             $graphApiParameters['Status'] = $true
         }
-        Invoke-GraphApiQuery @graphApiParameters
-     
+        Invoke-GraphApiQuery @graphApiParameters        
     }
     end {
 

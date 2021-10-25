@@ -41,7 +41,7 @@
     process {
         if (Test-PSFFunctionInterrupt) { return }
         if (Test-PSFParameterBinding -Parameter Filter) {
-            $queryFlter = '{0}$filter={1}' -f '$',[System.Net.WebUtility]::UrlEncode($Filter)
+            $queryFlter = '{0}filter={1}' -f '$',[System.Net.WebUtility]::UrlEncode($Filter)
         }
 
         if (Test-PSFParameterBinding -Parameter Select) {
