@@ -1,24 +1,42 @@
 ﻿function Get-PSMTGroup {
-    [CmdletBinding(DefaultParameterSetName = 'Filters',
+    [CmdletBinding(DefaultParameterSetName = 'GroupId',
         SupportsShouldProcess = $false,
         PositionalBinding = $true,
         ConfirmImpact = 'Medium')]
     param(
-        [Parameter(Mandatory = $false,
+        [Parameter(Mandatory = $true,
             ValueFromPipeline = $true,
             ValueFromPipelineByPropertyName = $true,
             ValueFromRemainingArguments = $false,
-            ParameterSetName = 'Filters')]
-        [Parameter(ParameterSetName = 'Displayname')]
+            Position = 0,
+            ParameterSetName = 'GroupId')]
+        [ValidateScript( {
+                try {
+                    [System.Guid]::Parse($_) | Out-Null
+                    $true
+                }
+                catch {
+                    $false
+                }
+            })]
+        [Alias("Id")]
+        [string]
+        $GroupId,
+        [Parameter(Mandatory = $true,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true,
+            ValueFromRemainingArguments = $false,
+            Position = 0,
+            ParameterSetName = 'DisplayName')]
         [ValidateNotNullOrEmpty()]
         [string]
         $DisplayName,
-        [Parameter(Mandatory = $false,
+        [Parameter(Mandatory = $true,
             ValueFromPipeline = $true,
             ValueFromPipelineByPropertyName = $true,
             ValueFromRemainingArguments = $false,
-            ParameterSetName = 'Filters')]
-        [Parameter(ParameterSetName = 'MailNickName')]
+            Position = 0,
+            ParameterSetName = 'MailNickName')]
         [ValidateNotNullOrEmpty()]
         [string]
         $MailNickName,
@@ -26,27 +44,51 @@
             ValueFromPipeline = $true,
             ValueFromPipelineByPropertyName = $true,
             ValueFromRemainingArguments = $false,
-            ParameterSetName = 'Filters')]
+            Position = 1,
+            ParameterSetName = 'MailNickName')]
+        [Parameter(Mandatory = $false,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true,
+            ValueFromRemainingArguments = $false,
+            Position = 1,
+            ParameterSetName = 'DisplayName')]
         [ValidateNotNullOrEmpty()]
         [ValidateSet("Public", "Private")]
         [string]
         $Visibility,
+        [Parameter(Mandatory = $false,
+            ValueFromPipeline = $false,
+            ValueFromPipelineByPropertyName = $false,
+            ValueFromRemainingArguments = $false,
+            ParameterSetName = 'DisplayName')]
+        [Parameter(Mandatory = $false,
+            ValueFromPipeline = $false,
+            ValueFromPipelineByPropertyName = $false,
+            ValueFromRemainingArguments = $false,
+            ParameterSetName = 'MailNickName')]
+        [ValidateNotNullOrEmpty()]
+        [string]$Filter,
         [Parameter(Mandatory = $true,
             ValueFromPipeline = $false,
             ValueFromPipelineByPropertyName = $false,
             ValueFromRemainingArguments = $false,
-            ParameterSetName = 'Filter')]
-        [ValidateNotNullOrEmpty()]
-        [string]$Filter,
+            ParameterSetName = 'DisplayName')]
         [Parameter(Mandatory = $false,
             ValueFromPipeline = $false,
             ValueFromPipelineByPropertyName = $false,
-            ValueFromRemainingArguments = $false)]
+            ValueFromRemainingArguments = $false,
+            ParameterSetName = 'MailNickName')]
         [switch]$All,
         [Parameter(Mandatory = $false,
             ValueFromPipeline = $false,
             ValueFromPipelineByPropertyName = $false,
-            ValueFromRemainingArguments = $false)]
+            ValueFromRemainingArguments = $false,
+            ParameterSetName = 'DisplayName')]
+        [Parameter(Mandatory = $false,
+            ValueFromPipeline = $false,
+            ValueFromPipelineByPropertyName = $false,
+            ValueFromRemainingArguments = $false,
+            ParameterSetName = 'MailNickName')]
         [ValidateRange(5, 1000)]
         [int]$PageSize
     )
@@ -69,7 +111,12 @@
             Method             = 'Get'
             AuthorizationToken = "Bearer $authorizationToken"
             Uri                = $url
-            #Filter = "(resourceProvisioningOptions/Any(x:x eq 'Team'))"
+            Select = $property -join ","
+        }
+
+        if (Test-PSFParameterBinding -Parameter GroupId) {
+            $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "groups/$($GroupId)"
+            $graphApiParameters['Uri'] = $url
         }
 			
         if (Test-PSFParameterBinding -Parameter MailNickName) {

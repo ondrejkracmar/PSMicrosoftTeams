@@ -68,12 +68,12 @@
             $graphApiParameters=@{
                 Method = 'Get'
                 AuthorizationToken = "Bearer $authorizationToken"
+                Select = $property -join ","
             }
 
             if(Test-PSFParameterBinding -Parameter UserPrincipalName) {
                 $urlUser = Join-UriPath -Uri $url -ChildPath $UserPrincipalName
                 $graphApiParameters['Uri'] = $urlUser
-                $graphApiParameters['Select'] = $property -join ","
             }
             else {
                 $graphApiParameters['Uri'] = $url
