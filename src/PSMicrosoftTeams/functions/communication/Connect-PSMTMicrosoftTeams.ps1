@@ -20,6 +20,8 @@ function Connect-PSMTMicrosoftTeams {
             'Application' {
                 try{
                     $accessToken = Request-PSMTAuthorizationToken -TenantName $TenantName -TenantId $TenantId -ClientId $ClientId -ClientSecret $ClientSecret
+                    #test memo
+                    #add mem
                 }
                 catch{
                     $PSCmdlet.ThrowTerminatingError((New-Object System.Management.Automation.ErrorRecord ([Exception]'some-error'), $null, 0, $null))
