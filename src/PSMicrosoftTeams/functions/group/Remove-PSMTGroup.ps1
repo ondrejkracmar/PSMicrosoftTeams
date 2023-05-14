@@ -1,4 +1,4 @@
-﻿function Remove-PSMTTeam {
+﻿function Remove-PSMTGroup {
     <#
     .SYNOPSIS
         Removed Team (Office 365 unified group).
@@ -27,7 +27,7 @@
             })]
         [Alias("Id")]
         [string]
-        $TeamId,
+        $GroupId,
         [switch]
         $Status
     )
@@ -36,6 +36,11 @@
         try {
             $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "groups"
             $authorizationToken = Get-PSMTAuthorizationToken
+            $graphApiParameters = @{
+                Method             = 'Delete'
+                AuthorizationToken = "Bearer $authorizationToken"
+            }
+            #$property = Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.GraphApiQuery.Select.Group
         } 
         catch {
             Stop-PSFFunction -String 'StringAssemblyError' -StringValues $url -ErrorRecord $_
@@ -45,18 +50,13 @@
     process {
         if (Test-PSFFunctionInterrupt) { return }
 
-        $graphApiParameters = @{
-            Method             = 'Delete'
-            AuthorizationToken = "Bearer $authorizationToken"
-            Uri                = Join-UriPath -Uri $url -ChildPath "$TeamId"
-        }
-            
+        $graphApiParameters['Uri'] = Join-UriPath -Uri $url -ChildPath "$GroupId"
         If ($Status.IsPresent) {
             $graphApiParameters['Status'] = $true
         }
         Invoke-GraphApiQuery @graphApiParameters
+    
     }
-
 	
     end {
 	

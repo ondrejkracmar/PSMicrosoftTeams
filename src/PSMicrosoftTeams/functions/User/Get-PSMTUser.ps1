@@ -53,7 +53,7 @@
     {
         try {
             $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "users"
-            $authorizationToken = Receive-PSMTAuthorizationToken
+            $authorizationToken = Get-PSMTAuthorizationToken
             $property = Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.GraphApiQuery.Select.User
 	    } catch {
             Stop-PSFFunction -String 'FailedGetUsers' -StringValues $graphApiParameters['Uri'] -ErrorRecord $_
@@ -68,12 +68,12 @@
             $graphApiParameters=@{
                 Method = 'Get'
                 AuthorizationToken = "Bearer $authorizationToken"
+                Select = $property -join ","
             }
 
             if(Test-PSFParameterBinding -Parameter UserPrincipalName) {
                 $urlUser = Join-UriPath -Uri $url -ChildPath $UserPrincipalName
                 $graphApiParameters['Uri'] = $urlUser
-                $graphApiParameters['Select'] = $property -join ","
             }
             else {
                 $graphApiParameters['Uri'] = $url
@@ -104,10 +104,10 @@
         catch
         {
             if(Test-PSFParameterBinding -Parameter UserPrincipalName) {
-                Stop-PSFFunction -String 'FailedGetUser' -StringValues $UserPrincipalName -Target $graphApiParameters['Uri'] -Continue -ErrorRecord $_ -Tag GraphApi,Get
+                Stop-PSFFunction -String 'FailedGetUser' -StringValues $UserPrincipalName -Target $graphApiParameters['Uri'] -SilentContinue -ErrorRecord $_ -Tag GraphApi,Get
             }
             else{
-                Stop-PSFFunction -String 'FailedGetUsers' -StringValues $graphApiParameters['Uri'] -Target $graphApiParameters['Uri'] -Continue -ErrorRecord $_ -Tag GraphApi,Get 
+                Stop-PSFFunction -String 'FailedGetUsers' -StringValues $graphApiParameters['Uri'] -Target $graphApiParameters['Uri'] -SilentContinue -ErrorRecord $_ -Tag GraphApi,Get 
             }
         }
         Write-PSFMessage -Level InternalComment -String 'QueryCommandOutput' -StringValues $graphApiParameters['Uri'] -Target $graphApiParameters['Uri'] -Tag GraphApi,Get -Data $graphApiParameters
