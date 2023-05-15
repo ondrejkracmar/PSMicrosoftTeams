@@ -1,4 +1,4 @@
-function Connect-PSMTMicrosoftTeams {
+﻿function Connect-PSMTMicrosoftTeams {
     [CmdletBinding(DefaultParametersetName = "Token")]    
     param(
         [Parameter(ParameterSetName = "AuthorizationToken", Mandatory = $true)]
