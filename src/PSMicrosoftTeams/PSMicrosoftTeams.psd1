@@ -3,7 +3,7 @@
 	RootModule = 'PSMicrosoftTeams.psm1'
 	
 	# Version number of this module.
-	ModuleVersion = '1.0.1.8'
+	ModuleVersion = '1.1.0.0'
 	
 	# ID used to uniquely identify this module
 	GUID = '68aff6a6-275a-40e9-adc0-f2ff32ce35b5'
@@ -12,21 +12,23 @@
 	Author = 'Ondrej Kracmar'
 	
 	# Company or vendor of this module
-	CompanyName = 'Ondrej Kracmar'
+	CompanyName = 'i-system'
 	
 	# Copyright statement for this module
-	Copyright = 'Copyright (c) 2020 Ondrej Kracmar'
+	Copyright = 'Copyright (c) 2022 i-system'
 	
 	# Description of the functionality provided by this module
 	Description = 'Powershell module for managing Microsoft Teams'
 	
 	# Minimum version of the Windows PowerShell engine required by this module
-	PowerShellVersion = '5.1'
+	PowerShellVersion = '7.2'
 	
 	# Modules that must be imported into the global environment prior to importing
 	# this module
-	RequiredModules = @(
-		@{ ModuleName='PSFramework'; ModuleVersion='1.5.170' }
+	
+	RequiredModules   = @('PSFramework', 'RestConnect'
+		#@{ ModuleName = 'PSFramework'; ModuleVersion='1.7'}
+		#@{ ModuleName = 'RestConnect'; ModuleVersion='1.0'}
 	)
 	
 	# Assemblies that must be loaded prior to importing this module
@@ -40,22 +42,8 @@
 	
 	# Functions to export from this module
 	FunctionsToExport = @(
-		'Add-PSMTTeamMember',
-		'Get-PSMTTeamMember',
-		'Remove-PSMTTeamMember',
-		'Get-PSMTTeam',
-		'New-PSMTTeam',
-		'Remove-PSMTTeam',
-		'Lock-PSMTTeam',
-		'Add-PSMTGroupMember',
-		'Remove-PSMTGroupMember',
-		'Get-PSMTGroupMember'
-		'New-PSMTGroup',
-		'Get-PSMTGroup',
-		'Remove-PSMTGroup',
-		'Connect-PSMTMicrosoftTeams',
-		'Disconnect-PSMTMicrosoftTeams',
-		'Get-PSMTUser'
+		'Connect-PSMicrosoftTeams',
+		'Get-PSMsTeamsTeam'
 	)
 	
 	# Cmdlets to export from this module

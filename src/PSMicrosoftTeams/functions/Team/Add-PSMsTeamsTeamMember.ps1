@@ -1,4 +1,4 @@
-﻿function Add-PSMTTeamMember {
+﻿function Add-PSMsTeamsTeamMember {
     <#
     .SYNOPSIS
     Adds an owner or member to the team, and to the unified group which backs the team.
