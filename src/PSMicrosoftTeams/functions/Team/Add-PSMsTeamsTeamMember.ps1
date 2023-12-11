@@ -57,46 +57,22 @@
 
     process {
         Invoke-PSFProtectedCommand -ActionString 'TeamMember.Add' -ActionStringValues ((($User | ForEach-Object { "{0}" -f $_ }) -join ',')) -Target $Identity -ScriptBlock {
-        $team = Get-PSMsTeamsTeam -Identity $Identity
-        if (-not([object]::Equals($team, $null))) {
-            $path = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath ('teams/{0}/{1})' -f $team.Id, 'memebrs' )
-            if ($User.Count -eq 0) {
-                $aADUser = Get-PSMsTeamsUser -Identity $User
-                if (-not([object]::Equals($aADUser, $null))) {
-                    $body = @{
-                        '@odata.type'     = '#microsoft.graph.aadUserConversationMember'
-                        roles             = @()
-                        'user@odata.bind' = ('{0}/users/{1}' -f (Get-GraphApiUriPath), $aADUser.Id)
-                    }
-                    if (Test-PSFParameterBinding -Parameter Role) {
-                        $body['roles'] = @($Role)
-                    }
-                    else {
-                        $body['roles'] = @()
-                    }
-                }
-                else {
-                    if ($EnableException.IsPresent) {
-                        Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $itemUser)
-                    }
-                }
-            }
-            else {
-                $path = = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath ('{0}/members/add' -f $team.Id)
-                $body = @{values = @() }
-                foreach ($memberItem in  $Members) {
-                    $aADUser = Get-PSMsTeamsUser -Identity $memberItem
+            $team = Get-PSMsTeamsTeam -Identity $Identity
+            if (-not([object]::Equals($team, $null))) {
+                $path = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath ('teams/{0}/{1})' -f $team.Id, 'memebrs' )
+                if ($User.Count -eq 0) {
+                    $aADUser = Get-PSMsTeamsUser -Identity $User
                     if (-not([object]::Equals($aADUser, $null))) {
-                        $urlUser = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "users('{0}')" -f $aADUser.UserPrincipalName
-                        $value = @{
-                            '@odata.type'     = "#microsoft.graph.aadUserConversationMember"
+                        $body = @{
+                            '@odata.type'     = '#microsoft.graph.aadUserConversationMember'
                             roles             = @()
-                            'user@odata.bind' = $urlUser
+                            'user@odata.bind' = ('{0}/users/{1}' -f (Get-GraphApiUriPath), $aADUser.Id)
                         }
                         if (Test-PSFParameterBinding -Parameter Role) {
-                            if ($memberItem['Role'] -eq 'Owner') {
-                                roles = $Role
-                            }
+                            $body['roles'] = @($Role)
+                        }
+                        else {
+                            $body['roles'] = @()
                         }
                     }
                     else {
@@ -105,14 +81,39 @@
                         }
                     }
                 }
-                $body = @{values = $values }
+                else {
+                    $path = = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath ('{0}/members/add' -f $team.Id)
+                    $body = @{values = @() }
+                    foreach ($memberItem in  $Members) {
+                        $aADUser = Get-PSMsTeamsUser -Identity $memberItem
+                        if (-not([object]::Equals($aADUser, $null))) {
+                            $urlUser = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "users('{0}')" -f $aADUser.UserPrincipalName
+                            $value = @{
+                                '@odata.type'     = "#microsoft.graph.aadUserConversationMember"
+                                roles             = @()
+                                'user@odata.bind' = $urlUser
+                            }
+                            if (Test-PSFParameterBinding -Parameter Role) {
+                                if ($memberItem['Role'] -eq 'Owner') {
+                                    roles = $Role
+                                }
+                            }
+                        }
+                        else {
+                            if ($EnableException.IsPresent) {
+                                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $itemUser)
+                            }
+                        }
+                    }
+                    $body = @{values = $values }
+                }
             }
-        }
-        else {
-            if ($EnableException.IsPresent) {
-                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Get.Failed) -f $Identity)
+            else {
+                if ($EnableException.IsPresent) {
+                    Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Get.Failed) -f $Identity)
+                }
             }
-        }
+        } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
     }
     end {
 
