@@ -13,7 +13,7 @@
         UserPrincipalName, Mail or Id of the user attribute populated in tenant/directory.
 
     .PARAMETER Role
-        Specify memebrship role Member.
+        Membership role (Member/Owner).
 
     .PARAMETER EnableException
         This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
@@ -72,7 +72,7 @@
                             'user@odata.bind' = ('{0}/users/{1}' -f (Get-GraphApiUriPath), $aADUser.Id)
                         }
                         if (Test-PSFParameterBinding -Parameter Role) {
-                            $body['roles'] = @($Role)
+                            $body['roles'] = $Role
                         }
                         else {
                             $body['roles'] = @()
@@ -116,7 +116,7 @@
                     Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Get.Failed) -f $Identity)
                 }
             }
-        } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+        } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue #-RetryCount $commandRetryCount -RetryWait $commandRetryWait
     }
     end {
 
