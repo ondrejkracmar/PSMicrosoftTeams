@@ -12,6 +12,9 @@
     .PARAMETER User
         UserPrincipalName, Mail or Id of the user attribute populated in tenant/directory.
 
+    .PARAMETER Role
+        Specify memebrship role Member.
+
     .PARAMETER EnableException
         This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
         but allows catching exceptions in calling scripts.
