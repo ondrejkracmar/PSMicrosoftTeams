@@ -79,6 +79,7 @@
 
 		Connect to the specified tenant using the DeviceCode flow
 	#>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '')]
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true, ParameterSetName = 'DeviceCode')]
