@@ -42,8 +42,12 @@
 	
 	# Functions to export from this module
 	FunctionsToExport = @(
-		'Connect-PSMicrosoftTeams',
+		'Connect-PSMicrosoftTeams'
 		'Get-PSMsTeamsTeam'
+		'Get-PSMsTeamsTeamMember'
+		'New-PSMsTeamsTeam'
+		'Remove-PSMsTeamsTeam'
+		'Protect-PSMsTeamsTeam'
 	)
 	
 	# Cmdlets to export from this module

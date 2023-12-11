@@ -1,120 +1,120 @@
 ﻿function Add-PSMsTeamsTeamMember {
     <#
     .SYNOPSIS
-    Adds an owner or member to the team, and to the unified group which backs the team.
-              
+        Add a member to a Microsoft Teams team.
+
     .DESCRIPTION
-        This cmdlet adds an owner or member to the team, and to the unified group which backs the team.
-              
-    .PARAMETER TeamId
-        Id of Team (unified group)
+        Add a member to a Microsoft Teams team.
 
-    .PARAMETER UserId
-        Id of User
+    .PARAMETER Identity
+        MailNickName or Id of  team
 
-    .PARAMETER Status
-        Switch response header or result
+    .PARAMETER User
+        UserPrincipalName, Mail or Id of the user attribute populated in tenant/directory.
 
+    .PARAMETER EnableException
+        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
+        but allows catching exceptions in calling scripts.
+
+    .PARAMETER WhatIf
+        Enables the function to simulate what it will do instead of actually executing.
+
+    .PARAMETER Confirm
+        The Confirm switch instructs the command to which it is applied to stop processing before any changes are made.
+        The command then prompts you to acknowledge each action before it continues.
+        When you use the Confirm switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
+        This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
+        A confirmation prompt is displayed for each object before the Shell modifies the object.
+
+    .EXAMPLE
+            PS C:\> Add-PSMsTeamsTeamMember -Identity team1 -User user1,user2
+
+            Add member to Microsoft Teams taam team1
 #>
-    [CmdletBinding(DefaultParameterSetName = 'AddSingleMember')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+    [OutputType()]
+    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'Identity')]
     param(
-        [Parameter(ParameterSetName = 'AddSingleMember', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
-        [Parameter(ParameterSetName = 'AddBulkMebers', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
-        [ValidateScript( {
-                try {
-                    [System.Guid]::Parse($_) | Out-Null
-                    $true
-                }
-                catch {
-                    $false
-                }
-            })]
-        [string]
-        $TeamId,
-        [Parameter(ParameterSetName = 'AddSingleMember', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
-        [ValidateScript( {
-                try {
-                    [System.Guid]::Parse($_) | Out-Null
-                    $true
-                }
-                catch {
-                    $false
-                }
-            })]
-        [Alias("Id")]
-        [string]
-        $UserId,
-        [Parameter(ParameterSetName = 'AddSingleMember', ValueFromPipelineByPropertyName = $true)]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
+        [Alias("Id", "GroupId", "TeamId", "MailNickName")]
+        [ValidateGroupIdentity()]
+        [string]$Identity,
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
+        [Alias("UserId", "UserPrincipalName", "Mail")]
+        [ValidateUserIdentity()]
+        [string[]]$User,
+        [Parameter(ParameterSetName = 'Identity', ValueFromPipelineByPropertyName = $true)]
         [ValidateSet('Member', 'Owner')]
-        [string]
-        $Role,
-        [Parameter(ParameterSetName = 'AddBulkMebers', Mandatory = $true)]
-        [hashtable[]]$Members,
-        [switch]
-        $Status
+        [string[]]$Role,
+        [switch]$EnableException
     )
-    
+
     begin {
-        try {
-            $url = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "teams"
-            $authorizationToken = Get-PSMTAuthorizationToken
-            $graphApiParameters = @{
-                Method             = 'Post'
-                AuthorizationToken = "Bearer $authorizationToken"
-            }
-            #$property = Get-PSFConfigValue -FullName PSMicrosoftTeams.Settings.GraphApiQuery.Select.Group
-        } 
-        catch {
-            Stop-PSFFunction -String 'StringAssemblyError' -StringValues $url -ErrorRecord $_
-        }  
+        Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
+        $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
+        $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
     }
-    
+
     process {
-        if (Test-PSFFunctionInterrupt) { return }
-        Switch ($PSCmdlet.ParameterSetName) {
-            'AddSingleMember' {
-                $graphApiParameters['uri'] = Join-UriPath -Uri $url -ChildPath "$($TeamId)/members"
-                $urlUser = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "users('$($UserId)')"                            
-                $bodyParameters = @{
-                    '@odata.type'     = "#microsoft.graph.aadUserConversationMember"
-                    roles             = @() 
-                    'user@odata.bind' = $urlUser
-                }
-                        
-                if (Test-PSFParameterBinding -Parameter Role) {
-                    if ($Role -eq 'Owner') {
-                        $bodyParameters['roles'] = @($Role)
-                    }
-                }
-            }
-            'AddBulkMebers' {
-                $graphApiParameters['uri'] = = Join-UriPath -Uri $url -ChildPath "$($TeamId)/members/add"   
-                $urlUser = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "users('$($UserId)')"
-                [array]$bodyParameters = @{values = @() }
-                foreach ($memberItem in  $Members) {                            
-                    $value = @{
-                        '@odata.type'     = "#microsoft.graph.aadUserConversationMember"
-                        roles             = @() 
-                        'user@odata.bind' = $memberItem['UserId']
+        Invoke-PSFProtectedCommand -ActionString 'TeamMember.Add' -ActionStringValues ((($User | ForEach-Object { "{0}" -f $_ }) -join ',')) -Target $Identity -ScriptBlock {
+        $team = Get-PSMsTeamsTeam -Identity $Identity
+        if (-not([object]::Equals($team, $null))) {
+            $path = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath ('teams/{0}/{1})' -f $team.Id, 'memebrs' )
+            if ($User.Count -eq 0) {
+                $aADUser = Get-PSMsTeamsUser -Identity $User
+                if (-not([object]::Equals($aADUser, $null))) {
+                    $body = @{
+                        '@odata.type'     = '#microsoft.graph.aadUserConversationMember'
+                        roles             = @()
+                        'user@odata.bind' = ('{0}/users/{1}' -f (Get-GraphApiUriPath), $aADUser.Id)
                     }
                     if (Test-PSFParameterBinding -Parameter Role) {
-                        if ($memberItem['Role'] -eq 'Owner') {
-                            $value['roles'] = $memberItem['Role']
-                        }
+                        $body['roles'] = @($Role)
                     }
-                    $bodyParameters.values += $value
+                    else {
+                        $body['roles'] = @()
+                    }
+                }
+                else {
+                    if ($EnableException.IsPresent) {
+                        Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $itemUser)
+                    }
                 }
             }
+            else {
+                $path = = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath ('{0}/members/add' -f $team.Id)
+                $body = @{values = @() }
+                foreach ($memberItem in  $Members) {
+                    $aADUser = Get-PSMsTeamsUser -Identity $memberItem
+                    if (-not([object]::Equals($aADUser, $null))) {
+                        $urlUser = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "users('{0}')" -f $aADUser.UserPrincipalName
+                        $value = @{
+                            '@odata.type'     = "#microsoft.graph.aadUserConversationMember"
+                            roles             = @()
+                            'user@odata.bind' = $urlUser
+                        }
+                        if (Test-PSFParameterBinding -Parameter Role) {
+                            if ($memberItem['Role'] -eq 'Owner') {
+                                roles = $Role
+                            }
+                        }
+                    }
+                    else {
+                        if ($EnableException.IsPresent) {
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $itemUser)
+                        }
+                    }
+                }
+                $body = @{values = $values }
+            }
         }
-        [string]$requestJSONQuery = $bodyParameters | ConvertTo-Json -Depth 10 | ForEach-Object { [System.Text.RegularExpressions.Regex]::Unescape($_) }
-        $graphApiParameters['body'] = $requestJSONQuery
-    
-        If ($Status.IsPresent) {
-            $graphApiParameters['Status'] = $true
+        else {
+            if ($EnableException.IsPresent) {
+                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Get.Failed) -f $Identity)
+            }
         }
-        Invoke-GraphApiQuery @graphApiParameters
-    }	
+    }
     end {
-	
+
     }
 }

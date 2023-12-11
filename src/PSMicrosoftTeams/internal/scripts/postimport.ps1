@@ -11,10 +11,7 @@ After building the module, this file will be completely ignored, adding anything
 $moduleRoot = Split-Path (Split-Path $PSScriptRoot)
 
 # Load ConfigurationValidation
-(Get-ChildItem "$moduleRoot\internal\configurationvalidation\*.ps1" -ErrorAction Ignore).FullName
-
-# Load Configurations
-(Get-ChildItem "$moduleRoot\internal\configurations\*.ps1" -ErrorAction Ignore).FullName
+#(Get-ChildItem "$moduleRoot\internal\configurationvalidation\*.ps1" -ErrorAction Ignore).FullName
 
 # Load Scriptblocks
 (Get-ChildItem "$moduleRoot\internal\scriptblocks\*.ps1" -ErrorAction Ignore).FullName
@@ -28,3 +25,9 @@ $moduleRoot = Split-Path (Split-Path $PSScriptRoot)
 # Load License
 "$moduleRoot\internal\scripts\license.ps1"
 
+# Load all internal classes
+
+"$moduleRoot\internal\classes\attributes\ValidateGroupIdentityAttribute.ps1"
+"$moduleRoot\internal\classes\attributes\ValidateMailAddressAttribute.ps1"
+"$moduleRoot\internal\classes\attributes\ValidateUserIdentityAttribute.ps1"
+"$moduleRoot\internal\classes\attributes\ValidateGuidAttribute.ps1"
