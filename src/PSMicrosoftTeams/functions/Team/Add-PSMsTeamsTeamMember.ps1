@@ -30,7 +30,7 @@
         A confirmation prompt is displayed for each object before the Shell modifies the object.
 
     .EXAMPLE
-            PS C:\> Add-PSMsTeamsTeamMember -Identity team1 -User user1,user2
+            PS C:\> Add-PSMsTeamsTeamMember -Identity team1 -User user1,user2 -Role
 
             Add member to Microsoft Teams taam team1
 #>
