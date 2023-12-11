@@ -138,6 +138,10 @@
                     $body['mailEnabled'] = $MailEnabled
                 }
 
+                if (Test-PSFParameterBinding -Parameter Classification) {
+                    $body['mailEnabled'] = $Classification
+                }
+
                 if (Test-PSFParameterBinding -Parameter Visibility) {
                     $body['visibility'] = $Visibility
                 }
@@ -209,6 +213,10 @@
 
         if (Test-PSFParameterBinding -Parameter allowTeamMentions) {
             $body['messagingSettings']['allowTeamMentions'] = $AllowTeamMentions
+        }
+
+        if (Test-PSFParameterBinding -Parameter allowTeamMentions) {
+            $body['messagingSettings']['allowChannelMentions'] = $AllowChannelMentions
         }
 
         if (Test-PSFParameterBinding -Parameter showInTeamsSearchAndSuggestions) {
