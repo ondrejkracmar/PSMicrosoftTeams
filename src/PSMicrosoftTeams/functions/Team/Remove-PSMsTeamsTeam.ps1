@@ -4,7 +4,7 @@
 		Delete team
 
 	.DESCRIPTION
-		Delete Azure AD team
+		Delete Microsoft Teams team
         When deleted, team resources are moved to a temporary container and can be restored within 30 days. After that time, they are permanently deleted.
 
 	.PARAMETER Identity
