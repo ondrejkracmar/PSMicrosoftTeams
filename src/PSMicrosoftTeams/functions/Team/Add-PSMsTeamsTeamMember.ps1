@@ -87,8 +87,8 @@
                 else {
                     $path = = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath ('{0}/members/add' -f $team.Id)
                     $body = @{values = @() }
-                    foreach ($memberItem in  $Members) {
-                        $aADUser = Get-PSMsTeamsUser -Identity $memberItem
+                    foreach ($userItem in  $User) {
+                        $aADUser = Get-PSMsTeamsUser -Identity $userItem
                         if (-not([object]::Equals($aADUser, $null))) {
                             $urlUser = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "users('{0}')" -f $aADUser.UserPrincipalName
                             $value = @{
