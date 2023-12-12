@@ -49,6 +49,7 @@
 		'Remove-PSMsTeamsTeam'
 		'Protect-PSMsTeamsTeam'
 		'Unprotect-PSMsTeamsTeam'
+		'Add-PSMsTeamsTeamMember'
 	)
 	
 	# Cmdlets to export from this module
