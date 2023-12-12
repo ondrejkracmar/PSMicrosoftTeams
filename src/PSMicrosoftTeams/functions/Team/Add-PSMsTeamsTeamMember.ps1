@@ -59,7 +59,7 @@
     }
 
     process {
-        $Role
+        $Role = ''
         Invoke-PSFProtectedCommand -ActionString 'TeamMember.Add' -ActionStringValues ((($User | ForEach-Object { "{0}" -f $_ }) -join ',')) -Target $Identity -ScriptBlock {
             $team = Get-PSMsTeamsTeam -Identity $Identity
             if (-not([object]::Equals($team, $null))) {
