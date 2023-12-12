@@ -16,7 +16,7 @@
 	'Team.Archive'      = "Archive/Protext team '{0}'"
 	'Team.Unarchive'	= "Unarchive/Unprotext team '{0}'"
 
-	'TeamMember.Add'    = "Add members '{0}'"
+	'TeamMember.Add'    = "Add members '{0}' with the following roles {1}"
 	#'TeamMember.Delete' = "Remove members '{0}'"
 	'TeamMember.List'   = "List members from the team '{0}'"
 	
