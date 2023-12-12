@@ -47,7 +47,7 @@
         [ValidateUserIdentity()]
         [string[]]$User,
         [Parameter(ParameterSetName = 'Identity', ValueFromPipelineByPropertyName = $true)]
-        [ValidateSet('Member', 'Owner')]
+        [ValidateSet("Member", "Owner")]
         [string[]]$Role,
         [switch]$EnableException
     )
