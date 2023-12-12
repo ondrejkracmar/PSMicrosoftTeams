@@ -4,8 +4,10 @@
 	'Identity.Platform' = "Microsoft Teams"
 
 	'User.Get'          = "Get user '{0}'"
-	#'User.Get.Failed'   = "Get user '{0}' failed"
+	'User.Get.Failed'   = "Get user '{0}' failed"
 	'User.Filter'       = "List users with filter '{0}'"
+	'User.List'         = "List users '{0}'"
+	'User.Name'         = "List users by name '{0}'"
 
 	'Team.Get'          = "Get team '{0}'"
 	'Team.Get.Failed'   = "Get team '{0}' failed"
@@ -14,7 +16,7 @@
 	'Team.New'          = "Create new team '{0}'"
 	'Team.Delete'       = "Delete team '{0}'"
 	'Team.Archive'      = "Archive/Protext team '{0}'"
-	'Team.Unarchive'	= "Unarchive/Unprotext team '{0}'"
+	'Team.Unarchive'    = "Unarchive/Unprotext team '{0}'"
 
 	'TeamMember.Add'    = "Add members '{0}' with the following roles {1}"
 	#'TeamMember.Delete' = "Remove members '{0}'"
