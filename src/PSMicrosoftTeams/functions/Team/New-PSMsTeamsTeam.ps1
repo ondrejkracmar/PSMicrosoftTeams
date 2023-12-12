@@ -1,4 +1,55 @@
 ﻿function New-PSMsTeamsTeam {
+    <#
+    .SYNOPSIS
+        Create new  Microsoft Teams team.
+
+    .DESCRIPTION
+        Create new  Microsoft Teams team.
+
+    .PARAMETER Identity
+        MailnicName, Mail or Id of the team attribute populated in tenant/directory..
+
+    .PARAMETER Displayname
+        The display name for the team.
+
+    .PARAMETER Description
+       The description for the team.
+
+    .PARAMETER MailNickname
+        The mail alias for the team, unique for Microsoft 365 groups in the organization. Maximum length is 64 characters.
+
+    .PARAMETER MailEnabled
+        Specifies whether the team is mail-enabled. Required.
+
+    .PARAMETER IsAssignableToRole
+        Indicates whether this team can be assigned to a Microsoft Entra role. Optional.
+
+    .PARAMETER SecurityEnabled
+        Specifies whether the team is a security group. Required.
+
+    .PARAMETER Classification
+        Describes a classification for the team.
+
+    .PARAMETER EnableException
+        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user frien
+        dly, but allows catching exceptions in calling scripts.
+
+    .PARAMETER WhatIf
+        Enables the function to simulate what it will do instead of actually executing.
+
+    .PARAMETER Confirm
+        The Confirm switch instructs the command to which it is applied to stop processing before any changes are made.
+        The command then prompts you to acknowledge each action before it continues.
+        When you use the Confirm switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
+        This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
+        A confirmation prompt is displayed for each object before the Shell modifies the object.
+
+
+    .EXAMPLE
+        PS C:\> New-PSEntraIDUser -DisplayName 'New Team' -Description 'Description of new team'
+
+		Create new  Microsoft Teams team
+#>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType()]
     [CmdletBinding(SupportsShouldProcess = $true,
