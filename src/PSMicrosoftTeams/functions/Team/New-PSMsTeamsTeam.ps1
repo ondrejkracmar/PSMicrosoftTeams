@@ -18,6 +18,9 @@
     .PARAMETER MailNickname
         The mail alias for the team, unique for Microsoft 365 groups in the organization. Maximum length is 64 characters.
 
+    .PARAMETER MailEnabled
+        Specifies whether the group is mail-enabled.
+
     .PARAMETER Classification
         Describes a classification for the team.
     
@@ -238,7 +241,7 @@
                 }
 
                 if (Test-PSFParameterBinding -Parameter Classification) {
-                    $body['mailEnabled'] = $Classification
+                    $body['classification'] = $Classification
                 }
 
                 if (Test-PSFParameterBinding -Parameter Visibility) {
