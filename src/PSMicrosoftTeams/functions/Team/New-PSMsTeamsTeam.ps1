@@ -22,43 +22,61 @@
         Describes a classification for the team.
     
     .PARAMETER Visibility
-        Specifies the group join policy and group content visibility for groups. Possible values are: Private, Public, or HiddenMembership.
+        Specifies the team join policy and team content visibility for groups. Possible values are: Private, Public, or HiddenMembership.
 
     .PARAMETER Template
+        Specifies team template.
 
     .PARAMETER AllowGiphy
+        Eable giphy for team.
 
     .PARAMETER GiphyContentRating
+        Rating for giphy. Can be "Strict" or "Moderate".
 
     .PARAMETER AllowStickersAndMemes
+        Enable Stickers and memes.
 
     .PARAMETER AllowCustomMemes
+        Allow custom memes.
 
     .PARAMETER AllowGuestCreateUpdateChannels
+        Setting that determines whether or not guests can create channels in the team.
 
     .PARAMETER AllowGuestDeleteChannels
+        Setting that determines whether or not guests can delete in the team.
 
     .PARAMETER AllowCreateUpdateChannels
+        Setting that determines whether or not members (and not just owners) are allowed to create channels.
 
     .PARAMETER AllowDeleteChannels
+        Setting that determines whether or not members (and not only owners) can delete channels in the team.
 
     .PARAMETER AllowAddRemoveApps
+        Boolean value that determines whether or not members (not only owners) are allowed to add apps to the team.
 
     .PARAMETER AllowCreateUpdateRemoveTabs
+        Setting that determines whether or not members (and not only owners) can manage tabs in channels.
 
     .PARAMETER AllowCreateUpdateRemoveConnectors
+        Setting that determines whether or not members (and not only owners) can manage connectors in the team.
 
     .PARAMETER AllowUserEditMessages
+        Setting that determines whether or not users can edit messages that they have posted.
 
     .PARAMETER AllowUserDeleteMessages
+        Setting that determines whether or not members can delete messages that they have posted.
 
     .PARAMETER AllowOwnerDeleteMessages
+        Setting that determines whether or not owners can delete messages that they or other members of the team have posted.
 
     .PARAMETER AllowTeamMentions
+        Setting that determines whether the entire team can be @ mentioned (which means that all users will be notified).
 
     .PARAMETER AllowChannelMentions
+        Boolean value that determines whether or not channels in the team can be @ mentioned so that all users who follow the channel are notified.
 
     .PARAMETER ShowInTeamsSearchAndSuggestions
+        The parameter has been deprecated.
 
     .PARAMETER EnableException
         This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user frien
