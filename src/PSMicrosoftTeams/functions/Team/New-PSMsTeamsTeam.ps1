@@ -18,17 +18,47 @@
     .PARAMETER MailNickname
         The mail alias for the team, unique for Microsoft 365 groups in the organization. Maximum length is 64 characters.
 
-    .PARAMETER MailEnabled
-        Specifies whether the team is mail-enabled. Required.
-
-    .PARAMETER IsAssignableToRole
-        Indicates whether this team can be assigned to a Microsoft Entra role. Optional.
-
-    .PARAMETER SecurityEnabled
-        Specifies whether the team is a security group. Required.
-
     .PARAMETER Classification
         Describes a classification for the team.
+    
+    .PARAMETER Visibility
+        Specifies the group join policy and group content visibility for groups. Possible values are: Private, Public, or HiddenMembership.
+
+    .PARAMETER Template
+
+    .PARAMETER AllowGiphy
+
+    .PARAMETER GiphyContentRating
+
+    .PARAMETER AllowStickersAndMemes
+
+    .PARAMETER AllowCustomMemes
+
+    .PARAMETER AllowGuestCreateUpdateChannels
+
+    .PARAMETER AllowGuestDeleteChannels
+
+    .PARAMETER AllowCreateUpdateChannels
+
+    .PARAMETER AllowDeleteChannels
+
+    .PARAMETER AllowAddRemoveApps
+
+    .PARAMETER AllowCreateUpdateRemoveTabs
+
+    .PARAMETER AllowCreateUpdateRemoveConnectors
+
+    .PARAMETER AllowUserEditMessages
+
+    .PARAMETER AllowUserDeleteMessages
+
+    .PARAMETER AllowOwnerDeleteMessages
+
+    .PARAMETER AllowTeamMentions
+
+    .PARAMETER AllowChannelMentions
+
+    .PARAMETER ShowInTeamsSearchAndSuggestions
 
     .PARAMETER EnableException
         This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user frien
