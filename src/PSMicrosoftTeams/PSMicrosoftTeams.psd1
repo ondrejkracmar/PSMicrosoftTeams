@@ -3,7 +3,7 @@
 	RootModule = 'PSMicrosoftTeams.psm1'
 	
 	# Version number of this module.
-	ModuleVersion = '1.0.0'
+	ModuleVersion = '1.1.0.2'
 	
 	# ID used to uniquely identify this module
 	GUID = '68aff6a6-275a-40e9-adc0-f2ff32ce35b5'
@@ -12,21 +12,23 @@
 	Author = 'Ondrej Kracmar'
 	
 	# Company or vendor of this module
-	CompanyName = 'Ondrej Kracmar'
+	CompanyName = 'i-system'
 	
 	# Copyright statement for this module
-	Copyright = 'Copyright (c) 2020 Ondrej Kracmar'
+	Copyright = 'Copyright (c) 2022 i-system'
 	
 	# Description of the functionality provided by this module
 	Description = 'Powershell module for managing Microsoft Teams'
 	
 	# Minimum version of the Windows PowerShell engine required by this module
-	PowerShellVersion = '5.0'
+	PowerShellVersion = '7.2'
 	
 	# Modules that must be imported into the global environment prior to importing
 	# this module
-	RequiredModules = @(
-		@{ ModuleName='PSFramework'; ModuleVersion='1.4.150' }
+	
+	RequiredModules   = @('PSFramework', 'RestConnect'
+		#@{ ModuleName = 'PSFramework'; ModuleVersion='1.7'}
+		#@{ ModuleName = 'RestConnect'; ModuleVersion='1.0'}
 	)
 	
 	# Assemblies that must be loaded prior to importing this module
@@ -40,19 +42,14 @@
 	
 	# Functions to export from this module
 	FunctionsToExport = @(
-		'Add-PSMTTeamUser',
-		'Get-PSMTTeam',
-		'Get-PSMTTeamUser',
-		'New-PSMTTeam',
-		'Get-PSMTUser',
-		'Remove-PSMTTeam',
-		'Remove-PSMTTeamUser',
-		'New-PSMTGroup',
-		'Get-PSMTGroup',
-		"Get-PSMTRequestStatus",
-		'Receive-PSMTAuthorizationToken',
-		'Write-PSMTAuthorizationToken',
-		'Get-PSMTUser'
+		'Connect-PSMicrosoftTeams'
+		'Get-PSMsTeamsTeam'
+		'Get-PSMsTeamsTeamMember'
+		'New-PSMsTeamsTeam'
+		'Remove-PSMsTeamsTeam'
+		'Protect-PSMsTeamsTeam'
+		'Unprotect-PSMsTeamsTeam'
+		'Add-PSMsTeamsTeamMember'
 	)
 	
 	# Cmdlets to export from this module
@@ -77,7 +74,9 @@
 		PSData = @{
 			
 			# Tags applied to this module. These help with module discovery in online galleries.
-			# Tags = @()
+			Tags                       = @('Rest', 'Azure', 'AzureActiveDirectory','MicrosoftEntra','MicrosoftEntraID','MicrosoftTeams')
+
+			ExternalModuleDependencies = @('PSFramework', 'RestConnect')
 			
 			# A URL to the license for this module.
 			# LicenseUri = ''

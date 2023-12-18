@@ -1,16 +1,25 @@
 ﻿# This is where the strings go, that are written by
 # Write-PSFMessage, Stop-PSFFunction or the PSFramework validation scriptblocks
 @{
-	'QueryMoreData' = 'The query contains more data, use recursive to get all!'
-	'QueryCommandOutput' = 'The command executed successfully'
-	'TokenExpired' = 'Access token has expired.'
-	'FailedInvokeRest' = "Failed to invoke rest method '{0}' from '{1}'."
-	'FailedGetUser' = "Failed to get user '{0}'."
-	'FailedNewTeam' = "Failed to create team '{0}'."
-	'FailedGetTeam' = "Failed to get team '{0}'."
-	'FailedNewGroup' = "Failed to create Office 365 group '{0}'."
-	'FailedGetGroup' = "Failed to get Office 365 group '{0}'."
-	'FailedGetUsers' = "Failed to receive uri '{0}'."
-	'FailedAddMember' = "Failed to add UserId '{0}' to TeamId {1}."
-	'FailedGetUri' = "Failed to receive uri '{0}'."
+	'Identity.Platform' = "Microsoft Teams"
+
+	'User.Get'          = "Get user '{0}'"
+	'User.Get.Failed'   = "Get user '{0}' failed"
+	'User.Filter'       = "List users with filter '{0}'"
+	'User.List'         = "List users '{0}'"
+	'User.Name'         = "List users by name '{0}'"
+
+	'Team.Get'          = "Get team '{0}'"
+	'Team.Get.Failed'   = "Get team '{0}' failed"
+	'Team.Filter'       = "List teams with filter '{0}'"
+	'Team.List'         = "List teams '{0}'"
+	'Team.New'          = "Create new team '{0}'"
+	'Team.Delete'       = "Delete team '{0}'"
+	'Team.Archive'      = "Archive/Protext team '{0}'"
+	'Team.Unarchive'    = "Unarchive/Unprotext team '{0}'"
+
+	'TeamMember.Add'    = "Add members '{0}' with the following roles {1}"
+	#'TeamMember.Delete' = "Remove members '{0}'"
+	'TeamMember.List'   = "List members from the team '{0}'"
+	
 }

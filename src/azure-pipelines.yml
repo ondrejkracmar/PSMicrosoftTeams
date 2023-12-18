@@ -1,44 +1,43 @@
-﻿pool:
-  name: Hosted VS2017
+﻿name: Publish Powershell Module To Private Repository
+trigger:
+  - main
+
+variables:
+  - group: "AzArtifactsPSModules"
+
 steps:
-- task: PowerShell@2
-  displayName: Prerequisites
-  inputs:
-    targetType: filePath
-    filePath: './src/build/vsts-prerequisites.ps1'
+   - task: PowerShell@2
+     displayName: Install Prerequisites For Validation
+     inputs:
+       targetType: filePath
+       filePath: "./src//build/vsts-prerequisites.ps1"
 
-- task: PowerShell@2
-  displayName: Validate
-  inputs:
-    targetType: filePath
-    filePath: './src/build/vsts-validate.ps1'
+   - task: PowerShell@2
+     displayName: Validation/Test Powershell Module
+     inputs:
+       targetType: filePath
+       filePath: "./src/build/vsts-validate.ps1"
 
-- task: PublishTestResults@2
-  displayName: 'Publish Test Results **/TEST-*.xml'
-  inputs:
-    testResultsFormat: NUnit
+   - task: PublishTestResults@2
+     displayName: "Publish Test Results **/TEST-*.xml"
+     inputs:
+       testResultsFormat: NUnit
+     condition: always()
 
-- task: PowerShell@2
-  displayName: RegisterRepository
-  inputs:
-    targetType: filePath
-    filePath: './src/build/vsts-registerRepository.ps1'
-    arguments:
-      -OrganizationName "i-system"
-      -RepositoryName "AutomationPlatform"
-      -ArtifactFeedName "AzArtifactsPSModules"
-      -ArtifactRepositoryName "IsAzPSRepository"
-      -FeedUsername "Ondrej Kracmar"
-      -PersonalAccessToken "c3hdrkgv3ealoea5pqsqthmjqh2hynqmmobx3ign5e5mtzehunta"
-  condition: always()
-  
-- task: PowerShell@2
-  displayName: Build
-  inputs:
-    targetType: filePath
-    filePath: './src/build/vsts-build.ps1'
-    arguments:
-      -WorkingDirectory "./src"
-      -ApiKey "c3hdrkgv3ealoea5pqsqthmjqh2hynqmmobx3ign5e5mtzehunta"
-      -Repository "IsAzPSRepository"
-  condition: always()
+   - task: PowerShell@2
+     displayName: Build Nuget For Powerhell module
+     inputs:
+       targetType: filePath
+       filePath: "./src/build/vsts-build.ps1"
+       arguments: > # Use this to avoid newline characters in multiline string
+          -WorkingDirectory "./src"
+          -LocalRepo
+
+   - task: PowerShell@2
+     displayName: Publish Powershell Module/Nuget To Private Azure Artifact/Powershell Reposityr
+     inputs:
+        targetType: inline
+        script: |
+          $source = 'https://pkgs.dev.azure.com/{0}/{1}/_packaging/{2}/nuget/v2' -f '$(company)', '$(project)', '$(feedName)'
+          Invoke-Expression "nuget source add -Name '$(feedName)' -Source '$($source)' -username '$(userName)' -password '$(PAT)'"
+          Invoke-Expression "nuget push -Source '$(feedName)' -ApiKey ((New-Guid).Guid)  'PSMicrosoftTeams.1.1.0.2.nupkg' -SkipDuplicate"
