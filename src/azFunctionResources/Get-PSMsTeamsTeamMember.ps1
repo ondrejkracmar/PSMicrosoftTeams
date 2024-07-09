@@ -79,7 +79,7 @@
                             }
                         }
                         Invoke-PSFProtectedCommand -ActionString 'TeamMember.List' -ActionStringValues $itemIdentity -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                            Invoke-RestRequest -Service 'graph' -Path $path -Query $query -Header $header -Method Get -ErrorAction Stop | ConvertFrom-RestTeamMember
+                            Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -ErrorAction Stop | ConvertFrom-RestTeamMember
                         } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                         if (Test-PSFFunctionInterrupt) { return }
                     }

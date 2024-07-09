@@ -33,8 +33,7 @@ function Unprotect-PSMsTeamsTeam {
 
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType()]
-    [CmdletBinding(SupportsShouldProcess = $true,
-        DefaultParameterSetName = 'Identity')]
+    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'Identity')]
     param (
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
         [Alias("Id", "TeamId", "GroupId", "MailNickname")]
@@ -43,9 +42,14 @@ function Unprotect-PSMsTeamsTeam {
         [switch]$EnableException
     )
     begin {
-        Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
+        $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+        $graphService = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultGraphService' -f $script:ModuleName)
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
+        $header = @{
+            'Content-Type' = 'application/json'
+        }
+
     }
 
     process {
@@ -54,7 +58,7 @@ function Unprotect-PSMsTeamsTeam {
                 $aADGroup = Get-PSMsTeamsTeam -Identity $group
                 if (-not([object]::Equals($aADGroup, $null))) {
                     $path = ("teams/{0}/unarchive" -f $aADGroup.Id)
-                    [void](Invoke-RestRequest -Service 'graph' -Path $path -Method Post -ErrorAction Stop)
+                    [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Method Post -ErrorAction Stop)
                 }
                 else {
                     if ($EnableException.IsPresent) {
