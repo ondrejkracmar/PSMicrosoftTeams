@@ -20,6 +20,7 @@ steps:
        targetType: inline
        script: |
         $output = dotnet-gitversion /config ./src/GitVersion.yml | ConvertFrom-Json
+        $output.PSObject.Properties
         $output.PSObject.Properties | ForEach-Object {
         echo "##vso[task.setvariable variable=GitVersion.$($_.Name)]$($_.Value)"} 
 
