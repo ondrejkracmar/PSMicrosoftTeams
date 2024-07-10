@@ -13,7 +13,7 @@ steps:
        targetType: inline
        script: |
          dotnet tool install --global GitVersion.Tool
-              $gitVersionObject = dotnet-gitversion | ConvertFrom-Json
+              $gitVersionObject = dotnet-gitversion /config ./src/GitVersion.yml | ConvertFrom-Json
               $gitVersionObject.PSObject.Properties.ForEach{
                   Write-Host -Object "Setting Task Variable '$($_.Name)' with value '$($_.Value)'."
                   Write-Host -Object "##vso[task.setvariable variable=$($_.Name);]$($_.Value)"
