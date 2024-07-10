@@ -1,22 +1,26 @@
 ﻿# This is where the strings go, that are written by
 # Write-PSFMessage, Stop-PSFFunction or the PSFramework validation scriptblocks
 @{
-	'QueryMoreData' 			= 'The query contains more data, use recursive to get all!'
-	'QueryCommandOutput' 		= 'The command executed successfully'
-	'QueryBatchCommandOutput' 	= 'The batch command'
-	'TokenExpired' 				= 'Access token has expired.'
-	'FailedInvokeRest' 			= "Failed to invoke rest method '{0}' from '{1}'."
-	'StringAssemblyError' 		= "Failed to assemble url '{0}'."
-	'FailedNewTeam' 			= "Failed to create team '{0}'."
-	'FailedRemoveTeam'			= "Failed to remove team '{0}'."
-	'FailedDeleteTeam' 			= "Failed to delete team '{0}'."
-	'FailedGetTeam' 			= "Failed to get team '{0}'."
-	'FailedNewGroup' 			= "Failed to create Office 365 group '{0}'."
-	'FailedDeleteGroup' 		= "Failed to delete Office 365 group '{0}'."
-	'FailedGetGroup' 			= "Failed to get Office 365 group '{0}'."
-	'FailedGetUsers' 			= "Failed to receive uri '{0}'."
-	'FailedGetUser' 			= "Failed to receive Id of  UserPrincipalName '{0}'."
-	'FailedAddMember' 			= "Failed to add UserId '{0}' to TeamId {1}."
-	'FailedRemoveMember'		= "Failed to remove MembershipId '{0}' from TeamId {1}."
-	'FailedGetUri' 				= "Failed to receive uri '{0}'."
+	'Identity.Platform'     = "Microsoft Teams"
+
+	'User.Get'              = "Get user '{0}'"
+	'User.Get.Failed'       = "Get user '{0}' failed"
+	'User.Filter'           = "List users with filter '{0}'"
+	'User.List'             = "List users '{0}'"
+	'User.Name'             = "List users by name '{0}'"
+
+	'Team.Get'              = "Get team '{0}'"
+	'Team.Get.Failed'       = "Get team '{0}' failed"
+	'Team.Filter'           = "List teams with filter '{0}'"
+	'Team.List'             = "List teams '{0}'"
+	'Team.New'              = "Create new team '{0}'"
+	'Team.Delete'           = "Delete team '{0}'"
+	'Team.Archive'          = "Archive/Protext team '{0}'"
+	'Team.Unarchive'        = "Unarchive/Unprotext team '{0}'"
+
+	'TeamMember.Add'        = "Add member '{0}' with the following roles {1}"
+	'TeamMember.Remove'     = "Remove member from team '{0}' with the following MembershipId '{1}'"
+	'TeamMember.Add.Failed' = "Add members to the group '{0}' failed"
+	'TeamMember.List'       = "List members from the team '{0}'"
+
 }
