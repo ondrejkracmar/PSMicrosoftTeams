@@ -8,7 +8,7 @@ variables:
 steps:
 
    - task: PowerShell@2
-     displayName: Determine version with GitVersion
+     displayName: Calculate ModuleVersion (GitVersion)
      inputs:
        targetType: inline
        script: |
@@ -19,7 +19,6 @@ steps:
                   Write-Host -Object "##vso[task.setvariable variable=$($_.Name);]$($_.Value)"
               }
               Write-Host -Object "##vso[build.updatebuildnumber]$($gitVersionObject.FullSemVer)"
-            displayName: "Calculate ModuleVersion (GitVersion)"
 
    - task: PowerShell@2
      displayName: Install Prerequisites For Validation
