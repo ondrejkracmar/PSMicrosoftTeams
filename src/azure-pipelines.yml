@@ -1,6 +1,18 @@
 ﻿name: Publish Powershell Module To Private Repository
 trigger:
-  - main
+  branches:
+    include:
+    - main
+  
+  paths:
+    exclude:
+    - CHANGELOG.md
+  
+  tags:
+    include:
+    - "v*"
+    exclude:
+    - "*-*"
 
 variables:
   - group: "AzArtifactsPSModules"
