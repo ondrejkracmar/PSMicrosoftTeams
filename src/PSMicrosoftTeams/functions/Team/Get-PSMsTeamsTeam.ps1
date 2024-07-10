@@ -56,7 +56,8 @@
     )
 
     begin {
-        Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
+        $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+        Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
         $query = @{
             '$count'  = 'true'
             '$top'    = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
@@ -78,14 +79,15 @@
                     $mailNickNameQuery['$Filter'] = ("resourceProvisioningOptions/Any(x:x eq 'Team') and mailNickName eq '{0}'" -f $group)
 
                     Invoke-PSFProtectedCommand -ActionString 'Team.Get' -ActionStringValues $group -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        $mailNickName = Invoke-RestRequest -Service 'graph' -Path ('groups') -Query $mailNickNameQuery -Method Get -ErrorAction Stop | ConvertFrom-RestTeam
+                        $mailNickName = Invoke-EntraRequest -Service $service -Path 'groups' -Query $mailNickNameQuery -Method Get -ErrorAction Stop | ConvertFrom-RestTeam
                         if (-not([object]::Equals($mailNickName, $null))) {
                             $groupId = $mailNickName[0].Id
                         }
                         else {
                             $groupId = $group
                         }
-                        Invoke-RestRequest -Service 'graph' -Path ('groups/{0}' -f $groupId) -Query $query -Method Get -ErrorAction Stop | ConvertFrom-RestTeam
+                        Invoke-EntraRequest -Service $service -Path ('groups/{0}' -f $groupId) -Method Get -ErrorAction Stop | ConvertFrom-RestTeam
+                        
                     } -EnableException $EnableException -Continue -PSCmdlet $PSCmdlet -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                     if (Test-PSFFunctionInterrupt) { return }
                 }
@@ -94,7 +96,7 @@
                 foreach ($group in $DisplayName) {
                     $query['$Filter'] = ("resourceProvisioningOptions/Any(x:x eq 'Team') and startswith(displayName,'{0}')" -f $group)
                     Invoke-PSFProtectedCommand -ActionString 'Team.Get' -ActionStringValues $group -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        Invoke-RestRequest -Service 'graph' -Path ('groups') -Query $query -Method Get -ErrorAction Stop | ConvertFrom-RestTeam
+                        Invoke-EntraRequest -Service $service -Path 'groups' -Query $query -Method Get -ErrorAction Stop | ConvertFrom-RestTeam
                     } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                     if (Test-PSFFunctionInterrupt) { return }
                 }
@@ -105,12 +107,12 @@
                     $header = @{}
                     $header['ConsistencyLevel'] = 'eventual'
                     Invoke-PSFProtectedCommand -ActionString 'Team.Filter' -ActionStringValues $query['$Filter'] -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        Invoke-RestRequest -Service 'graph' -Path ('groups') -Query $query -Method Get -Header $header -ErrorAction Stop | ConvertFrom-RestTeam
+                        Invoke-EntraRequest -Service $service -Path 'groups' -Query $query -Method Get -Header $header -ErrorAction Stop | ConvertFrom-RestTeam
                     } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                 }
                 else {
                     Invoke-PSFProtectedCommand -ActionString 'Team.Filter' -ActionStringValues $query['$Filter'] -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        Invoke-RestRequest -Service 'graph' -Path ('groups') -Query $query -Method Get -ErrorAction Stop | ConvertFrom-RestTeam
+                        Invoke-EntraRequest -Service $service -Path ('groups') -Query $query -Method Get -ErrorAction Stop | ConvertFrom-RestTeam
                     } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                 }
                 if (Test-PSFFunctionInterrupt) { return }
@@ -119,7 +121,7 @@
                 if ($All.IsPresent) {
                     $query['$Filter'] = "resourceProvisioningOptions/Any(x:x eq 'Team')"
                     Invoke-PSFProtectedCommand -ActionString 'Team.List' -ActionStringValues $query['$Filter'] -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        Invoke-RestRequest -Service 'graph' -Path ('groups') -Query $query -Method Get -ErrorAction Stop | ConvertFrom-RestTeam
+                        Invoke-EntraRequest -Service $service -Path 'groups' -Query $query -Method Get -ErrorAction Stop | ConvertFrom-RestTeam
                     } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                     if (Test-PSFFunctionInterrupt) { return }
                 }

@@ -9,9 +9,6 @@
     .PARAMETER Identity
         MailNickName or Id of group or team.
 
-    .PARAMETER Owner
-        Member type owner.
-
     .PARAMETER Filter
         Filter expressions of groups in tenant/directory.
 
@@ -23,22 +20,19 @@
         but allows catching exceptions in calling scripts.
 
     .EXAMPLE
-        PS C:\> Get-PSMsTeamsTeamMember -Identity user1@contoso.com
+        PS C:\> Get-PSMsTeamsTeamMember -Identity teammailnickname
 
-		Get properties of Azure AD user user1@contoso.com
+		Get properties of team members
 
 
 #>
-    [OutputType('PSMicrosoftEntraID.User')]
+    [OutputType('PSMicrosoftEntraID.TeamMember')]
     [CmdletBinding(DefaultParameterSetName = 'Identity')]
     param(
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
         [ValidateGroupIdentity()]
         [Alias("Id", "GroupId", "TeamId", "MailNickName")]
         [string[]]$Identity,
-        [Parameter(Mandatory = $False, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
-        [ValidateNotNullOrEmpty()]
-        [switch]$Owner,
         [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'Identity')]
         [ValidateNotNullOrEmpty()]
         [string]$Filter,
@@ -49,11 +43,10 @@
     )
 
     begin {
-        Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
+        $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+        Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
         $query = @{
-            '$count'  = 'true'
-            '$top'    = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
-            '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.TeamMember).Value -join ',')
+            '$top' = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
         }
         $header = @{}
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
@@ -66,12 +59,7 @@
                 foreach ($itemIdentity in $Identity) {
                     $team = Get-PSMsTeamsTeam -Identity $itemIdentity
                     if (-not([object]::Equals($team, $null))) {
-                        if ($Owner.IsPresent) {
-                            $path = ('groups/{0}/owners' -f $team.Id)
-                        }
-                        else {
-                            $path = ('groups/{0}/members' -f $team.Id)
-                        }
+                        $path = ('teams/{0}/members' -f $team.Id)
                         if (Test-PSFParameterBinding -ParameterName 'Filter') {
                             $query['$Filter'] = $Filter
                             if ($AdvancedFilter.IsPresent) {
@@ -79,7 +67,7 @@
                             }
                         }
                         Invoke-PSFProtectedCommand -ActionString 'TeamMember.List' -ActionStringValues $itemIdentity -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                            Invoke-RestRequest -Service 'graph' -Path $path -Query $query -Header $header -Method Get -ErrorAction Stop | ConvertFrom-RestTeamMember
+                            Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -ErrorAction Stop | ConvertFrom-RestTeamMember
                         } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                         if (Test-PSFFunctionInterrupt) { return }
                     }

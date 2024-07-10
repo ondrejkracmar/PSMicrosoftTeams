@@ -29,31 +29,12 @@ function ConvertFrom-RestTeamMember {
 
 
 		[PSCustomObject]@{
-			PSTypeName        = 'PSMicrosoftEntraID.User'
-			Id                = $InputObject.id
-			UserPrincipalName = $InputObject.userPrincipalName
-			CreatedDateTime   = $InputObject.createdDateTime
-			Mail              = $InputObject.mail
-			MailNickname      = $InputObject.mailNickname
-			ProxyAddresses    = $InputObject.proxyAddresses
-			UserType          = $InputObject.userType
-            Roles             = $InputObject.roles
-			AccountEnabled    = $InputObject.accountEnabled
-			GivenName         = $InputObject.givenName
-			Surname           = $InputObject.surname
-			DisplayName       = $InputObject.displayName
-			EmployeeId        = $InputObject.employeeId
-			JobTitle          = $InputObject.jobTitle
-			Department        = $InputObject.department
-			OfficeLocation    = $InputObject.officeLocation
-			CompanyName       = $InputObject.companyName
-			City              = $InputObject.city
-			PostalCode        = $InputObject.postalCode
-			Country           = $InputObject.Country
-			UsageLocation     = $InputObject.usageLocation
-			MobilePhone       = $InputObject.mobilePhone
-			BusinessPhones    = $InputObject.businessPhones
-			FaxNumber         = $InputObject.faxNumber
+			PSTypeName   = 'PSMicrosoftEntraID.TeamMember'
+			Id           = $InputObject.UserId
+			DisplayName  = $InputObject.displayName
+			Mail         = $InputObject.email
+			MembershipId = $InputObject.Id
+			Roles        = $InputObject.roles
 		}
 	}
 }

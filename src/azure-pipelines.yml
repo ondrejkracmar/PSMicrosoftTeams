@@ -6,6 +6,24 @@ variables:
   - group: "AzArtifactsPSModules"
 
 steps:
+
+   - task: PowerShell@2
+     displayName: Dotnet install GitVersion.Tool
+     inputs:
+       targetType: inline
+       script: | 
+         dotnet tool install --global GitVersion.Tool --version 5.*
+
+   - task: PowerShell@2
+     displayName: Determine version with GitVersion
+     inputs:
+       targetType: inline
+       script: |
+        $output = dotnet-gitversion /config ./src/GitVersion.yml | ConvertFrom-Json
+        $output.PSObject.Properties
+        $output.PSObject.Properties | ForEach-Object {
+        echo "##vso[task.setvariable variable=GitVersion.$($_.Name)]$($_.Value)"} 
+
    - task: PowerShell@2
      displayName: Install Prerequisites For Validation
      inputs:
@@ -40,4 +58,4 @@ steps:
         script: |
           $source = 'https://pkgs.dev.azure.com/{0}/{1}/_packaging/{2}/nuget/v2' -f '$(company)', '$(project)', '$(feedName)'
           Invoke-Expression "nuget source add -Name '$(feedName)' -Source '$($source)' -username '$(userName)' -password '$(PAT)'"
-          Invoke-Expression "nuget push -Source '$(feedName)' -ApiKey ((New-Guid).Guid)  'PSMicrosoftTeams.1.1.0.2.nupkg' -SkipDuplicate"
+          Invoke-Expression "nuget push -Source '$(feedName)' -ApiKey ((New-Guid).Guid)  'PSMicrosoftTeams.1.2.1.1.nupkg' -SkipDuplicate"

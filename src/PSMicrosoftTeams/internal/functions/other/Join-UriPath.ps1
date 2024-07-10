@@ -1,4 +1,4 @@
-
+﻿
 function Join-UriPath {
     <#
     .SYNOPSIS

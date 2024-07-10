@@ -3,7 +3,7 @@
 	RootModule = 'PSMicrosoftTeams.psm1'
 	
 	# Version number of this module.
-	ModuleVersion = '1.1.0.2'
+	ModuleVersion = '1.2.1'
 	
 	# ID used to uniquely identify this module
 	GUID = '68aff6a6-275a-40e9-adc0-f2ff32ce35b5'
@@ -26,7 +26,7 @@
 	# Modules that must be imported into the global environment prior to importing
 	# this module
 	
-	RequiredModules   = @('PSFramework', 'RestConnect'
+	RequiredModules   = @('PSFramework'
 		#@{ ModuleName = 'PSFramework'; ModuleVersion='1.7'}
 		#@{ ModuleName = 'RestConnect'; ModuleVersion='1.0'}
 	)
@@ -50,6 +50,7 @@
 		'Protect-PSMsTeamsTeam'
 		'Unprotect-PSMsTeamsTeam'
 		'Add-PSMsTeamsTeamMember'
+		'Remove-PSMsTeamsTeamMember'
 	)
 	
 	# Cmdlets to export from this module
@@ -76,7 +77,7 @@
 			# Tags applied to this module. These help with module discovery in online galleries.
 			Tags                       = @('Rest', 'Azure', 'AzureActiveDirectory','MicrosoftEntra','MicrosoftEntraID','MicrosoftTeams')
 
-			ExternalModuleDependencies = @('PSFramework', 'RestConnect')
+			ExternalModuleDependencies = @('PSFramework')
 			
 			# A URL to the license for this module.
 			# LicenseUri = ''

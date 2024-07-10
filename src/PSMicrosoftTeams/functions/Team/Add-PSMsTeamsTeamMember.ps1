@@ -53,44 +53,53 @@
     )
 
     begin {
-        Assert-RestConnection -Service 'graph' -Cmdlet $PSCmdlet
+        $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+        $graphService = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultGraphService' -f $script:ModuleName)
+        Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
+        $header = @{
+            'Content-Type' = 'application/json'
+        }
     }
 
     process {
         Invoke-PSFProtectedCommand -ActionString 'TeamMember.Add' -ActionStringValues ((($User | ForEach-Object { "{0}" -f $_ }) -join ',')), ((($Role | ForEach-Object { "{0}" -f $_ }) -join ',')) -Target $Identity -ScriptBlock {
-            $team = Get-PSMsTeamsTeam -Identity $Identity
+            if (([object]::Equals($team, $null))) {
+                $team = Get-PSMsTeamsTeam -Identity $Identity
+            }
             if (-not([object]::Equals($team, $null))) {
-                $path = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath ('teams/{0}/{1})' -f $team.Id, 'memebrs' )
+                $path = Join-UriPath -Uri ($graphService) -ChildPath ('teams/{0}/{1})' -f $team.Id, 'memebrs')
                 if ($User.Count -eq 0) {
                     $aADUser = Get-PSMsTeamsUser -Identity $User
                     if (-not([object]::Equals($aADUser, $null))) {
                         $body = @{
                             '@odata.type'     = '#microsoft.graph.aadUserConversationMember'
                             roles             = @()
-                            'user@odata.bind' = ('{0}/users/{1}' -f (Get-GraphApiUriPath), $aADUser.Id)
+                            'user@odata.bind' = Join-UriPath -Uri (Get-EntraService -Name $graphService).ServiceUrl -ChildPath "users('{0}')" -f $aADUser.UserPrincipalName
                         }
-                        if (Test-PSFParameterBinding -Parameter Role) {
-                            $body['roles'] = $Role
-                        }
-                        else {
-                            $body['roles'] = @()
-                        }
+
                     }
                     else {
                         if ($EnableException.IsPresent) {
                             Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $itemUser)
                         }
                     }
+                    if (Test-PSFParameterBinding -Parameter Role) {
+                        $body['roles'] = $Role
+                    }
+                    else {
+                        $body['roles'] = @()
+                    }
+
                 }
                 else {
-                    $path = = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath ('{0}/members/add' -f $team.Id)
+                    $path = = Join-UriPath -Uri ($graphService) -ChildPath ('{0}/members/add' -f $team.Id)
                     $body = @{values = @() }
                     foreach ($userItem in  $User) {
                         $aADUser = Get-PSMsTeamsUser -Identity $userItem
                         if (-not([object]::Equals($aADUser, $null))) {
-                            $urlUser = Join-UriPath -Uri (Get-GraphApiUriPath) -ChildPath "users('{0}')" -f $aADUser.UserPrincipalName
+                            $urlUser = Join-UriPath -Uri (Get-EntraService -Name $graphService).ServiceUrl -ChildPath "users('{0}')" -f $aADUser.UserPrincipalName
                             $value = @{
                                 '@odata.type'     = "#microsoft.graph.aadUserConversationMember"
                                 roles             = @()
@@ -109,6 +118,14 @@
                         }
                     }
                     $body = @{values = $values }
+                }
+                try {
+                    [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
+                }
+                catch {
+                    if ($EnableException.IsPresent) {
+                        Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Add.Failed) -f $Identity)
+                    }
                 }
             }
             else {
