@@ -20,7 +20,7 @@ variables:
 steps:
 
    - task: PowerShell@2
-     displayName: Calculate ModuleVersion (GitVersion)
+     displayName: Calculate Powershell ModuleVersion (GitVersion)
      inputs:
        targetType: inline
        script: |
