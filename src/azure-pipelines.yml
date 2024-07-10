@@ -6,8 +6,6 @@ variables:
   - group: "AzArtifactsPSModules"
 
 steps:
-   - checkout: self
-     fetchDepth: 0
 
    - task: PowerShell@2
      displayName: Dotnet install GitVersion.Tool
