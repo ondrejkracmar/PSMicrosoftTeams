@@ -6,7 +6,7 @@ variables:
   - group: "AzArtifactsPSModules"
 
 steps:
-   - checkout: self
+   - checkout: dev
      fetchDepth: 0
 
    - task: PowerShell@2
