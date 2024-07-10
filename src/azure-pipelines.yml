@@ -19,10 +19,14 @@ steps:
      inputs:
        targetType: inline
        script: |
-        $output = dotnet-gitversion /config ./src/GitVersion.yml | ConvertFrom-Json
-        $output.PSObject.Properties
-        $output.PSObject.Properties | ForEach-Object {
-        echo "##vso[task.setvariable variable=GitVersion.$($_.Name)]$($_.Value)"} 
+         dotnet tool install --global GitVersion.Tool
+              $gitVersionObject = dotnet-gitversion | ConvertFrom-Json
+              $gitVersionObject.PSObject.Properties.ForEach{
+                  Write-Host -Object "Setting Task Variable '$($_.Name)' with value '$($_.Value)'."
+                  Write-Host -Object "##vso[task.setvariable variable=$($_.Name);]$($_.Value)"
+              }
+              Write-Host -Object "##vso[build.updatebuildnumber]$($gitVersionObject.FullSemVer)"
+            displayName: Calculate ModuleVersion (GitVersion)
 
    - task: PowerShell@2
      displayName: Install Prerequisites For Validation
