@@ -6,6 +6,16 @@ variables:
   - group: "AzArtifactsPSModules"
 
 steps:
+
+   - task: PowerShell@2
+     displayName: Determine version with GitVersion
+     inputs:
+       targetType: inline
+       script: |
+        $output = dotnet-gitversion /config ./GitVersion.yml | ConvertFrom-Json
+        $output.PSObject.Properties | ForEach-Object {
+        echo "##vso[task.setvariable variable=GitVersion.$($_.Name)]$($_.Value)"} 
+
    - task: PowerShell@2
      displayName: Install Prerequisites For Validation
      inputs:
