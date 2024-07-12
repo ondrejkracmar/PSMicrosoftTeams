@@ -10,7 +10,9 @@ branches:
     tag: preview
     regex: ^main$
   pull-request:
-    tag: PR
+    tag: preview
+    increment: Inherit
+    source-branches: [ 'feature', 'hotfix' ]
   feature:
     tag: useBranchName
     increment: Minor
