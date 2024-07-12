@@ -16,6 +16,7 @@ trigger:
 
 variables:
   - group: "AzArtifactsPSModules"
+  - group: "BuildEnvironment"
 
 steps:
 
@@ -25,7 +26,7 @@ steps:
        targetType: inline
        script: |
          dotnet tool install --global GitVersion.Tool
-              $gitVersionObject = dotnet-gitversion /config ./src/GitVersion.yml | ConvertFrom-Json
+              $gitVersionObject = dotnet-gitversion /config $(sourceDirectory)/GitVersion.yml | ConvertFrom-Json
               $gitVersionObject.PSObject.Properties.ForEach{
                   Write-Host -Object "Setting Task Variable '$($_.Name)' with value '$($_.Value)'."
                   Write-Host -Object "##vso[task.setvariable variable=$($_.Name);]$($_.Value)"
@@ -36,13 +37,13 @@ steps:
      displayName: Install Prerequisites For Validation
      inputs:
        targetType: filePath
-       filePath: "./src//build/vsts-prerequisites.ps1"
+       filePath: "$(sourceDirectory)/build/vsts-prerequisites.ps1"
 
    - task: PowerShell@2
      displayName: Validation/Test Powershell Module
      inputs:
        targetType: filePath
-       filePath: "./src/build/vsts-validate.ps1"
+       filePath: "$(sourceDirectory)/build/vsts-validate.ps1"
 
    - task: PublishTestResults@2
      displayName: "Publish Test Results **/TEST-*.xml"
@@ -54,9 +55,9 @@ steps:
      displayName: Build Nuget For Powerhell module
      inputs:
        targetType: filePath
-       filePath: "./src/build/vsts-build.ps1"
+       filePath: "$(sourceDirectory)/build/vsts-build.ps1"
        arguments: > # Use this to avoid newline characters in multiline string
-          -WorkingDirectory "./src"
+          -WorkingDirectory $(sourceDirectory)
           -LocalRepo
 
    - task: PowerShell@2
@@ -66,4 +67,4 @@ steps:
         script: |
           $source = 'https://pkgs.dev.azure.com/{0}/{1}/_packaging/{2}/nuget/v2' -f '$(company)', '$(project)', '$(feedName)'
           Invoke-Expression "nuget source add -Name '$(feedName)' -Source '$($source)' -username '$(userName)' -password '$(PAT)'"
-          Invoke-Expression "nuget push -Source '$(feedName)' -ApiKey ((New-Guid).Guid)  'PSMicrosoftTeams.1.2.1.1.nupkg' -SkipDuplicate"
+          Invoke-Expression "nuget push -Source '$(feedName)' -ApiKey ((New-Guid).Guid)  '$(moduleName).$(NuGetVersionV2)' -SkipDuplicate"
