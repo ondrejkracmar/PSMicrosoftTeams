@@ -1,4 +1,5 @@
-﻿function Connect-PSMicrosoftTeams {
+﻿function Connect-PSMicrosoftTeams
+{
 	<#
 	.SYNOPSIS
 		Establish a connection to an Entra Service.
@@ -141,6 +142,7 @@
 		Establish a connection to the graph API, after retrieving the necessary certificate from the specified Azure Key Vault.
 #>
 	[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "")]
+	[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', 'Connect-PSMicrosoftTeams')]
 	[CmdletBinding(DefaultParameterSetName = 'Browser')]
 	param (
 		[Parameter(Mandatory = $true, ParameterSetName = 'Browser')]
@@ -245,12 +247,16 @@
 		[switch]
 		$PassThru
 	)
-	begin {
+	begin
+	{
 		$service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
 		$param = $PSBoundParameters | ConvertTo-PSFHashtable -ReferenceCommand Connect-EntraService
 	}
 
-	process {
+	process
+	{
 		Connect-EntraService @param -Service $service
-	}end { }
+	}end
+	{
+ }
 }
