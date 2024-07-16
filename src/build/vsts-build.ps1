@@ -6,17 +6,20 @@ Insert any build steps you may need to take before publishing it here.
 #>
 param (
 	$ApiKey,
-	
+
 	$WorkingDirectory,
-	
+
 	$Repository = 'PSGallery',
-	
+
 	[switch]
 	$LocalRepo,
-	
+
 	[switch]
 	$SkipPublish,
-	
+
+	[string]
+	$NuGetVersion,
+
 	[switch]
 	$AutoVersion
 )
@@ -28,9 +31,15 @@ if (-not $WorkingDirectory)
 	{
 		$WorkingDirectory = Join-Path -Path $env:SYSTEM_DEFAULTWORKINGDIRECTORY -ChildPath $env:RELEASE_PRIMARYARTIFACTSOURCEALIAS
 	}
-	else { $WorkingDirectory = $env:SYSTEM_DEFAULTWORKINGDIRECTORY }
+	else
+	{
+		$WorkingDirectory = $env:SYSTEM_DEFAULTWORKINGDIRECTORY
+ }
 }
-if (-not $WorkingDirectory) { $WorkingDirectory = Split-Path $PSScriptRoot }
+if (-not $WorkingDirectory)
+{
+ $WorkingDirectory = Split-Path $PSScriptRoot
+}
 #endregion Handle Working Directory Defaults
 
 # Prepare publish folder
@@ -45,11 +54,20 @@ $processed = @()
 # Gather Stuff to run before
 foreach ($filePath in (& "$($PSScriptRoot)\..\PSMicrosoftTeams\internal\scripts\preimport.ps1"))
 {
-	if ([string]::IsNullOrWhiteSpace($filePath)) { continue }
-	
+	if ([string]::IsNullOrWhiteSpace($filePath))
+ {
+		continue
+ }
+
 	$item = Get-Item $filePath
-	if ($item.PSIsContainer) { continue }
-	if ($item.FullName -in $processed) { continue }
+	if ($item.PSIsContainer)
+	{
+		continue
+ }
+	if ($item.FullName -in $processed)
+	{
+		continue
+ }
 	$text += [System.IO.File]::ReadAllText($item.FullName)
 	$processed += $item.FullName
 }
@@ -65,11 +83,20 @@ Get-ChildItem -Path "$($publishDir.FullName)\PSMicrosoftTeams\functions\" -Recur
 # Gather stuff to run afterwards
 foreach ($filePath in (& "$($PSScriptRoot)\..\PSMicrosoftTeams\internal\scripts\postimport.ps1"))
 {
-	if ([string]::IsNullOrWhiteSpace($filePath)) { continue }
-	
+	if ([string]::IsNullOrWhiteSpace($filePath))
+ {
+		continue
+ }
+
 	$item = Get-Item $filePath
-	if ($item.PSIsContainer) { continue }
-	if ($item.FullName -in $processed) { continue }
+	if ($item.PSIsContainer)
+	{
+		continue
+ }
+	if ($item.FullName -in $processed)
+	{
+		continue
+ }
 	$text += [System.IO.File]::ReadAllText($item.FullName)
 	$processed += $item.FullName
 }
@@ -86,7 +113,10 @@ $fileData = $fileData.Replace('"<compile code into here>"', ($text -join "`n`n")
 if ($AutoVersion)
 {
 	Write-PSFMessage -Level Important -Message "Updating module version numbers."
-	try { [version]$remoteVersion = (Find-Module 'PSMicrosoftTeams' -Repository $Repository -ErrorAction Stop).Version }
+	try
+	{
+		[version]$remoteVersion = (Find-Module 'PSMicrosoftTeams' -Repository $Repository -ErrorAction Stop).Version
+	}
 	catch
 	{
 		Stop-PSFFunction -Message "Failed to access $($Repository)" -EnableException $true -ErrorRecord $_
@@ -99,17 +129,34 @@ if ($AutoVersion)
 	[version]$localVersion = (Import-PowerShellDataFile -Path "$($publishDir.FullName)\PSMicrosoftTeams\PSMicrosoftTeams.psd1").ModuleVersion
 	Update-ModuleManifest -Path "$($publishDir.FullName)\PSMicrosoftTeams\PSMicrosoftTeams.psd1" -ModuleVersion "$($localVersion.Major).$($localVersion.Minor).$($newBuildNumber)"
 }
+
+if (-not ([string]::IsNullOrEmpty($NuGetVersion)))
+{
+	Update-ModuleManifest -Path "$($publishDir.FullName)\PSMicrosoftTeams\PSMicrosoftTeams.psd1" -ModuleVersion $($NuGetVersion)
+}
+
 #endregion Updating the Module Version
 
 #region Publish
-if ($SkipPublish) { return }
+if ($SkipPublish)
+{
+ return
+}
 if ($LocalRepo)
 {
 	# Dependencies must go first
 	Write-PSFMessage -Level Important -Message "Creating Nuget Package for module: PSFramework"
 	New-PSMDModuleNugetPackage -ModulePath (Get-Module -Name PSFramework).ModuleBase -PackagePath .
 	Write-PSFMessage -Level Important -Message "Creating Nuget Package for module: PSMicrosoftTeams"
-	New-PSMDModuleNugetPackage -ModulePath "$($publishDir.FullName)\PSMicrosoftTeams" -PackagePath .
+	if (-not ([string]::IsNullOrEmpty($NuGetVersion)))
+	{
+		New-PSMDModuleNugetPackage -ModulePath "$($publishDir.FullName)\PSMicrosoftTeams.$($NuGetVersion)" -PackagePath .
+	}
+	else
+	{
+		New-PSMDModuleNugetPackage -ModulePath "$($publishDir.FullName)\PSMicrosoftTeams" -PackagePath .
+	}
+
 }
 else
 {
