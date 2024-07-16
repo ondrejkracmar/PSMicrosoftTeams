@@ -1,4 +1,4 @@
-﻿name: Publish Powershell Module To Private Repository
+﻿name: Publish Powershell Module To Private Repository Test
 trigger:
   branches:
     include:
