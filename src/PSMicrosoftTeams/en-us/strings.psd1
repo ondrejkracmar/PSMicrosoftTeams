@@ -20,7 +20,7 @@
 
 	'TeamMember.Add'        = "Add member '{0}' with the following roles {1}"
 	'TeamMember.Remove'     = "Remove member from team '{0}' with the following MembershipId '{1}'"
-	'TeamMember.Add.Failed' = "Add members to the group '{0}' failed"
+	'TeamMember.Add.Failed' = "Add members to the team '{0}' failed"
 	'TeamMember.List'       = "List members from the team '{0}'"
 
 }
