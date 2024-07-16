@@ -31,6 +31,12 @@
     .PARAMETER Template
         Specifies team template.
 
+    .PARAMETER Owners
+        List of owners of new team.
+
+    .PARAMETER Members
+        List of mwmwbrs of new team.
+
     .PARAMETER AllowGiphy
         Eable giphy for team.
 
