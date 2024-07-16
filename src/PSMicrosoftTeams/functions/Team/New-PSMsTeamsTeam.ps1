@@ -1,4 +1,5 @@
-﻿function New-PSMsTeamsTeam {
+﻿function New-PSMsTeamsTeam
+{
     <#
     .SYNOPSIS
         Create new  Microsoft Teams team.
@@ -152,7 +153,8 @@
         [switch]$EnableException
 
     )
-    begin {
+    begin
+    {
         $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
         $graphService = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultGraphService' -f $script:ModuleName)
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
@@ -164,210 +166,250 @@
         }
     }
 
-    process {
+    process
+    {
+        Switch ($PSCmdlet.ParameterSetName)
+        {
+            'Identity'
+            {
+                $body = [ordered]@{
+                    'group@odata.bind'    = ''
+                    'template@odata.bind' = ''
+                    'memberSettings'      = @{
+                        'allowCreateUpdateChannels'         = $false
+                        'allowDeleteChannels'               = $false
+                        'allowAddRemoveApps'                = $false
+                        'allowCreateUpdateRemoveTabs'       = $false
+                        'allowCreateUpdateRemoveConnectors' = $false
+                    }
+                    'guestSettings'       = @{
+                        'allowCreateUpdateChannels' = $false
+                        'allowDeleteChannels'       = $false
+                    }
+                    'funSettings'         = @{
+                        'allowGiphy'            = $true
+                        'giphyContentRating'    = 'Moderate'
+                        'allowStickersAndMemes' = $true
+                        'allowCustomMemes'      = $true
+                    }
+                    'messagingSettings'   = @{
+                        'allowUserEditMessages'    = $true
+                        'allowUserDeleteMessages'  = $true
+                        'allowOwnerDeleteMessages' = $true
+                        'allowTeamMentions'        = $true
+                        'allowChannelMentions'     = $true
+                    }
+                    'discoverySettings'   = @{
+                        'showInTeamsSearchAndSuggestions' = $false
+                    }
+                }
+                $body['group@odata.bind'] = Join-UriPath -Uri $graphService -ChildPath ('groups({0}{1}{2})' -f "'", $Identity, "'")
+            }
+            'Team'
+            {
+                $body = @{
+                    'template@odata.bind' = ''
+                    'displayName'         = ''
+                    'mailNickName'        = ''
+                    'mailEnabled'         = $true
+                    'description'         = ''
+                    'visibility'          = 'Public'
+                    'memberSettings'      = @{
+                        'allowCreateUpdateChannels'         = $false
+                        'allowDeleteChannels'               = $false
+                        'allowAddRemoveApps'                = $false
+                        'allowCreateUpdateRemoveTabs'       = $false
+                        'allowCreateUpdateRemoveConnectors' = $false
+                    }
+                    'guestSettings'       = @{
+                        'allowCreateUpdateChannels' = $false
+                        'allowDeleteChannels'       = $false
+                    }
+                    'funSettings'         = @{
+                        'allowGiphy'            = $true
+                        'giphyContentRating'    = 'Moderate'
+                        'allowStickersAndMemes' = $true
+                        'allowCustomMemes'      = $true
+                    }
+                    'messagingSettings'   = @{
+                        'allowUserEditMessages'    = $true
+                        'allowUserDeleteMessages'  = $true
+                        'allowOwnerDeleteMessages' = $true
+                        'allowTeamMentions'        = $true
+                        'allowChannelMentions'     = $true
+                    }
+                    'discoverySettings'   = @{
+                        'showInTeamsSearchAndSuggestions' = $false
+                    }
+                }
+                $body['displayName'] = $DisplayName
+                if (Test-PSFParameterBinding -ParameterName 'Description')
+                {
+                    $body['description'] = $Description
+                }
+                if (Test-PSFParameterBinding -ParameterName 'MailNickName')
+                {
+                    $body['mailNickName'] = $MailNickName
+                }
+                if (Test-PSFParameterBinding -ParameterName 'MailEnabled')
+                {
+                    $body['mailEnabled'] = $MailEnabled
+                }
+                if (Test-PSFParameterBinding -ParameterName 'Classification')
+                {
+                    $body['classification'] = $Classification
+                }
+                if (Test-PSFParameterBinding -ParameterName 'Visibility')
+                {
+                    $body['visibility'] = $Visibility
+                }
+                if (Test-PSFParameterBinding -ParameterName 'Owners')
+                {
+                    $memberBodyList = [System.Collections.ArrayList]::new()
+                    foreach ($owner in $Owners)
+                    {
+                        $memberBody = @{}
+                        $aADUser = Get-PSMsTeamsUser -Identity $owner
+                        if (-not([object]::Equals($aADUser, $null)))
+                        {
+                            $memberBody['@odata.type'] = '#microsoft.graph.aadUserConversationMember'
+                            $memberBody['user@odata.bind"'] = ('{0}/users/{1}' -f (Get-EntraService -Name $graphService).ServiceUrl, $aADUser.Id)
+                            $memberBody['roles'] = @('owner')
+                            [void]$memberBodyList.Add($memberBody)
+                        }
+                    }
+                    foreach ($member in $Members)
+                    {
+                        $memberBody = @{}
+                        $aADUser = Get-PSMsTeamsUser -Identity $member
+                        if (-not([object]::Equals($aADUser, $null)))
+                        {
+                            $memberBody['@odata.type'] = '#microsoft.graph.aadUserConversationMember'
+                            $memberBody['user@odata.bind"'] = ('{0}/users/{1}' -f (Get-EntraService -Name $graphService).ServiceUrl, $aADUser.Id)
+                            $memberBody['roles'] = @('member')
+                            [void]$memberBodyList.Add($memberBody)
+                        }
+                    }
+                    if ($memberBodyList.Count -gt 0)
+                    {
+                        $body['members'] = [array]$memberBodyList
+                    }
+                }
+                if (Test-PSFParameterBinding -ParameterName 'MembershipRuleProcessingState')
+                {
+                    $body['membershipRuleProcessingState'] = $MembershipRuleProcessingState
+                }
+                if (Test-PSFParameterBinding -ParameterName 'ResourceBehaviorOptions')
+                {
+                    $body['resourceBehaviorOptions'] = $ResourceBehaviorOptions
+                }
+            }
+        }
+        if (Test-PSFParameterBinding -ParameterName 'Template')
+        {
+            $body['template@odata.bind'] = Join-UriPath -Uri (Get-EntraService -Name $graphService).ServiceUrl -ChildPath ('teamsTemplates({0}{1}{2})' -f "'", $template, "'")
+        }
+        else
+        {
+            $body['template@odata.bind'] = Join-UriPath -Uri (Get-EntraService -Name $graphService).ServiceUrl -ChildPath ('teamsTemplates({0}standard{1})' -f "'", "'")
+        }
+        if (Test-PSFParameterBinding -ParameterName 'AllowCreateUpdateChannels')
+        {
+            $body['memberSettings']['allowCreateUpdateChannels'] = $AllowCreateUpdateChannels
+        }
+
+        if (Test-PSFParameterBinding -ParameterName 'AllowDeleteChannels')
+        {
+            $body['memberSettings']['allowDeleteChannels'] = $AllowDeleteChannels
+        }
+
+        if (Test-PSFParameterBinding -ParameterName 'AllowAddRemoveApps')
+        {
+            $body['memberSettings']['allowAddRemoveApps'] = $AllowAddRemoveApps
+        }
+
+        if (Test-PSFParameterBinding -ParameterName 'AllowAddRemoveApps')
+        {
+            $body['memberSettings']['allowCreateUpdateRemoveTabs'] = $AllowCreateUpdateRemoveTabs
+        }
+
+        if (Test-PSFParameterBinding -ParameterName 'AllowCreateUpdateRemoveConnectors')
+        {
+            $body['memberSettings']['allowCreateUpdateRemoveConnectors'] = $AllowCreateUpdateRemoveConnectors
+        }
+
+        if (Test-PSFParameterBinding -ParameterName 'AllowCreateUpdateChannels')
+        {
+            $body['guestSettings']['allowCreateUpdateChannels'] = $AllowGuestCreateUpdateChannels
+        }
+
+        if (Test-PSFParameterBinding -ParameterName 'AllowDeleteChannels')
+        {
+            $body['guestSettings']['allowDeleteChannels'] = $AllowGuestDeleteChannels
+        }
+
+        if (Test-PSFParameterBinding -ParameterName 'AllowGiphy')
+        {
+            $body['funSettings']['allowGiphy'] = $AllowGiphy
+        }
+
+        if (Test-PSFParameterBinding -ParameterName 'GiphyContentRating')
+        {
+            $body['funSettings']['giphyContentRating'] = $GiphyContentRating
+        }
+
+        if (Test-PSFParameterBinding -ParameterName 'AllowStickersAndMemes')
+        {
+            $body['funSettings']['allowStickersAndMemes'] = $AllowStickersAndMemes
+        }
+
+        if (Test-PSFParameterBinding -ParameterName 'AllowCustomMemes')
+        {
+            $body['funSettings']['allowCustomMemes'] = $AllowCustomMemes
+        }
+
+        if (Test-PSFParameterBinding -ParameterName 'AllowUserEditMessages')
+        {
+            $body['messagingSettings']['allowUserEditMessages'] = $allowUserEditMessages
+        }
+
+        if (Test-PSFParameterBinding -ParameterName 'AllowUserDeleteMessages')
+        {
+            $body['messagingSettings']['allowUserDeleteMessages'] = $AllowUserDeleteMessages
+        }
+
+        if (Test-PSFParameterBinding -ParameterName 'AllowOwnerDeleteMessages')
+        {
+            $body['messagingSettings']['allowOwnerDeleteMessages'] = $AllowOwnerDeleteMessages
+        }
+
+        if (Test-PSFParameterBinding -ParameterName 'AllowTeamMentions')
+        {
+            $body['messagingSettings']['allowTeamMentions'] = $AllowTeamMentions
+        }
+
+        if (Test-PSFParameterBinding -ParameterName 'AllowTeamMentions')
+        {
+            $body['messagingSettings']['allowChannelMentions'] = $AllowChannelMentions
+        }
+
+        if (Test-PSFParameterBinding -ParameterName 'AhowInTeamsSearchAndSuggestions')
+        {
+
+            $body['discoverySettings']['showInTeamsSearchAndSuggestions'] = $ShowInTeamsSearchAndSuggestions
+        }
+
         Invoke-PSFProtectedCommand -ActionString 'Team.New' -ActionStringValues $DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-            Switch ($PSCmdlet.ParameterSetName) {
-                'Identity' {
-                    $body = [ordered]@{
-                        'group@odata.bind'    = ''
-                        'template@odata.bind' = ''
-                        'memberSettings'      = @{
-                            'allowCreateUpdateChannels'         = $false
-                            'allowDeleteChannels'               = $false
-                            'allowAddRemoveApps'                = $false
-                            'allowCreateUpdateRemoveTabs'       = $false
-                            'allowCreateUpdateRemoveConnectors' = $false
-                        }
-                        'guestSettings'       = @{
-                            'allowCreateUpdateChannels' = $false
-                            'allowDeleteChannels'       = $false
-                        }
-                        'funSettings'         = @{
-                            'allowGiphy'            = $true
-                            'giphyContentRating'    = 'Moderate'
-                            'allowStickersAndMemes' = $true
-                            'allowCustomMemes'      = $true
-                        }
-                        'messagingSettings'   = @{
-                            'allowUserEditMessages'    = $true
-                            'allowUserDeleteMessages'  = $true
-                            'allowOwnerDeleteMessages' = $true
-                            'allowTeamMentions'        = $true
-                            'allowChannelMentions'     = $true
-                        }
-                        'discoverySettings'   = @{
-                            'showInTeamsSearchAndSuggestions' = $false
-                        }
-                    }
-                    $body['group@odata.bind'] = Join-UriPath -Uri $graphService -ChildPath ('groups({0}{1}{2})' -f "'", $Identity, "'")
-                }
-                'Team' {
-                    $body = @{
-                        'template@odata.bind' = ''
-                        'displayName'         = ''
-                        'mailNickName'        = ''
-                        'mailEnabled'         = $true
-                        'description'         = ''
-                        'visibility'          = 'Public'
-                        'memberSettings'      = @{
-                            'allowCreateUpdateChannels'         = $false
-                            'allowDeleteChannels'               = $false
-                            'allowAddRemoveApps'                = $false
-                            'allowCreateUpdateRemoveTabs'       = $false
-                            'allowCreateUpdateRemoveConnectors' = $false
-                        }
-                        'guestSettings'       = @{
-                            'allowCreateUpdateChannels' = $false
-                            'allowDeleteChannels'       = $false
-                        }
-                        'funSettings'         = @{
-                            'allowGiphy'            = $true
-                            'giphyContentRating'    = 'Moderate'
-                            'allowStickersAndMemes' = $true
-                            'allowCustomMemes'      = $true
-                        }
-                        'messagingSettings'   = @{
-                            'allowUserEditMessages'    = $true
-                            'allowUserDeleteMessages'  = $true
-                            'allowOwnerDeleteMessages' = $true
-                            'allowTeamMentions'        = $true
-                            'allowChannelMentions'     = $true
-                        }
-                        'discoverySettings'   = @{
-                            'showInTeamsSearchAndSuggestions' = $false
-                        }
-                    }
-                    $body['displayName'] = $DisplayName
-                    if (Test-PSFParameterBinding -ParameterName 'Description') {
-                        $body['description'] = $Description
-                    }
-                    if (Test-PSFParameterBinding -ParameterName 'MailNickName') {
-                        $body['mailNickName'] = $MailNickName
-                    }
-                    if (Test-PSFParameterBinding -ParameterName 'MailEnabled') {
-                        $body['mailEnabled'] = $MailEnabled
-                    }
-                    if (Test-PSFParameterBinding -ParameterName 'Classification') {
-                        $body['classification'] = $Classification
-                    }
-                    if (Test-PSFParameterBinding -ParameterName 'Visibility') {
-                        $body['visibility'] = $Visibility
-                    }
-                    if (Test-PSFParameterBinding -ParameterName 'Owners') {
-                        $memberBodyList = [System.Collections.ArrayList]::new()
-                        foreach ($owner in $Owners) {
-                            $memberBody = @{}
-                            $aADUser = Get-PSMsTeamsUser -Identity $owner
-                            if (-not([object]::Equals($aADUser, $null))) {
-                                $memberBody['@odata.type'] = '#microsoft.graph.aadUserConversationMember'
-                                $memberBody['user@odata.bind"'] = ('{0}/users/{1}' -f (Get-EntraService -Name $graphService).ServiceUrl, $aADUser.Id)
-                                $memberBody['roles'] = @('owner')
-                                [void]$memberBodyList.Add($memberBody)
-                            }
-                        }
-                        foreach ($member in $Members) {
-                            $memberBody = @{}
-                            $aADUser = Get-PSMsTeamsUser -Identity $member
-                            if (-not([object]::Equals($aADUser, $null))) {
-                                $memberBody['@odata.type'] = '#microsoft.graph.aadUserConversationMember'
-                                $memberBody['user@odata.bind"'] = ('{0}/users/{1}' -f (Get-EntraService -Name $graphService).ServiceUrl, $aADUser.Id)
-                                $memberBody['roles'] = @('member')
-                                [void]$memberBodyList.Add($memberBody)
-                            }
-                        }
-                        if ($memberBodyList.Count -gt 0) {
-                            $body['members'] = [array]$memberBodyList
-                        }
-                    }
-                    if (Test-PSFParameterBinding -ParameterName 'MembershipRuleProcessingState') {
-                        $body['membershipRuleProcessingState'] = $MembershipRuleProcessingState
-                    }
-                    if (Test-PSFParameterBinding -ParameterName 'ResourceBehaviorOptions') {
-                        $body['resourceBehaviorOptions'] = $ResourceBehaviorOptions
-                    }
-                }
-            }
-            if (Test-PSFParameterBinding -ParameterName 'Template') {
-                $body['template@odata.bind'] = Join-UriPath -Uri (Get-EntraService -Name $graphService).ServiceUrl -ChildPath ('teamsTemplates({0}{1}{2})' -f "'", $template, "'")
-            }
-            else {
-                $body['template@odata.bind'] = Join-UriPath -Uri (Get-EntraService -Name $graphService).ServiceUrl -ChildPath ('teamsTemplates({0}standard{1})' -f "'", "'")
-            }
-            if (Test-PSFParameterBinding -ParameterName 'AllowCreateUpdateChannels') {
-                $body['memberSettings']['allowCreateUpdateChannels'] = $AllowCreateUpdateChannels
-            }
-
-            if (Test-PSFParameterBinding -ParameterName 'AllowDeleteChannels') {
-                $body['memberSettings']['allowDeleteChannels'] = $AllowDeleteChannels
-            }
-
-            if (Test-PSFParameterBinding -ParameterName 'AllowAddRemoveApps') {
-                $body['memberSettings']['allowAddRemoveApps'] = $AllowAddRemoveApps
-            }
-
-            if (Test-PSFParameterBinding -ParameterName 'AllowAddRemoveApps') {
-                $body['memberSettings']['allowCreateUpdateRemoveTabs'] = $AllowCreateUpdateRemoveTabs
-            }
-
-            if (Test-PSFParameterBinding -ParameterName 'AllowCreateUpdateRemoveConnectors') {
-                $body['memberSettings']['allowCreateUpdateRemoveConnectors'] = $AllowCreateUpdateRemoveConnectors
-            }
-
-            if (Test-PSFParameterBinding -ParameterName 'AllowCreateUpdateChannels') {
-                $body['guestSettings']['allowCreateUpdateChannels'] = $AllowGuestCreateUpdateChannels
-            }
-
-            if (Test-PSFParameterBinding -ParameterName 'AllowDeleteChannels') {
-                $body['guestSettings']['allowDeleteChannels'] = $AllowGuestDeleteChannels
-            }
-
-            if (Test-PSFParameterBinding -ParameterName 'AllowGiphy') {
-                $body['funSettings']['allowGiphy'] = $AllowGiphy
-            }
-
-            if (Test-PSFParameterBinding -ParameterName 'GiphyContentRating') {
-                $body['funSettings']['giphyContentRating'] = $GiphyContentRating
-            }
-
-            if (Test-PSFParameterBinding -ParameterName 'AllowStickersAndMemes') {
-                $body['funSettings']['allowStickersAndMemes'] = $AllowStickersAndMemes
-            }
-
-            if (Test-PSFParameterBinding -ParameterName 'AllowCustomMemes') {
-                $body['funSettings']['allowCustomMemes'] = $AllowCustomMemes
-            }
-
-            if (Test-PSFParameterBinding -ParameterName 'AllowUserEditMessages') {
-                $body['messagingSettings']['allowUserEditMessages'] = $allowUserEditMessages
-            }
-
-            if (Test-PSFParameterBinding -ParameterName 'AllowUserDeleteMessages') {
-                $body['messagingSettings']['allowUserDeleteMessages'] = $AllowUserDeleteMessages
-            }
-
-            if (Test-PSFParameterBinding -ParameterName 'AllowOwnerDeleteMessages') {
-                $body['messagingSettings']['allowOwnerDeleteMessages'] = $AllowOwnerDeleteMessages
-            }
-
-            if (Test-PSFParameterBinding -ParameterName 'AllowTeamMentions') {
-                $body['messagingSettings']['allowTeamMentions'] = $AllowTeamMentions
-            }
-
-            if (Test-PSFParameterBinding -ParameterName 'AllowTeamMentions') {
-                $body['messagingSettings']['allowChannelMentions'] = $AllowChannelMentions
-            }
-
-            if (Test-PSFParameterBinding -ParameterName 'AhowInTeamsSearchAndSuggestions') {
-
-                $body['discoverySettings']['showInTeamsSearchAndSuggestions'] = $ShowInTeamsSearchAndSuggestions
-            }
             [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
         } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-        if (Test-PSFFunctionInterrupt) { return }
-
+        if (Test-PSFFunctionInterrupt)
+        {
+            return
+        }
     }
 
-    end {
+    end
+    {
 
     }
 }
