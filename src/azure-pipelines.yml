@@ -3,11 +3,11 @@ trigger:
   branches:
     include:
     - main
-  
+
   paths:
     exclude:
     - CHANGELOG.md
-  
+
   tags:
     include:
     - "v*"
@@ -26,6 +26,7 @@ steps:
        targetType: inline
        script: |
          dotnet tool install --global GitVersion.Tool
+              Write-Host $(sourceDirectory)/GitVersion.yml
               $gitVersionObject = dotnet-gitversion /config $(sourceDirectory)/GitVersion.yml | ConvertFrom-Json
               $gitVersionObject.PSObject.Properties.ForEach{
                   Write-Host -Object "Setting Task Variable '$($_.Name)' with value '$($_.Value)'."
