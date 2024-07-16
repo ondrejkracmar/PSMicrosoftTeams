@@ -7,7 +7,7 @@
         Create new  Microsoft Teams team.
 
     .PARAMETER Identity
-        MailnicName, Mail or Id of the team attribute populated in tenant/directory..
+        MailnicName, Mail.
 
     .PARAMETER DisplayName
         The display name for the team.
@@ -361,8 +361,7 @@
 
                 $body['discoverySettings']['showInTeamsSearchAndSuggestions'] = $ShowInTeamsSearchAndSuggestions
             }
-            #[void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
-            $body
+            [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
         } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
         if (Test-PSFFunctionInterrupt) { return }
 
