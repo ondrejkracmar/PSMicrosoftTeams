@@ -72,9 +72,9 @@ steps:
           $PreRelease = '$(NuGetPreReleaseTagV2)'
           if (-not ([string]::IsNullOrEmpty($PreRelease)))
           {
-            Invoke-Expression "nuget push -Source '$(feedName)' -ApiKey ((New-Guid).Guid)  '$(moduleName)$(MajorMinorPatch)-$(NuGetPreReleaseTagV2)' -SkipDuplicate"
+            Invoke-Expression "nuget push -Source '$(feedName)' -ApiKey ((New-Guid).Guid)  '$(moduleName)$(MajorMinorPatch)-$(NuGetPreReleaseTagV2)'.nupkg -SkipDuplicate"
           }
           else
           {
-            Invoke-Expression "nuget push -Source '$(feedName)' -ApiKey ((New-Guid).Guid)  '$(moduleName)$(MajorMinorPatch)' -SkipDuplicate"
+            Invoke-Expression "nuget push -Source '$(feedName)' -ApiKey ((New-Guid).Guid)  '$(moduleName)$(MajorMinorPatch)'.nupkg -SkipDuplicate"
           }
