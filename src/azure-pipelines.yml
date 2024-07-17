@@ -70,13 +70,11 @@ steps:
           $source = 'https://pkgs.dev.azure.com/{0}/{1}/_packaging/{2}/nuget/v2' -f '$(company)', '$(project)', '$(feedName)'
           Invoke-Expression "nuget source add -Name '$(feedName)' -Source '$($source)' -username '$(userName)' -password '$(PAT)'"
           $PreRelease = '$(NuGetPreReleaseTagV2)'
-          pwd
-          Get-ChildItem -Recurse
           if (-not ([string]::IsNullOrEmpty($PreRelease)))
           {
-            Invoke-Expression "nuget push -Source '$(feedName)' -ApiKey ((New-Guid).Guid)  '$(moduleName)$(MajorMinorPatch)-$(NuGetPreReleaseTagV2).nupkg' -SkipDuplicate"
+            Invoke-Expression "nuget push -Source '$(feedName)' -ApiKey ((New-Guid).Guid)  '$(moduleName).$(MajorMinorPatch)-$(NuGetPreReleaseTagV2).nupkg' -SkipDuplicate"
           }
           else
           {
-            Invoke-Expression "nuget push -Source '$(feedName)' -ApiKey ((New-Guid).Guid)  '$(moduleName)$(MajorMinorPatch).nupkg' -SkipDuplicate"
+            Invoke-Expression "nuget push -Source '$(feedName)' -ApiKey ((New-Guid).Guid)  '$(moduleName).$(MajorMinorPatch).nupkg' -SkipDuplicate"
           }
