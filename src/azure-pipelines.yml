@@ -63,7 +63,7 @@ steps:
           -PreRelease '$(NuGetPreReleaseTagV2)'
 
    - task: PowerShell@2
-     displayName: Publish Powershell Module/Nuget To Private Azure Artifact/Powershell Reposityr
+     displayName: Publish Powershell Module/Nuget To Private Azure Artifact/Powershell Repository
      inputs:
         targetType: inline
         script: |

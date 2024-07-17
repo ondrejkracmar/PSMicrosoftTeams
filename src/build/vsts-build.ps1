@@ -135,11 +135,9 @@ if ($AutoVersion)
 
 if (-not ([string]::IsNullOrEmpty($ModuleVersion)))
 {
-	Write-PSFMessage -Level Important -Message 'ModuleVersion'
 	if (-not ([string]::IsNullOrEmpty($PreRelease)))
 	{
 		Update-ModuleManifest -Path "$($publishDir.FullName)\PSMicrosoftTeams\PSMicrosoftTeams.psd1" -ModuleVersion $ModuleVersion -Prerelease $PreRelease
-		Write-PSFMessage -Level Important -Message 'PreRelease'
 	}
 	else
 	{
@@ -158,10 +156,9 @@ if ($LocalRepo)
 {
 	# Dependencies must go first
 	Write-PSFMessage -Level Important -Message "Creating Nuget Package for module: PSFramework"
-	New-PSMDModuleNugetPackage -ModulePath (Get-Module -Name PSFramework).ModuleBase -PackagePath .
+	New-PSMDModuleNugetPackage -ModulePath (Get-Module -Name PSFramework).ModuleBase -PackagePath $WorkingDirectory
 	Write-PSFMessage -Level Important -Message "Creating Nuget Package for module: PSMicrosoftTeams"
-	New-PSMDModuleNugetPackage -ModulePath "$($publishDir.FullName)\PSMicrosoftTeams" -PackagePath .
-	Get-ChildItem -Path .
+	New-PSMDModuleNugetPackage -ModulePath "$($publishDir.FullName)\PSMicrosoftTeams" -PackagePath $WorkingDirectory
 }
 else
 {
