@@ -132,7 +132,7 @@ if ($AutoVersion)
 
 if (-not ([string]::IsNullOrEmpty($NuGetVersion)))
 {
-	Update-ModuleManifest -Path "$($publishDir.FullName)\PSMicrosoftTeams\PSMicrosoftTeams.psd1" -ModuleVersion $($NuGetVersion)
+	Update-ModuleManifest -Path "$($publishDir.FullName)\PSMicrosoftTeams\PSMicrosoftTeams.psd1" -ModuleVersion $NuGetVersion
 }
 
 #endregion Updating the Module Version
