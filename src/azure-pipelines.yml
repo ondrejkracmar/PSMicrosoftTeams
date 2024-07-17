@@ -57,14 +57,24 @@ steps:
        targetType: filePath
        filePath: "$(sourceDirectory)/build/vsts-build.ps1"
        arguments: > # Use this to avoid newline characters in multiline string
-          -WorkingDirectory $(sourceDirectory)
+          -WorkingDirectory '$(sourceDirectory)'
           -LocalRepo
+          -ModuleVersion '$(MajorMinorPatch)'
+          -PreRelease '$(NuGetPreReleaseTagV2)'
 
    - task: PowerShell@2
-     displayName: Publish Powershell Module/Nuget To Private Azure Artifact/Powershell Reposityr
+     displayName: Publish Powershell Module/Nuget To Private Azure Artifact/Powershell Repository
      inputs:
         targetType: inline
         script: |
           $source = 'https://pkgs.dev.azure.com/{0}/{1}/_packaging/{2}/nuget/v2' -f '$(company)', '$(project)', '$(feedName)'
           Invoke-Expression "nuget source add -Name '$(feedName)' -Source '$($source)' -username '$(userName)' -password '$(PAT)'"
-          Invoke-Expression "nuget push -Source '$(feedName)' -ApiKey ((New-Guid).Guid)  '$(moduleName).$(NuGetVersionV2)' -SkipDuplicate"
+          $PreRelease = '$(NuGetPreReleaseTagV2)'
+          if (-not ([string]::IsNullOrEmpty($PreRelease)))
+          {
+            Invoke-Expression "nuget push -Source '$(feedName)' -ApiKey ((New-Guid).Guid)  '$(moduleName).$(MajorMinorPatch)-$(NuGetPreReleaseTagV2).nupkg' -SkipDuplicate"
+          }
+          else
+          {
+            Invoke-Expression "nuget push -Source '$(feedName)' -ApiKey ((New-Guid).Guid)  '$(moduleName).$(MajorMinorPatch).nupkg' -SkipDuplicate"
+          }
