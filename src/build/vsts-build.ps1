@@ -163,6 +163,7 @@ if ($LocalRepo)
 		if (-not ([string]::IsNullOrEmpty($PreRelease)))
   {
 			New-PSMDModuleNugetPackage -ModulePath "$($publishDir.FullName)\PSMicrosoftTeams.$($ModuleVersion)-$($PreRelease)" -PackagePath .
+			Write-PSFMessage -Level Important -Message "$($publishDir.FullName)\PSMicrosoftTeams.$($ModuleVersion)-$($PreRelease)"
 		}
 		else
 		{
