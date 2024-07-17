@@ -156,9 +156,9 @@ if ($LocalRepo)
 {
 	# Dependencies must go first
 	Write-PSFMessage -Level Important -Message "Creating Nuget Package for module: PSFramework"
-	New-PSMDModuleNugetPackage -ModulePath (Get-Module -Name PSFramework).ModuleBase -PackagePath $WorkingDirectory
+	New-PSMDModuleNugetPackage -ModulePath (Get-Module -Name PSFramework).ModuleBase -PackagePath .
 	Write-PSFMessage -Level Important -Message "Creating Nuget Package for module: PSMicrosoftTeams"
-	New-PSMDModuleNugetPackage -ModulePath "$($publishDir.FullName)\PSMicrosoftTeams" -PackagePath $WorkingDirectory
+	New-PSMDModuleNugetPackage -ModulePath "$($publishDir.FullName)\PSMicrosoftTeams" -PackagePath .
 }
 else
 {
