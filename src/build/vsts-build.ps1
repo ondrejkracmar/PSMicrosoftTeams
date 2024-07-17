@@ -135,9 +135,11 @@ if ($AutoVersion)
 
 if (-not ([string]::IsNullOrEmpty($ModuleVersion)))
 {
+	Write-PSFMessage -Level Important -Message 'ModuleVersion'
 	if (-not ([string]::IsNullOrEmpty($PreRelease)))
 	{
 		Update-ModuleManifest -Path "$($publishDir.FullName)\PSMicrosoftTeams\PSMicrosoftTeams.psd1" -ModuleVersion $ModuleVersion -Prerelease $PreRelease
+		Write-PSFMessage -Level Important -Message 'PreRelease'
 	}
 	else
 	{
