@@ -158,7 +158,7 @@ if ($LocalRepo)
 	Write-PSFMessage -Level Important -Message "Creating Nuget Package for module: PSFramework"
 	New-PSMDModuleNugetPackage -ModulePath (Get-Module -Name PSFramework).ModuleBase -PackagePath .
 	Write-PSFMessage -Level Important -Message "Creating Nuget Package for module: PSMicrosoftTeams"
-	if (-not ([string]::IsNullOrEmpty($NuGetVersion)))
+	if (-not ([string]::IsNullOrEmpty($ModuleVersion)))
 	{
 		if (-not ([string]::IsNullOrEmpty($PreRelease)))
   {
