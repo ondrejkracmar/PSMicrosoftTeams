@@ -69,4 +69,11 @@ steps:
         script: |
           $source = 'https://pkgs.dev.azure.com/{0}/{1}/_packaging/{2}/nuget/v2' -f '$(company)', '$(project)', '$(feedName)'
           Invoke-Expression "nuget source add -Name '$(feedName)' -Source '$($source)' -username '$(userName)' -password '$(PAT)'"
-          Invoke-Expression "nuget push -Source '$(feedName)' -ApiKey ((New-Guid).Guid)  '$(moduleName).$(NuGetVersionV2)' -SkipDuplicate"
+          if (-not ([string]::IsNullOrEmpty($PreRelease)))
+          {
+            Invoke-Expression "nuget push -Source '$(feedName)' -ApiKey ((New-Guid).Guid)  '$(moduleName).$(MajorMinorPatch)-$(NuGetPreReleaseTagV2)' -SkipDuplicate"
+          }
+          else
+          {
+            Invoke-Expression "nuget push -Source '$(feedName)' -ApiKey ((New-Guid).Guid)  '$(moduleName).$(MajorMinorPatch)' -SkipDuplicate"
+          }

@@ -136,7 +136,7 @@ if ($AutoVersion)
 if (-not ([string]::IsNullOrEmpty($ModuleVersion)))
 {
 	if (-not ([string]::IsNullOrEmpty($PreRelease)))
- {
+	{
 		Update-ModuleManifest -Path "$($publishDir.FullName)\PSMicrosoftTeams\PSMicrosoftTeams.psd1" -ModuleVersion $ModuleVersion -Prerelease $PreRelease
 	}
 	else
@@ -160,10 +160,12 @@ if ($LocalRepo)
 	Write-PSFMessage -Level Important -Message "Creating Nuget Package for module: PSMicrosoftTeams"
 	if (-not ([string]::IsNullOrEmpty($NuGetVersion)))
 	{
-		if (-not ([string]::IsNullOrEmpty($PreRelease))){
+		if (-not ([string]::IsNullOrEmpty($PreRelease)))
+  {
 			New-PSMDModuleNugetPackage -ModulePath "$($publishDir.FullName)\PSMicrosoftTeams.$($ModuleVersion)-$($PreRelease)" -PackagePath .
 		}
-		else{
+		else
+		{
 			New-PSMDModuleNugetPackage -ModulePath "$($publishDir.FullName)\PSMicrosoftTeams.$($ModuleVersion)" -PackagePath .
 		}
 	}
