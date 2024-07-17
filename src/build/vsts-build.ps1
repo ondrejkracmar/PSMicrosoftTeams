@@ -18,7 +18,10 @@ param (
 	$SkipPublish,
 
 	[string]
-	$NuGetVersion,
+	$ModuleVersion,
+
+	[string]
+	$PreRelease,
 
 	[switch]
 	$AutoVersion
@@ -130,9 +133,16 @@ if ($AutoVersion)
 	Update-ModuleManifest -Path "$($publishDir.FullName)\PSMicrosoftTeams\PSMicrosoftTeams.psd1" -ModuleVersion "$($localVersion.Major).$($localVersion.Minor).$($newBuildNumber)"
 }
 
-if (-not ([string]::IsNullOrEmpty($NuGetVersion)))
+if (-not ([string]::IsNullOrEmpty($ModuleVersion)))
 {
-	Update-ModuleManifest -Path "$($publishDir.FullName)\PSMicrosoftTeams\PSMicrosoftTeams.psd1" -ModuleVersion $NuGetVersion
+	if (-not ([string]::IsNullOrEmpty($PreRelease)))
+ {
+		Update-ModuleManifest -Path "$($publishDir.FullName)\PSMicrosoftTeams\PSMicrosoftTeams.psd1" -ModuleVersion $ModuleVersion -Prerelease $PreRelease
+	}
+	else
+	{
+		Update-ModuleManifest -Path "$($publishDir.FullName)\PSMicrosoftTeams\PSMicrosoftTeams.psd1" -ModuleVersion $ModuleVersion
+	}
 }
 
 #endregion Updating the Module Version
@@ -150,7 +160,12 @@ if ($LocalRepo)
 	Write-PSFMessage -Level Important -Message "Creating Nuget Package for module: PSMicrosoftTeams"
 	if (-not ([string]::IsNullOrEmpty($NuGetVersion)))
 	{
-		New-PSMDModuleNugetPackage -ModulePath "$($publishDir.FullName)\PSMicrosoftTeams.$($NuGetVersion)" -PackagePath .
+		if (-not ([string]::IsNullOrEmpty($PreRelease))){
+			New-PSMDModuleNugetPackage -ModulePath "$($publishDir.FullName)\PSMicrosoftTeams.$($ModuleVersion)-$($PreRelease)" -PackagePath .
+		}
+		else{
+			New-PSMDModuleNugetPackage -ModulePath "$($publishDir.FullName)\PSMicrosoftTeams.$($ModuleVersion)" -PackagePath .
+		}
 	}
 	else
 	{
