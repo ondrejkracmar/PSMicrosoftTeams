@@ -59,7 +59,8 @@ steps:
        arguments: > # Use this to avoid newline characters in multiline string
           -WorkingDirectory $(sourceDirectory)
           -LocalRepo
-          -NugetVersion $(NuGetVersionV2)
+          -ModuleVersion $(MajorMinorPatch)
+          -PreRelease $(NuGetPreReleaseTagV2)
 
    - task: PowerShell@2
      displayName: Publish Powershell Module/Nuget To Private Azure Artifact/Powershell Reposityr
