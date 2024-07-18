@@ -19,6 +19,8 @@ variables:
   - group: "BuildEnvironment"
 
 steps:
+   - checkout: self
+     persistCredentials: true
 
    - task: PowerShell@2
      displayName: Calculate Powershell ModuleVersion (GitVersion)
