@@ -78,7 +78,7 @@ steps:
           {
             Invoke-Expression "nuget push -Source '$(feedName)' -ApiKey ((New-Guid).Guid)  '$(moduleName).$(MajorMinorPatch).nupkg' -SkipDuplicate"
           }
-          
+
     - task: PowerShell@2
      displayName: Generate documentation
      inputs:
