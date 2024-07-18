@@ -12,11 +12,8 @@ param (
 )
 
 # Variables
-$packageSourceUrl = "https://pkgs.dev.azure.com/$($OrganizationName)/$ArtifactRepositoryName/_packaging/$ArtifactFeedName/nuget/v3/index.json" # NOTE: v2 Feed
+$packageSourceUrl = "https://pkgs.dev.azure.com/$($OrganizationName)/$ArtifactRepositoryName/_packaging/$ArtifactFeedName/nuget/v2" # NOTE: v2 Feed
 
-
-# This is downloaded during Step 3, but could also be "C:\Users\USERNAME\AppData\Local\Microsoft\Windows\PowerShell\PowerShellGet\NuGet.exe"
-# if not running script as Administrator.
 $nugetPath = 'nuget'
 
 # Create credential
@@ -41,8 +38,8 @@ Get-PackageProvider -Name 'NuGet' -ForceBootstrap | Format-List *
 # Step 4
 # Upload NuGet Package
 if (-not ([string]::IsNullOrEmpty($PreRelease))) {
-    & $nugetPath source push -Source $ArtifactFeedName -ApiKey ((New-Guid).Guid)  '$(moduleName).$(ModuleVersion).nupkg' -SkipDuplicate
+    & $nugetPath source push -Source $ArtifactFeedName -ApiKey ((New-Guid).Guid) '$(moduleName).$(ModuleVersion).nupkg' -SkipDuplicate
 }
 else{
-    & $nugetPath source push -Source $ArtifactFeedName -ApiKey ((New-Guid).Guid)  '$(moduleName).$(ModuleVersion)-$($PreRelease).nupkg' -SkipDuplicate
+    & $nugetPath source push -Source $ArtifactFeedName -ApiKey ((New-Guid).Guid) '$(moduleName).$(ModuleVersion)-$($PreRelease).nupkg' -SkipDuplicate
 }
