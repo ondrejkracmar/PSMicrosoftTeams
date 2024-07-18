@@ -80,10 +80,23 @@ steps:
           }
 
    - task: PowerShell@2
-     displayName: Generate documentation
+     displayName: Create Documentation
      inputs:
        targetType: filePath
        filePath: "$(sourceDirectory)/build/vsts-createDocumentation.ps1"
        arguments: > # Use this to avoid newline characters in multiline string
           -WorkingDirectory '$(sourceDirectory)'
           -ModuleName '$(moduleName)'
+
+   - task: PowerShell@2
+     displayName: Commit And Push Updated Markdown Files For Powershell Module
+     env:
+      SYSTEM_ACCESSTOKEN: '$(PAT)'
+     inputs:
+        targetType: inline
+        script: |
+           git config --local user.email '$(userName)'
+           git config --local user.name "Azure Pipelines"
+           git add *.md
+           git commit -m "Create documentation"
+           git push origin HEAD:$(Build.SourceBranchName)
