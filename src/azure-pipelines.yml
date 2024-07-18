@@ -80,22 +80,3 @@ steps:
           {
             Invoke-Expression "nuget push -Source '$(feedName)' -ApiKey ((New-Guid).Guid)  '$(moduleName).$(MajorMinorPatch).nupkg' -SkipDuplicate"
           }
-
-   - task: PowerShell@2
-     displayName: Create Documentation
-     inputs:
-       targetType: filePath
-       filePath: "$(sourceDirectory)/build/vsts-createDocumentation.ps1"
-       arguments: > # Use this to avoid newline characters in multiline string
-          -WorkingDirectory '$(sourceDirectory)'
-          -ModuleName '$(moduleName)'
-
-   - powershell: |
-      git config --local user.email '$(userName)'
-      git config --local user.name "Azure Pipelines"
-      git add *.md
-      git commit -m "Generate documentation"
-      git push origin HEAD:$(Build.SourceBranchName)
-     displayName: 'Commit And Push Updated Markdown Files For Module'
-     env:
-      SYSTEM_ACCESSTOKEN: '$(PAT)'
