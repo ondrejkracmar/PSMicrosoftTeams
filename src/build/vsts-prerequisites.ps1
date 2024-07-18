@@ -4,7 +4,7 @@ param (
     $Repository = 'PSGallery'
 )
 
-$modules = @("Pester", "PSFramework", "PSModuleDevelopment", "PSScriptAnalyzer")
+$modules = @("Pester", "PSFramework", "PSModuleDevelopment", "PSScriptAnalyzer","PlatyPS")
 
 # Automatically add missing dependencies
 $data = Import-PowerShellDataFile -Path "$PSScriptRoot\..\PSMicrosoftTeams\PSMicrosoftTeams.psd1"
@@ -24,4 +24,3 @@ foreach ($module in $modules) {
     Install-Module $module -Force -SkipPublisherCheck -Repository $Repository
     Import-Module $module -Force -PassThru
 }
-
