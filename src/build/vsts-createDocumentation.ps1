@@ -33,7 +33,7 @@ if (Test-Path -Path "$($WorkingDirectory)/$($MarkdownDirectoryName)/cmdlets") {
 else {
 	$MarkdownPath = New-Item -Path "$($WorkingDirectory)" -Name "$($MarkdownDirectoryName)/cmdlets" -ItemType Directory -Force
 }
-Import-Module "$($WorkingDirectory)$($ModuleName)/$($ModuleName).psd1"
+Import-Module "$($WorkingDirectory)/$($ModuleName)/$($ModuleName).psd1"
 if (Test-Path -Path "$($WorkingDirectory)/$($ModuleName)/$($Location)") {
 	$MamlPath = "$($WorkingDirectory)/$($ModuleName)/$($Location)"
 }else {
