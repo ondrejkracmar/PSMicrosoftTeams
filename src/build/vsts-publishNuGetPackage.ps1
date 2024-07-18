@@ -29,7 +29,7 @@ $credential = New-Object System.Management.Automation.PSCredential ($FeedUsernam
 
 # Step 2
 # Check NuGet is listed
-Get-PackageProvider -Name 'NuGet' -ForceBootstrap | Format-List *
+#Get-PackageProvider -Name 'NuGet' -ForceBootstrap | Format-List *
 
 # Step 3
 # Register NuGet Package Source
@@ -38,8 +38,8 @@ Get-PackageProvider -Name 'NuGet' -ForceBootstrap | Format-List *
 # Step 4
 # Upload NuGet Package
 if (-not ([string]::IsNullOrEmpty($PreRelease))) {
-    & $nugetPath source push -Source $ArtifactFeedName -ApiKey ((New-Guid).Guid) '$(moduleName).$(ModuleVersion).nupkg' -SkipDuplicate
+    & $nugetPath push -Source $ArtifactFeedName -ApiKey ((New-Guid).Guid) '$(moduleName).$(ModuleVersion).nupkg' -SkipDuplicate
 }
 else{
-    & $nugetPath source push -Source $ArtifactFeedName -ApiKey ((New-Guid).Guid) '$(moduleName).$(ModuleVersion)-$($PreRelease).nupkg' -SkipDuplicate
+    & $nugetPath push -Source $ArtifactFeedName -ApiKey ((New-Guid).Guid) '$(moduleName).$(ModuleVersion)-$($PreRelease).nupkg' -SkipDuplicate
 }
