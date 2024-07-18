@@ -1,4 +1,4 @@
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
+﻿[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
 param (
     $WorkingDirectory,
     [string]$OrganizationName,
@@ -18,10 +18,6 @@ $packageSourceUrl = "https://pkgs.dev.azure.com/$($OrganizationName)/$ArtifactRe
 # This is downloaded during Step 3, but could also be "C:\Users\USERNAME\AppData\Local\Microsoft\Windows\PowerShell\PowerShellGet\NuGet.exe"
 # if not running script as Administrator.
 $nugetPath = 'nuget'
-if (-not (Test-Path -Path $nugetPath)) {
-    # $nugetPath = 'C:\ProgramData\Microsoft\Windows\PowerShell\PowerShellGet\NuGet.exe'
-    $nugetPath = Join-Path -Path $env:LOCALAPPDATA -ChildPath 'Microsoft\Windows\PowerShell\PowerShellGet\NuGet.exe'
-}
 
 # Create credential
 $password = ConvertTo-SecureString -String $PersonalAccessToken -AsPlainText -Force
