@@ -19,6 +19,8 @@ variables:
   - group: "BuildEnvironment"
 
 steps:
+   - checkout: self
+     persistCredentials: true
 
    - task: PowerShell@2
      displayName: Calculate Powershell ModuleVersion (GitVersion)
@@ -52,7 +54,7 @@ steps:
      condition: always()
 
    - task: PowerShell@2
-     displayName: Build Nuget For Powerhell module
+     displayName: Build Nuget Package For Powerhell Module
      inputs:
        targetType: filePath
        filePath: "$(sourceDirectory)/build/vsts-build.ps1"
@@ -63,18 +65,21 @@ steps:
           -PreRelease '$(NuGetPreReleaseTagV2)'
 
    - task: PowerShell@2
-     displayName: Publish Powershell Module/Nuget To Private Azure Artifact/Powershell Repository
+     displayName: Publish Nuget Package To Repository
      inputs:
-        targetType: inline
-        script: |
-          $source = 'https://pkgs.dev.azure.com/{0}/{1}/_packaging/{2}/nuget/v2' -f '$(company)', '$(project)', '$(feedName)'
-          Invoke-Expression "nuget source add -Name '$(feedName)' -Source '$($source)' -username '$(userName)' -password '$(PAT)'"
-          $PreRelease = '$(NuGetPreReleaseTagV2)'
-          if (-not ([string]::IsNullOrEmpty($PreRelease)))
-          {
-            Invoke-Expression "nuget push -Source '$(feedName)' -ApiKey ((New-Guid).Guid)  '$(moduleName).$(MajorMinorPatch)-$(NuGetPreReleaseTagV2).nupkg' -SkipDuplicate"
-          }
-          else
-          {
-            Invoke-Expression "nuget push -Source '$(feedName)' -ApiKey ((New-Guid).Guid)  '$(moduleName).$(MajorMinorPatch).nupkg' -SkipDuplicate"
-          }
+       targetType: filePath
+       filePath: "$(sourceDirectory)/build/vsts-publishNuGetPackage.ps1"
+       arguments: > # Use this to avoid newline characters in multiline string
+          -WorkingDirectory '$(sourceDirectory)'
+          -OrganizationName '$(organizationName)'
+          -ArtifactRepositoryName '$(artifactRepositoryName)'
+          -ArtifactFeedName '$(artifactFeedName)'
+          -FeedUsername '$(FeedUsername)'
+          -PersonalAccessToken '$(personalAccessToken)'
+          -ModuleName '$(moduleName)'
+          -ModuleVersion '$(MajorMinorPatch)'
+          -PreRelease '$(NuGetPreReleaseTagV2)'
+
+
+
+    

@@ -1,4 +1,19 @@
 ﻿
+<#
+This script create markdown documentation for the module.
+It expects as input an ApiKey authorized to publish the module.
+
+Insert any build steps you may need to take before publishing it here.
+#>
+param (
+	$WorkingDirectory,
+
+	$ModuleName,
+
+	$MarkdownDirectoryName = 'docs',
+
+	$Location = 'en-us'
+)
 
 #region Handle Working Directory Defaults
 if (-not $WorkingDirectory) {
@@ -12,18 +27,17 @@ if (-not $WorkingDirectory) { $WorkingDirectory = Split-Path $PSScriptRoot }
 
 #define module for documentation
 
-$ModuleName = 'PSMicrosoftEntraID'
-if (Test-Path -Path "$($WorkingDirectory)/src/docs/cmdlets") {
-	$MarkdownPath = "$($WorkingDirectory)/src/docs/cmdlets"
+if (Test-Path -Path "$($WorkingDirectory)/$($MarkdownDirectoryName)/cmdlets") {
+	$MarkdownPath = "$($WorkingDirectory)/$($MarkdownDirectoryName)/cmdlets"
 }
 else {
-	$MarkdownPath = New-Item -Path "$($WorkingDirectory)/src/" -Name 'docs/cmdlets' -ItemType Directory -Force
+	$MarkdownPath = New-Item -Path "$($WorkingDirectory)" -Name "$($MarkdownDirectoryName)/cmdlets" -ItemType Directory -Force
 }
-Import-Module "$($WorkingDirectory)/src/$($ModuleName)/$($ModuleName).psd1"
-if (Test-Path -Path "$($WorkingDirectory)/src/PSMicrosoftEntraID/en-us") {
-	$MamlPath = "$($WorkingDirectory)/src/PSMicrosoftEntraID/en-us"
+Import-Module "$($WorkingDirectory)/$($ModuleName)/$($ModuleName).psd1"
+if (Test-Path -Path "$($WorkingDirectory)/$($ModuleName)/$($Location)") {
+	$MamlPath = "$($WorkingDirectory)/$($ModuleName)/$($Location)"
 }else {
-	$MamlPath = New-Item -Path "$($WorkingDirectory)/src/" -Name 'en-us' -ItemType Directory -Force
+	$MamlPath = New-Item -Path "$($WorkingDirectory)"-Name $Location -ItemType Directory -Force
 }
 
 $MdHelpParams = @{
