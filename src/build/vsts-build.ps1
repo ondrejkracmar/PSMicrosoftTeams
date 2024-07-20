@@ -5,17 +5,20 @@ It expects as input an ApiKey authorized to publish the module.
 Insert any build steps you may need to take before publishing it here.
 #>
 param (
-	$ApiKey,
-
 	$WorkingDirectory,
 
 	$Repository = 'PSGallery',
+
+	$ApiKey,
 
 	[switch]
 	$LocalRepo,
 
 	[switch]
 	$SkipPublish,
+
+	[string]
+	$ModuleName,
 
 	[string]
 	$ModuleVersion,
@@ -48,14 +51,14 @@ if (-not $WorkingDirectory)
 # Prepare publish folder
 Write-PSFMessage -Level Important -Message "Creating and populating publishing directory"
 $publishDir = New-Item -Path $WorkingDirectory -Name publish -ItemType Directory -Force
-Copy-Item -Path "$($WorkingDirectory)\PSMicrosoftTeams" -Destination $publishDir.FullName -Recurse -Force
+Copy-Item -Path "$($WorkingDirectory)\$($ModuleName)" -Destination $publishDir.FullName -Recurse -Force
 
 #region Gather text data to compile
 $text = @()
 $processed = @()
 
 # Gather Stuff to run before
-foreach ($filePath in (& "$($PSScriptRoot)\..\PSMicrosoftTeams\internal\scripts\preimport.ps1"))
+foreach ($filePath in (& "$($PSScriptRoot)\..\$($ModuleName)\internal\scripts\preimport.ps1"))
 {
 	if ([string]::IsNullOrWhiteSpace($filePath))
  {
@@ -76,15 +79,15 @@ foreach ($filePath in (& "$($PSScriptRoot)\..\PSMicrosoftTeams\internal\scripts\
 }
 
 # Gather commands
-Get-ChildItem -Path "$($publishDir.FullName)\PSMicrosoftTeams\internal\functions\" -Recurse -File -Filter "*.ps1" | ForEach-Object {
+Get-ChildItem -Path "$($publishDir.FullName)\$($ModuleName)\internal\functions\" -Recurse -File -Filter "*.ps1" | ForEach-Object {
 	$text += [System.IO.File]::ReadAllText($_.FullName)
 }
-Get-ChildItem -Path "$($publishDir.FullName)\PSMicrosoftTeams\functions\" -Recurse -File -Filter "*.ps1" | ForEach-Object {
+Get-ChildItem -Path "$($publishDir.FullName)\$($ModuleName)\functions\" -Recurse -File -Filter "*.ps1" | ForEach-Object {
 	$text += [System.IO.File]::ReadAllText($_.FullName)
 }
 
 # Gather stuff to run afterwards
-foreach ($filePath in (& "$($PSScriptRoot)\..\PSMicrosoftTeams\internal\scripts\postimport.ps1"))
+foreach ($filePath in (& "$($PSScriptRoot)\..\$($ModuleName)\internal\scripts\postimport.ps1"))
 {
 	if ([string]::IsNullOrWhiteSpace($filePath))
  {
@@ -106,10 +109,10 @@ foreach ($filePath in (& "$($PSScriptRoot)\..\PSMicrosoftTeams\internal\scripts\
 #endregion Gather text data to compile
 
 #region Update the psm1 file
-$fileData = Get-Content -Path "$($publishDir.FullName)\PSMicrosoftTeams\PSMicrosoftTeams.psm1" -Raw
+$fileData = Get-Content -Path "$($publishDir.FullName)\$($ModuleName)\$($ModuleName).psm1" -Raw
 $fileData = $fileData.Replace('"<was not compiled>"', '"<was compiled>"')
 $fileData = $fileData.Replace('"<compile code into here>"', ($text -join "`n`n"))
-[System.IO.File]::WriteAllText("$($publishDir.FullName)\PSMicrosoftTeams\PSMicrosoftTeams.psm1", $fileData, [System.Text.Encoding]::UTF8)
+[System.IO.File]::WriteAllText("$($publishDir.FullName)\$($ModuleName)\$($ModuleName).psm1", $fileData, [System.Text.Encoding]::UTF8)
 #endregion Update the psm1 file
 
 #region Updating the Module Version
@@ -118,7 +121,7 @@ if ($AutoVersion)
 	Write-PSFMessage -Level Important -Message "Updating module version numbers."
 	try
 	{
-		[version]$remoteVersion = (Find-Module 'PSMicrosoftTeams' -Repository $Repository -ErrorAction Stop).Version
+		[version]$remoteVersion = (Find-Module "$($ModuleName)" -Repository $Repository -ErrorAction Stop).Version
 	}
 	catch
 	{
@@ -126,22 +129,22 @@ if ($AutoVersion)
 	}
 	if (-not $remoteVersion)
 	{
-		Stop-PSFFunction -Message "Couldn't find PSMicrosoftTeams on repository $($Repository)" -EnableException $true
+		Stop-PSFFunction -Message "Couldn't find $($ModuleName) on repository $($Repository)" -EnableException $true
 	}
 	$newBuildNumber = $remoteVersion.Build + 1
-	[version]$localVersion = (Import-PowerShellDataFile -Path "$($publishDir.FullName)\PSMicrosoftTeams\PSMicrosoftTeams.psd1").ModuleVersion
-	Update-ModuleManifest -Path "$($publishDir.FullName)\PSMicrosoftTeams\PSMicrosoftTeams.psd1" -ModuleVersion "$($localVersion.Major).$($localVersion.Minor).$($newBuildNumber)"
+	[version]$localVersion = (Import-PowerShellDataFile -Path "$($publishDir.FullName)\$($ModuleName)\$($ModuleName).psd1").ModuleVersion
+	Update-ModuleManifest -Path "$($publishDir.FullName)\$($ModuleName)\$($ModuleName).psd1" -ModuleVersion "$($localVersion.Major).$($localVersion.Minor).$($newBuildNumber)"
 }
 
 if (-not ([string]::IsNullOrEmpty($ModuleVersion)))
 {
 	if (-not ([string]::IsNullOrEmpty($PreRelease)))
 	{
-		Update-ModuleManifest -Path "$($publishDir.FullName)\PSMicrosoftTeams\PSMicrosoftTeams.psd1" -ModuleVersion $ModuleVersion -Prerelease $PreRelease
+		Update-ModuleManifest -Path "$($publishDir.FullName)\$($ModuleName)\$($ModuleName).psd1" -ModuleVersion $ModuleVersion -Prerelease $PreRelease
 	}
 	else
 	{
-		Update-ModuleManifest -Path "$($publishDir.FullName)\PSMicrosoftTeams\PSMicrosoftTeams.psd1" -ModuleVersion $ModuleVersion
+		Update-ModuleManifest -Path "$($publishDir.FullName)\$($ModuleName)\$($ModuleName).psd1" -ModuleVersion $ModuleVersion
 	}
 }
 
@@ -157,13 +160,13 @@ if ($LocalRepo)
 	# Dependencies must go first
 	Write-PSFMessage -Level Important -Message "Creating Nuget Package for module: PSFramework"
 	New-PSMDModuleNugetPackage -ModulePath (Get-Module -Name PSFramework).ModuleBase -PackagePath .
-	Write-PSFMessage -Level Important -Message "Creating Nuget Package for module: PSMicrosoftTeams"
-	New-PSMDModuleNugetPackage -ModulePath "$($publishDir.FullName)\PSMicrosoftTeams" -PackagePath .
+	Write-PSFMessage -Level Important -Message "Creating Nuget Package for module: $($ModuleName)"
+	New-PSMDModuleNugetPackage -ModulePath "$($publishDir.FullName)\$($ModuleName)" -PackagePath .
 }
 else
 {
 	# Publish to Gallery
-	Write-PSFMessage -Level Important -Message "Publishing the PSMicrosoftTeams module to $($Repository)"
-	Publish-Module -Path "$($publishDir.FullName)\PSMicrosoftTeams" -NuGetApiKey $ApiKey -Force -Repository $Repository
+	Write-PSFMessage -Level Important -Message "Publishing the $($ModuleName) module to $($Repository)"
+	Publish-Module -Path "$($publishDir.FullName)\$($ModuleName)" -NuGetApiKey $ApiKey -Force -Repository $Repository
 }
 #endregion Publish
