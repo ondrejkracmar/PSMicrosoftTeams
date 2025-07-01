@@ -26,7 +26,7 @@
 
 
 #>
-    [OutputType('PSMicrosoftEntraID.TeamMember')]
+    [OutputType('PSMicrosoftEntraID.User')]
     [CmdletBinding(DefaultParameterSetName = 'Identity')]
     param(
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]

@@ -58,13 +58,13 @@ $clientID = '63a71861-498b-46ae-0000-6b5c142010e1'
 $tenantID = 'a948c2b3-8eb2-498a-0000-c32aeeaa0f90'
 
 # Connect using the certificate object we still have in our variable
-Connect-PSMicrosoftEntraID -ClientID $clientID -TenantID $tenantID -Certificate $cert
+Connect-PSMicrosoftTeams -ClientID $clientID -TenantID $tenantID -Certificate $cert
 
 # Connect via Certificate thumbprint, cert selected from cert store
-Connect-PSMicrosoftEntraID -ClientID $clientID -TenantID $tenantID -CertificateThumbprint 690667761F6E285B2A6AEFF098B886263433FB54
+Connect-PSMicrosoftTeams -ClientID $clientID -TenantID $tenantID -CertificateThumbprint 690667761F6E285B2A6AEFF098B886263433FB54
 
 # Connect via Certificate Subject, cert selected from cert store
-Connect-PSMicrosoftEntraID -ClientID $clientID -TenantID $tenantID -CertificateName 'CN=EntraAuth demo certificate'
+Connect-PSMicrosoftTeams -ClientID $clientID -TenantID $tenantID -CertificateName 'CN=EntraAuth demo certificate'
 ```
 
 Once connected, we are now ready to use the connection to query all groups in our tenant:

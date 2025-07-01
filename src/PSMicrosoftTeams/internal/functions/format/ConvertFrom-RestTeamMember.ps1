@@ -29,7 +29,7 @@ function ConvertFrom-RestTeamMember {
 
 
 		[PSCustomObject]@{
-			PSTypeName   = 'PSMicrosoftEntraID.TeamMember'
+			PSTypeName   = 'PSMicrosoftEntraID.User'
 			Id           = $InputObject.UserId
 			DisplayName  = $InputObject.displayName
 			Mail         = $InputObject.email

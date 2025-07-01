@@ -28,6 +28,7 @@ steps:
        targetType: inline
        script: |
          dotnet tool install --global GitVersion.Tool
+              dotnet-gitversion /config $(sourceDirectory)/GitVersion.yml
               $gitVersionObject = dotnet-gitversion /config $(sourceDirectory)/GitVersion.yml | ConvertFrom-Json
               $gitVersionObject.PSObject.Properties.ForEach{
                   Write-Host -Object "Setting Task Variable '$($_.Name)' with value '$($_.Value)'."
@@ -40,6 +41,8 @@ steps:
      inputs:
        targetType: filePath
        filePath: "$(sourceDirectory)/build/vsts-prerequisites.ps1"
+       arguments: > # Use this to avoid newline characters in multiline string
+          -ModuleName "PSMicrosoftTeams"
 
    - task: PowerShell@2
      displayName: Validation/Test Powershell Module
@@ -62,8 +65,8 @@ steps:
           -WorkingDirectory '$(sourceDirectory)'
           -LocalRepo
           -ModuleName "PSMicrosoftTeams"
-          -ModuleVersion '$(MajorMinorPatch)'
-          -PreRelease '$(NuGetPreReleaseTagV2)'
+          -ModuleVersion '$(SemVer)'
+          -PreRelease '$(PreReleaseLabel)'
 
    - task: PowerShell@2
      displayName: Publish Nuget Package To Repository
@@ -78,8 +81,8 @@ steps:
           -FeedUsername '$(FeedUsername)'
           -PersonalAccessToken '$(personalAccessToken)'
           -ModuleName "PSMicrosoftTeams"
-          -ModuleVersion '$(MajorMinorPatch)'
-          -PreRelease '$(NuGetPreReleaseTagV2)'
+          -ModuleVersion '$(SemVer)'
+          -PreRelease '$(PreReleaseLabel)'
 
 
 

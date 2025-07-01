@@ -1688,7 +1688,7 @@
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>PSMicrosoftEntraID.Team</maml:name>
+          <maml:name>PSMicrosoftTeams.Team</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -1852,7 +1852,7 @@
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>PSMicrosoftEntraID.TeamMember</maml:name>
+          <maml:name>PSMicrosoftTeams.TeamMember</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -3389,7 +3389,7 @@
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>PSMicrosoftEntraID.TeamMember</maml:name>
+          <maml:name>PSMicrosoftTeams.TeamMember</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>

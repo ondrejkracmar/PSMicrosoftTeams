@@ -33,7 +33,7 @@ function Remove-PSMsTeamsTeamMember
 		Get properties of team members
 
 #>
-    [OutputType('PSMicrosoftEntraID.TeamMember')]
+    [OutputType('PSMicrosoftEntraID.User')]
     [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'Identity')]
     param([Parameter(Mandatory = $True, ParameterSetName = 'Identity')]
         [ValidateGroupIdentity()]

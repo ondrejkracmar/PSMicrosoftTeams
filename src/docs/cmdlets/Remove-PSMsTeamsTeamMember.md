@@ -134,7 +134,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## OUTPUTS
 
-### PSMicrosoftEntraID.TeamMember
+### PSMicrosoftTeams.TeamMember
 ## NOTES
 
 ## RELATED LINKS

@@ -1,5 +1,4 @@
-﻿
-param (
+﻿param (
     [string]
     $Repository = 'PSGallery'
 )

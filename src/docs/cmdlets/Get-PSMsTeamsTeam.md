@@ -163,7 +163,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## OUTPUTS
 
-### PSMicrosoftEntraID.Team
+### PSMicrosoftTeams.Team
 ## NOTES
 
 ## RELATED LINKS

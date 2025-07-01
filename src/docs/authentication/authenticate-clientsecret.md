@@ -40,7 +40,7 @@ $clientID = '63a71861-498b-46ae-0000-6b5c142010e1'
 $tenantID = 'a948c2b3-8eb2-498a-0000-c32aeeaa0f90'
 $secret = Get-ClipBoard | ConvertTo-SecureString -AsPlainText -Force
 
-Connect-PSMicrosoftEntraID -ClientID $clientID -TenantID $tenantID -ClientSecret $secret
+Connect-PSMicrosoftTeams -ClientID $clientID -TenantID $tenantID -ClientSecret $secret
 ```
 
 Once connected, we are now ready to use the connection to query all groups in our tenant:

@@ -36,7 +36,7 @@ Using the EntraAuth PowerShell module, we can now connect using our Application,
 $clientID = '63a71861-498b-46ae-0000-6b5c142010e1'
 $tenantID = 'a948c2b3-8eb2-498a-0000-c32aeeaa0f90'
 
-Connect-PSMicrosoftEntraID -ClientID $clientID -TenantID $tenantID -DeviceCode
+Connect-PSMicrosoftTeams -ClientID $clientID -TenantID $tenantID -DeviceCode
 ```
 
 ```text

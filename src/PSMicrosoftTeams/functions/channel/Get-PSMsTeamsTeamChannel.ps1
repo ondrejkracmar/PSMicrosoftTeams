@@ -1,4 +1,4 @@
-﻿function Get-PSMsTeamsTeam {
+﻿function Get-PSMsTeamsTeamChannel {
     <#
         .SYNOPSIS
             Get the properties of the specified team.
