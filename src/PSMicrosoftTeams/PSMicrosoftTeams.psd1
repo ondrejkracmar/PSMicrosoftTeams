@@ -15,7 +15,7 @@
 	CompanyName = 'i-system'
 	
 	# Copyright statement for this module
-	Copyright = 'Copyright (c) 2022 i-system'
+	Copyright = 'Copyright (c) 2025 i-system'
 	
 	# Description of the functionality provided by this module
 	Description = 'Powershell module for managing Microsoft Teams'
@@ -35,10 +35,10 @@
 	# RequiredAssemblies = @('bin\PSMicrosoftTeams.dll')
 	
 	# Type files (.ps1xml) to be loaded when importing this module
-	#TypesToProcess = @('xml\PSMicrosoftTeams.Types.ps1xml')
+	TypesToProcess = @('types\PSMicrosoftTeams.Types.ps1xml')
 	
 	# Format files (.ps1xml) to be loaded when importing this module
-	FormatsToProcess = @('xml\PSMicrosoftTeams.Format.ps1xml')
+	FormatsToProcess = @('views\PSMicrosoftTeams.Format.ps1xml')
 	
 	# Functions to export from this module
 	FunctionsToExport = @(
@@ -51,10 +51,13 @@
 		'Unprotect-PSMsTeamsTeam'
 		'Add-PSMsTeamsTeamMember'
 		'Remove-PSMsTeamsTeamMember'
+		'Invoke-PSMsTeamsBatchRequest'
+		'Get-PSMsTeamsCommandRetry'
+		'Set-PSMsTeamsCommandRetry'
 	)
 	
 	# Cmdlets to export from this module
-	CmdletsToExport = ''
+	CmdletsToExport = @('New-PSMsTeamsBatchRequest')
 	
 	# Variables to export from this module
 	VariablesToExport = ''

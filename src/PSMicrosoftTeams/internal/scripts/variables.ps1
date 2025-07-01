@@ -6,4 +6,3 @@ $script:_EntraEndpoints = @{}
 
 # The default service to connect to
 $script:_DefaultService = 'PSMicrosoftTeams.Graph'
-$script:_DefaultGraphService = 'PSMicrosoftTeams.Graph'

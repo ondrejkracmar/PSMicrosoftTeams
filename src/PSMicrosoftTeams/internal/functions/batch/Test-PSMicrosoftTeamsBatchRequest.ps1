@@ -1,4 +1,4 @@
-﻿Function Test-PSMicrosoftTeamsBatchRequest {
+﻿Function Test-PSMsTeamsBatchRequest {
     <#
     .SYNOPSIS
         Processes an array of batch request objects for Microsoft Entra ID.
@@ -22,7 +22,7 @@
             @{ RequestType = "Create"; Data = "SampleData1" },
             @{ RequestType = "Update"; Data = "SampleData2" }
         )
-        $batchRequests | Test-PSMicrosoftTeamsBatchRequest -EnableException
+        $batchRequests | Test-PSMsTeamsBatchRequest -EnableException
     #>
         Param (
             [Parameter(

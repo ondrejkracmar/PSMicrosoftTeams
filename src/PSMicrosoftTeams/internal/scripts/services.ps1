@@ -1,6 +1,6 @@
 ﻿# Registers the default service configurations
 $endpointCfg = @{
-	Name          = 'Endpoint'
+	Name          = 'PSMicrosoftTeams.Endpoint'
 	ServiceUrl    = 'https://api.securitycenter.microsoft.com/api'
 	Resource      = 'https://api.securitycenter.microsoft.com'
 	DefaultScopes = @()
@@ -10,7 +10,7 @@ $endpointCfg = @{
 Register-EntraService @endpointCfg
 
 $securityCfg = @{
-	Name          = 'Security'
+	Name          = 'PSMicrosoftTeams.Security'
 	ServiceUrl    = 'https://api.security.microsoft.com/api'
 	Resource      = 'https://security.microsoft.com/mtp/'
 	DefaultScopes = @('AdvancedHunting.Read')
@@ -20,7 +20,7 @@ $securityCfg = @{
 Register-EntraService @securityCfg
 
 $graphCfg = @{
-	Name          = 'Graph'
+	Name          = 'PSMicrosoftTeams.Graph'
 	ServiceUrl    = 'https://graph.microsoft.com/v1.0'
 	Resource      = 'https://graph.microsoft.com'
 	DefaultScopes = @()
@@ -29,7 +29,7 @@ $graphCfg = @{
 Register-EntraService @graphCfg
 
 $graphBetaCfg = @{
-	Name          = 'GraphBeta'
+	Name          = 'PSMicrosoftTeams.GraphBeta'
 	ServiceUrl    = 'https://graph.microsoft.com/beta'
 	Resource      = 'https://graph.microsoft.com'
 	DefaultScopes = @()
@@ -38,7 +38,7 @@ $graphBetaCfg = @{
 Register-EntraService @graphBetaCfg
 
 $azureCfg = @{
-	Name          = 'Azure'
+	Name          = 'PSMicrosoftTeams.Azure'
 	ServiceUrl    = 'https://management.azure.com'
 	Resource      = 'https://management.core.windows.net/'
 	DefaultScopes = @()
@@ -47,7 +47,7 @@ $azureCfg = @{
 Register-EntraService @azureCfg
 
 $azureKeyVaultCfg = @{
-	Name          = 'AzureKeyVault'
+	Name          = 'PSMicrosoftTeams.AzureKeyVault'
 	ServiceUrl    = 'https://%VAULTNAME%.vault.azure.net'
 	Resource      = 'https://vault.azure.net'
 	DefaultScopes = @()
@@ -61,35 +61,11 @@ $azureKeyVaultCfg = @{
 }
 Register-EntraService @azureKeyVaultCfg
 
-$teamstGraphCfg = @{
-	Name          = 'PSMicrosoftTeams.Graph'
+$entraIDazTokenCfg = @{
+	Name          = 'PSMicrosoftTeams.AzToken'
 	ServiceUrl    = 'https://graph.microsoft.com/v1.0'
 	Resource      = 'https://graph.microsoft.com'
 	DefaultScopes = @()
 	HelpUrl       = 'https://developer.microsoft.com/en-us/graph/quick-start'
 }
-Register-EntraService @teamstGraphCfg
-
-$teamsGraphBetaCfg = @{
-	Name          = 'PSMicrosoftTeams.GraphBeta'
-	ServiceUrl    = 'https://graph.microsoft.com/beta'
-	Resource      = 'https://graph.microsoft.com'
-	DefaultScopes = @()
-	HelpUrl       = 'https://developer.microsoft.com/en-us/graph/quick-start'
-}
-Register-EntraService @teamsGraphBetaCfg
-
-$teamsAzureKeyVaultCfg = @{
-	Name          = 'PSMicrosoftTeams.AzureKeyVault'
-	ServiceUrl    = 'https://%VAULTNAME%.vault.azure.net'
-	Resource      = 'https://vault.azure.net'
-	DefaultScopes = @()
-	HelpUrl       = 'https://learn.microsoft.com/en-us/rest/api/keyvault/?view=rest-keyvault-secrets-7.4'
-	Parameters    = @{
-		VaultName = 'Name of the Key Vault to execute against'
-	}
-	Query         = @{
-		'api-version' = '7.4'
-	}
-}
-Register-EntraService @teamsAzureKeyVaultCfg
+Register-EntraService @entraIDazTokenCfg -NoRefresh

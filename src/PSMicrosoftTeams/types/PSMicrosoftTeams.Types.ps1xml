@@ -1,26 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Types>
-  <!-- Foo.Bar -->
   <Type>
-    <Name>Deserialized.PSMicrosoftTeams.User</Name>
-    <Members>
-      <MemberSet>
-        <Name>PSStandardMembers</Name>
-        <Members>
-          <NoteProperty>
-            <Name>
-              System.String
-            </Name>
-            <Value>
-              Id
-            </Value>
-          </NoteProperty>
-        </Members>
-      </MemberSet>
-    </Members>
-  </Type>
-  <Type>
-    <Name>PSMicrosoftTeams.User</Name>
+    <Name>PSMicrosoftEntraID.User</Name>
     <Members>
       <CodeProperty IsHidden="true">
         <Name>SerializationData</Name>

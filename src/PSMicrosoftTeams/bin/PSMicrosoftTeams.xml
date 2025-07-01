@@ -4,5 +4,49 @@
         <name>PSMicrosoftTeams</name>
     </assembly>
     <members>
+        <member name="T:PSMicrosoftTeams.Commands.NewPSMsTeamsBatchRequest">
+            <summary>
+            Cmdlet that receives Request objects from the pipeline and produces multiple 
+            <see cref="T:PSMicrosoftEntraID.Batch.BatchRequestPayload"/> objects, each containing up to 20 sub-requests. 
+            In each chunk, request Ids are reassigned to "1", "2", etc. to comply with the 
+            Microsoft Graph batch limit of 1..20 sub-requests per batch.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Commands.NewPSMsTeamsBatchRequest.InputObject">
+            <summary>
+            An array of Request objects coming from the pipeline. 
+            Each item is a sub-request definition (method, url, body, etc.).
+            </summary>
+        </member>
+        <member name="F:PSMicrosoftTeams.Commands.NewPSMsTeamsBatchRequest._buffer">
+            <summary>
+            Internal buffer to accumulate up to 20 requests before emitting a batch payload.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftTeams.Commands.NewPSMsTeamsBatchRequest.BeginProcessing">
+            <summary>
+            Called once before pipeline input is processed.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftTeams.Commands.NewPSMsTeamsBatchRequest.ProcessRecord">
+            <summary>
+            Called once for each pipeline block of Request objects.
+            We accumulate them, and each time we hit 20, we emit a new BatchRequestPayload 
+            with Ids reindexed from "1" up to "n".
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftTeams.Commands.NewPSMsTeamsBatchRequest.EndProcessing">
+            <summary>
+            Called after all pipeline input has been processed. 
+            If there's any leftover (20) requests in _buffer, we emit one final payload.
+            </summary>
+        </member>
+        <member name="M:PSMicrosoftTeams.Commands.NewPSMsTeamsBatchRequest.EmitOnePayload(System.Collections.Generic.List{PSMicrosoftEntraID.Batch.Request})">
+            <summary>
+            Helper method to create a single BatchRequestPayload from up to 20 Request objects, 
+            reindexing their Ids from "1" to the number of requests in this chunk.
+            </summary>
+            <param name="requests">A list of up to 20 Request objects.</param>
+        </member>
     </members>
 </doc>

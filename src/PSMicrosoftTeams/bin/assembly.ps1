@@ -12,9 +12,9 @@ catch {
     throw
 }
 try {
-    Update-TypeData -AppendPath "$script:ModuleRoot\types\PSMicrosoftTeams.ps1xml" -ErrorAction Stop
+    Update-TypeData -AppendPath "$script:ModuleRoot\types\PSMicrosoftTeams.Types.ps1xml" -ErrorAction Stop
 }
 catch {
-    Write-Warning "Failed to load PSMicrosoftEntraID type extensions! Unable to import module."
+    Write-Warning "Failed to load PSMicrosoftTeams type extensions! Unable to import module."
     throw
 }
