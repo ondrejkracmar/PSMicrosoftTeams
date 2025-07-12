@@ -1,10 +1,14 @@
-﻿function Get-PSMsTeamsTeamMember {
+﻿using namespace PSMicrosoftTeams.Users
+function Get-PSMsTeamsTeamMember {
     <#
     .SYNOPSIS
         Get an owner or member to the team, and to the unified group which backs the team.
 
     .DESCRIPTION
         This cmdlet get an owner or member of the team, and to the unified group which backs the team.
+
+    .PARAMETER InputObject
+        PSMicrosoftTeams.Groups.Group object in tenant/directory.
 
     .PARAMETER Identity
         MailNickName or Id of group or team.
@@ -20,62 +24,90 @@
         but allows catching exceptions in calling scripts.
 
     .EXAMPLE
-        PS C:\> Get-PSMsTeamsTeamMember -Identity teammailnickname
+        PS C:\> Get-PSMsTeamsTeamMember -Identity team1@contoso.com
 
-		Get properties of team members
-
+		Get members of team11@contoso.com
 
 #>
-    [OutputType('PSMicrosoftEntraID.User')]
-    [CmdletBinding(DefaultParameterSetName = 'Identity')]
-    param(
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
-        [ValidateGroupIdentity()]
+    [OutputType('PSMicrosoftTeams.Members.ConversationMember')]
+    [CmdletBinding(DefaultParameterSetName = 'InputObject')]
+    param([Parameter(Mandatory = $True, ValueFromPipeline = $True, ParameterSetName = 'InputObject')]
+        [PSMicrosoftEntraID.Groups.Group[]]$InputObject,
+        [Parameter(Mandatory = $True, ValueFromPipelineByPropertyName = $True, ParameterSetName = 'Identity')]
         [Alias("Id", "GroupId", "TeamId", "MailNickName")]
-        [string[]]$Identity,
-        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'Identity')]
+        [ValidateGroupIdentity()]
+        [string[]] $Identity,
+        [Parameter(Mandatory = $False, ParameterSetName = 'InputObject')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'Identity')]
         [ValidateNotNullOrEmpty()]
-        [string]$Filter,
-        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'Identity')]
+        [string] $Filter,
+        [Parameter(Mandatory = $False, ParameterSetName = 'InputObject')]
+        [Parameter(Mandatory = $false, ParameterSetName = 'Identity')]
         [ValidateNotNullOrEmpty()]
-        [switch]$AdvancedFilter,
-        [switch]$EnableException
+        [switch] $AdvancedFilter,
+        [Parameter()]
+        [switch] $EnableException
     )
 
     begin {
-        $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+        [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
-        $query = @{
+        [hashtable] $query = @{
+            #'$count'  = 'true'
             '$top' = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
+            #'$select' = (Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.ConversationMember).Value -join ','
         }
-        $header = @{}
-        $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
-        $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
+        [hashtable] $header = @{}
+        [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
+        [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
+        if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
+            [boolean] $cmdLetVerbose = $true
+        }
+        else {
+            [boolean] $cmdLetVerbose = $false
+        }
     }
 
     process {
         switch ($PSCmdlet.ParameterSetName) {
-            'Identity' {
-                foreach ($itemIdentity in $Identity) {
-                    $team = Get-PSMsTeamsTeam -Identity $itemIdentity
-                    if (-not([object]::Equals($team, $null))) {
-                        $path = ('teams/{0}/members' -f $team.Id)
+            'InputObject' {
+                foreach ($itemInputObject in $InputObject) {
+                    Invoke-PSFProtectedCommand -ActionString 'TeamsMember.List' -ActionStringValues $itemInputObject.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                        [string] $path = ('teams/{0}/members' -f $itemInputObject.Id)
                         if (Test-PSFParameterBinding -ParameterName 'Filter') {
                             $query['$Filter'] = $Filter
                             if ($AdvancedFilter.IsPresent) {
                                 $header['ConsistencyLevel'] = 'eventual'
                             }
                         }
-                        Invoke-PSFProtectedCommand -ActionString 'TeamMember.List' -ActionStringValues $itemIdentity -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                            Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -ErrorAction Stop | ConvertFrom-RestTeamMember
-                        } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        ConvertFrom-RestConversationMember -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
                         if (Test-PSFFunctionInterrupt) { return }
-                    }
-                    else {
-                        if ($EnableException.IsPresent) {
-                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Get.Failed) -f $itemIdentity)
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                    if (Test-PSFFunctionInterrupt) { return }
+                }
+            }
+            'Identity' {
+                foreach ($itemIdentity in $Identity) {
+                    Invoke-PSFProtectedCommand -ActionString 'TeamsMember.List' -ActionStringValues $itemIdentity -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                        [PSMicrosoftTeams.Teams.Team] $team = Get-PSMsTeamsTeam -Identity $itemIdentity
+                        if (-not([object]::Equals($team, $null))) {
+                            [string] $path = ('teams/{0}/members' -f $team.Id)
+                            if (Test-PSFParameterBinding -ParameterName 'Filter') {
+                                $query['$Filter'] = $Filter
+                                if ($AdvancedFilter.IsPresent) {
+                                    $header['ConsistencyLevel'] = 'eventual'
+                                }
+                            }
+                            ConvertFrom-RestConversationMember -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                            if (Test-PSFFunctionInterrupt) { return }
                         }
-                    }
+                        else {
+                            if ($EnableException.IsPresent) {
+                                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Group.Get.Failed) -f $itemIdentity)
+                            }
+                        }
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                    if (Test-PSFFunctionInterrupt) { return }
                 }
             }
         }

@@ -12,6 +12,7 @@
 	'User.Name'               = "List users by name '{0}'"
 
 	'Team.Get'                = "Get team '{0}'"
+	'Team.AdditionalProperty' = "Get team additional properties '{0}'"
 	'Team.Get.Failed'         = "Get team '{0}' failed"
 	'Team.Filter'             = "List teams with filter '{0}'"
 	'Team.List'               = "List teams '{0}'"

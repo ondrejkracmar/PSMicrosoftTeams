@@ -13,6 +13,7 @@
 		},
 		"ghcr.io/devcontainers/features/powershell:1": {
 			"modules": [
+				"Microsoft.Powershell.PSResourceGet",
 				"PSFramework",
 				"Profiler",
 				"Pester",

@@ -1,141 +1,139 @@
 ﻿function Add-PSMsTeamsTeamMember {
     <#
-    .SYNOPSIS
-        Add a member to a Microsoft Teams team.
+.SYNOPSIS
+    Add a member or owner to a Microsoft Teams team.
 
-    .DESCRIPTION
-        Add a member to a Microsoft Teams team.
+.DESCRIPTION
+    Adds a user (or multiple users) as member/owner to the specified Microsoft Teams team (POST /teams/{id}/members/add).
+    Accepts user identities (UPN, ID, email) or InputObject (user object).
 
-    .PARAMETER Identity
-        MailNickName or Id of  team
+.PARAMETER Identity
+    Team Id, GroupId, MailNickname, or other unique team identifier.
 
-    .PARAMETER User
-        UserPrincipalName, Mail or Id of the user attribute populated in tenant/directory.
+.PARAMETER InputObject
+    User object(s) (from Get-PSMsTeamsUser).
 
-    .PARAMETER Role
-        Membership role (Member/Owner).
+.PARAMETER User
+    UserPrincipalName, Mail, or Id of the user(s) to add.
 
-    .PARAMETER EnableException
-        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
-        but allows catching exceptions in calling scripts.
+.PARAMETER Role
+    Role for new member(s): "Member" (default) or "Owner".
 
-    .PARAMETER WhatIf
-        Enables the function to simulate what it will do instead of actually executing.
+.PARAMETER EnableException
+    If set, cmdlet throws on failure. Otherwise, issues warnings.
 
-    .PARAMETER Confirm
-        The Confirm switch instructs the command to which it is applied to stop processing before any changes are made.
-        The command then prompts you to acknowledge each action before it continues.
-        When you use the Confirm switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
-        This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
-        A confirmation prompt is displayed for each object before the Shell modifies the object.
+.PARAMETER Force
+    Suppresses confirmation prompts.
 
-    .EXAMPLE
-            PS C:\> Add-PSMsTeamsTeamMember -Identity team1 -User user1,user2
+.PARAMETER WhatIf
+    Simulates the operation.
 
-            Add member to Microsoft Teams taam team1
+.PARAMETER Confirm
+    Prompts for confirmation before adding.
+
+.EXAMPLE
+    Add-PSMsTeamsTeamMember -Identity "team1" -User "user1@contoso.com","user2@contoso.com" -Role Owner
 #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
-    [OutputType()]
-    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'Identity')]
+    [OutputType('PSMicrosoftTeams.Members.Member')]
+    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'User')]
     param(
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'User')]
         [Alias("Id", "GroupId", "TeamId", "MailNickName")]
         [ValidateGroupIdentity()]
-        [string]$Identity,
-        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
+        [string] $Identity,
+
+        [Parameter(Mandatory = $true, ParameterSetName = 'User', ValueFromPipelineByPropertyName = $true)]
         [Alias("UserId", "UserPrincipalName", "Mail")]
         [ValidateUserIdentity()]
-        [string[]]$User,
-        [Parameter(ParameterSetName = 'Identity', ValueFromPipelineByPropertyName = $true)]
+        [string[]] $User,
+
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'InputObject')]
+        [PSMicrosoftTeams.Users.User[]] $InputObject,
+
+        [Parameter(ParameterSetName = 'User')]
+        [Parameter(ParameterSetName = 'InputObject')]
         [ValidateSet("Member", "Owner")]
-        [string[]]$Role,
-        [switch]$EnableException
+        [string] $Role = "Member",
+
+        [Parameter()]
+        [switch] $EnableException,
+
+        [Parameter()]
+        [switch] $Force
     )
-
     begin {
-        $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
-        $graphService = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultGraphService' -f $script:ModuleName)
+        [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
-        $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
-        $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
-        $header = @{
-            'Content-Type' = 'application/json'
-        }
+        [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
+        [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
+        [hashtable] $header = @{ 'Content-Type' = 'application/json' }
+        $cmdLetConfirm = if ($Force.IsPresent) { $false } else { $true }
+        $cmdLetVerbose = $PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')
     }
-
     process {
-        Invoke-PSFProtectedCommand -ActionString 'TeamMember.Add' -ActionStringValues ((($User | ForEach-Object { "{0}" -f $_ }) -join ',')), ((($Role | ForEach-Object { "{0}" -f $_ }) -join ',')) -Target $Identity -ScriptBlock {
-            if (([object]::Equals($team, $null))) {
-                $team = Get-PSMsTeamsTeam -Identity $Identity
+        $team = Get-PSMsTeamsTeam -Identity $Identity
+        if ([object]::Equals($team, $null)) {
+            if ($EnableException.IsPresent) {
+                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Get.Failed) -f $Identity)
             }
-            if (-not([object]::Equals($team, $null))) {
-                $path = Join-UriPath -Uri ($graphService) -ChildPath ('teams/{0}/{1})' -f $team.Id, 'memebrs')
-                if ($User.Count -eq 0) {
-                    $aADUser = Get-PSMsTeamsUser -Identity $User
-                    if (-not([object]::Equals($aADUser, $null))) {
-                        $body = @{
-                            '@odata.type'     = '#microsoft.graph.aadUserConversationMember'
-                            roles             = @()
-                            'user@odata.bind' = Join-UriPath -Uri (Get-EntraService -Name $graphService).ServiceUrl -ChildPath "users('{0}')" -f $aADUser.UserPrincipalName
-                        }
+            return
+        }
 
-                    }
-                    else {
-                        if ($EnableException.IsPresent) {
-                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $itemUser)
-                        }
-                    }
-                    if (Test-PSFParameterBinding -Parameter Role) {
-                        $body['roles'] = $Role
-                    }
-                    else {
-                        $body['roles'] = @()
-                    }
+        $membersToAdd = @()
+        if ($PSCmdlet.ParameterSetName -eq 'InputObject') {
+            foreach ($userObj in $InputObject) {
+                if ($null -eq $userObj -or -not $userObj.Id) {
+                    Write-Warning "InputObject missing Id, skipping."
+                    continue
+                }
+                $userUrl = "{0}/users/{1}" -f (Get-EntraService -Name $service).ServiceUrl, $userObj.Id
+                $membersToAdd += @{
+                    '@odata.type'     = "#microsoft.graph.aadUserConversationMember"
+                    'roles'           = @($Role.ToLower())
+                    'user@odata.bind' = $userUrl
+                }
+            }
+        }
+        elseif ($PSCmdlet.ParameterSetName -eq 'User') {
+            foreach ($userId in $User) {
+                $userObj = Get-PSMsTeamsUser -Identity $userId
+                if ([object]::Equals($team, $null)) {
 
-                }
-                else {
-                    $path = = Join-UriPath -Uri ($graphService) -ChildPath ('{0}/members/add' -f $team.Id)
-                    $body = @{values = @() }
-                    foreach ($userItem in  $User) {
-                        $aADUser = Get-PSMsTeamsUser -Identity $userItem
-                        if (-not([object]::Equals($aADUser, $null))) {
-                            $urlUser = Join-UriPath -Uri (Get-EntraService -Name $graphService).ServiceUrl -ChildPath "users('{0}')" -f $aADUser.UserPrincipalName
-                            $value = @{
-                                '@odata.type'     = "#microsoft.graph.aadUserConversationMember"
-                                roles             = @()
-                                'user@odata.bind' = $urlUser
-                            }
-                            if (Test-PSFParameterBinding -Parameter Role) {
-                                if ($memberItem['Role'] -eq 'Owner') {
-                                    roles = $Role
-                                }
-                            }
-                        }
-                        else {
-                            if ($EnableException.IsPresent) {
-                                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $itemUser)
-                            }
-                        }
+                    if ($EnableException.IsPresent) {
+                        Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $userId)
                     }
-                    $body = @{values = $values }
                 }
+                $userUrl = "{0}/users/{1}" -f (Get-EntraService -Name $service).ServiceUrl, $userObj.Id
+                $membersToAdd += @{
+                    '@odata.type'     = "#microsoft.graph.aadUserConversationMember"
+                    'roles'           = @($Role.ToLower())
+                    'user@odata.bind' = $userUrl
+                }
+            }
+        }
+
+        if ($membersToAdd.Count -eq 0) {
+            Write-Warning "No members to add for team '$($team.DisplayName ?? $team.Id)'."
+            return
+        }
+
+        $path = "teams/$($team.Id)/members/add"
+        $body = @{ values = $membersToAdd }
+
+        if ($PSCmdlet.ShouldProcess($team.DisplayName ?? $team.Id, "Add Teams member(s)")) {
+            Invoke-PSFProtectedCommand -ActionString 'TeamMember.Add' -ActionStringValues (($membersToAdd | ForEach-Object { $_['user@odata.bind'] }) -join ", ") -Target $Identity -ScriptBlock {
                 try {
-                    [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
+                    [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -Verbose:$cmdLetVerbose -ErrorAction Stop)
                 }
                 catch {
                     if ($EnableException.IsPresent) {
                         Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name TeamMember.Add.Failed) -f $Identity)
                     }
                 }
-            }
-            else {
-                if ($EnableException.IsPresent) {
-                    Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Get.Failed) -f $Identity)
-                }
-            }
-        } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue #-RetryCount $commandRetryCount -RetryWait $commandRetryWait
+            } -EnableException:$EnableException -Confirm:$cmdLetConfirm -PSCmdlet $PSCmdlet -Continue
+            if (Test-PSFFunctionInterrupt) { return }
+        }
     }
-    end {
-
-    }
+    end {}
 }

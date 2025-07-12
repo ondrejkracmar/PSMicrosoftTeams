@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Types>
   <Type>
-    <Name>PSMicrosoftEntraID.User</Name>
+    <Name>PSMicrosoftTeams.User</Name>
     <Members>
       <CodeProperty IsHidden="true">
         <Name>SerializationData</Name>

@@ -1,75 +1,72 @@
 function Unprotect-PSMsTeamsTeam {
     <#
-	.SYNOPSIS
-		Archive team
+.SYNOPSIS
+    Unarchives (restores) a Microsoft Teams team.
 
-	.DESCRIPTION
-		Unarchive MIcrosoft Teams team
-        Restore an archived team. This restores users' ability to send messages and edit the team, abiding by tenant and team settings..
+.DESCRIPTION
+    Restores an archived Microsoft Teams team (via Microsoft Graph API POST /teams/{id}/unarchive).
+    Restores users' ability to send messages and edit the team, abiding by tenant and team settings.
 
-	.PARAMETER Identity
-        teamPrincipalName, Mail or Id of the team attribute populated in tenant/directory.
+.PARAMETER Identity
+    Team Id, GroupId, MailNickname, or any unique attribute identifying the team.
 
-    .PARAMETER EnableException
-        Archive the specified team. When a team is archived, users can no longer send or like messages on any channel in the team, edit the team's name, description, or other settings, or in general make most changes to the team.
-        Membership changes to the team continue to be allowed.
+.PARAMETER EnableException
+    If set, cmdlet throws on failure. Otherwise, issues warnings.
 
-    .PARAMETER WhatIf
-        Enables the function to simulate what it will do instead of actually executing.
+.PARAMETER Force
+    Suppresses confirmation prompts.
 
-    .PARAMETER Confirm
-        The Confirm switch instructs the command to which it is applied to stop processing before any changes are made.
-        The command then prompts you to acknowledge each action before it continues.
-        When you use the Confirm switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
-        This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
-        A confirmation prompt is displayed for each object before the Shell modifies the object.
+.PARAMETER WhatIf
+    Simulates the operation.
 
-	.EXAMPLE
-		PS C:\> Unprotect-PSMsTeamsTeam -Identity teamname@contoso.com
+.PARAMETER Confirm
+    Prompts for confirmation before unarchiving.
 
-		Unprotect team teamname@contoso.com from Microsoft Teams
-
-	#>
-
+.EXAMPLE
+    Unprotect-PSMsTeamsTeam -Identity "teamname@contoso.com"
+#>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType()]
-    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'Identity')]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium', DefaultParameterSetName = 'Identity')]
     param (
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
         [Alias("Id", "TeamId", "GroupId", "MailNickname")]
-        [ValidateGroupIdentity()]
         [string[]]$Identity,
-        [switch]$EnableException
+
+        [Parameter()]
+        [switch]$EnableException,
+
+        [Parameter()]
+        [switch]$Force
     )
     begin {
-        $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
-        $graphService = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultGraphService' -f $script:ModuleName)
-        $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
-        $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
-        $header = @{
-            'Content-Type' = 'application/json'
-        }
-
+        [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+        Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
+        [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
+        [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
+        [hashtable] $header = @{ 'Content-Type' = 'application/json' }
+        $cmdLetConfirm = if ($Force.IsPresent) { $false } else { $true }
+        $cmdLetVerbose = $PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')
     }
-
     process {
-        foreach ($group in $Identity) {
-            Invoke-PSFProtectedCommand -ActionString 'Team.Unarchive' -ActionStringValues $group -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                $aADGroup = Get-PSMsTeamsTeam -Identity $group
-                if (-not([object]::Equals($aADGroup, $null))) {
-                    $path = ("teams/{0}/unarchive" -f $aADGroup.Id)
-                    [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Method Post -ErrorAction Stop)
+        foreach ($teamId in $Identity) {
+            Invoke-PSFProtectedCommand -ActionString 'Team.Unarchive' -ActionStringValues $teamId -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                $teamObj = Get-PSMsTeamsTeam -Identity $teamId
+                if ($null -ne $teamObj -and $teamObj.Id) {
+                    [string] $path = ("teams/{0}/unarchive" -f $teamObj.Id)
+                    if ($PSCmdlet.ShouldProcess($teamObj.DisplayName ?? $teamObj.Id, "Unarchive Microsoft Teams team")) {
+                        [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Method Post -Verbose:$cmdLetVerbose -ErrorAction Stop)
+                    }
                 }
                 else {
                     if ($EnableException.IsPresent) {
-                        Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Get.Failed) -f $group)
+                        Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Get.Failed) -f $teamId)
                     }
                 }
-            } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue #-RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                if (Test-PSFFunctionInterrupt) { return }
+            } -EnableException:$EnableException -Confirm:$cmdLetConfirm -PSCmdlet $PSCmdlet -Continue
             if (Test-PSFFunctionInterrupt) { return }
         }
     }
-
-    end
-    {}
+    end {}
 }

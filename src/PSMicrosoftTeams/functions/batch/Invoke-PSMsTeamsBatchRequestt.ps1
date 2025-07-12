@@ -63,7 +63,7 @@
             ValueFromPipeline = $true,
             HelpMessage = "One or more BatchRequestPayload objects, each with up to 20 sub-requests."
         )]
-        [PSMicrosoftEntraID.Batch.BatchRequestPayload[]] $InputObject,
+        [PSMicrosoftTeams.Batch.BatchRequestPayload[]] $InputObject,
         [Parameter()]
         [switch] $EnableException,
         [Parameter()]
@@ -101,7 +101,7 @@
                 'requests' = $payload.Requests
             }
 
-            if (Test-PSMicrosoftEntraIDBatchRequest -Requests $payload.Requests -EnableException:$EnableException) {
+            if (Test-PSMicrosoftTeamsBatchRequest -Requests $payload.Requests -EnableException:$EnableException) {
                 Invoke-PSFProtectedCommand -ActionString 'Batch.Invoke' -ActionStringValues ($payload.Requests.Id -join ",") `
                     -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) `
                     -ScriptBlock {

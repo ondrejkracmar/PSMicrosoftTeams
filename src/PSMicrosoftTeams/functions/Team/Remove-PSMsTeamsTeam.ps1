@@ -1,74 +1,72 @@
 ﻿function Remove-PSMsTeamsTeam {
     <#
-	.SYNOPSIS
-		Delete team
+.SYNOPSIS
+    Deletes a Microsoft Teams team.
 
-	.DESCRIPTION
-		Delete Microsoft Teams team
-        When deleted, team resources are moved to a temporary container and can be restored within 30 days. After that time, they are permanently deleted.
+.DESCRIPTION
+    Deletes the Microsoft Teams team (via Microsoft Graph API DELETE /groups/{id}).
+    Team resources are soft-deleted and can be restored within 30 days.
 
-	.PARAMETER Identity
-        teamPrincipalName, Mail or Id of the team attribute populated in tenant/directory.
+.PARAMETER Identity
+    Team Id, GroupId, MailNickname, or any unique attribute identifying the team.
 
-    .PARAMETER EnableException
-        This parameters disables team-friendly warnings and enables the throwing of exceptions. This is less team frien
-        dly, but allows catching exceptions in calling scripts.
+.PARAMETER EnableException
+    If set, cmdlet throws on failure. Otherwise, issues warnings.
 
-    .PARAMETER WhatIf
-        Enables the function to simulate what it will do instead of actually executing.
+.PARAMETER Force
+    Suppresses confirmation prompts.
 
-    .PARAMETER Confirm
-        The Confirm switch instructs the command to which it is applied to stop processing before any changes are made.
-        The command then prompts you to acknowledge each action before it continues.
-        When you use the Confirm switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
-        This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
-        A confirmation prompt is displayed for each object before the Shell modifies the object.
+.PARAMETER WhatIf
+    Simulates the operation.
 
-	.EXAMPLE
-		PS C:\> Remove-PSMsTeamsTeam -Identity teamname@contoso.com
+.PARAMETER Confirm
+    Prompts for confirmation before deletion.
 
-		Delete team teamname@contoso.com from Azure AD (Entra ID)
-
-	#>
-
+.EXAMPLE
+    Remove-PSMsTeamsTeam -Identity "teamname@contoso.com"
+#>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType()]
-    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'Identity')]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High', DefaultParameterSetName = 'Identity')]
     param (
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
         [Alias("Id", "TeamId", "GroupId", "MailNickname")]
-        [ValidateGroupIdentity()]
         [string[]]$Identity,
-        [switch]$EnableException
+
+        [Parameter()]
+        [switch]$EnableException,
+
+        [Parameter()]
+        [switch]$Force
     )
     begin {
-        $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
-        $graphService = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultGraphService' -f $script:ModuleName)
-        $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
-        $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
-        $header = @{
-            'Content-Type' = 'application/json'
-        }
+        [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+        Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
+        [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
+        [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
+        [hashtable] $header = @{ 'Content-Type' = 'application/json' }
+        $cmdLetConfirm = if ($Force.IsPresent) { $false } else { $true }
+        $cmdLetVerbose = $PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')
     }
-
     process {
-        foreach ($group in $Identity) {
-            Invoke-PSFProtectedCommand -ActionString 'Team.Delete' -ActionStringValues $group -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                $aADGroup = Get-PSMsTeamsTeam -Identity $group
-                if (-not([object]::Equals($aADGroup, $null))) {
-                    $path = ("groups/{0}" -f $aADGroup.Id)
-                    [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Method Delete -ErrorAction Stop)
+        foreach ($teamId in $Identity) {
+            Invoke-PSFProtectedCommand -ActionString 'Team.Delete' -ActionStringValues $teamId -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                $teamObj = Get-PSMsTeamsTeam -Identity $teamId
+                if ($null -ne $teamObj -and $teamObj.Id) {
+                    [string] $path = ("groups/{0}" -f $teamObj.Id)
+                    if ($PSCmdlet.ShouldProcess($teamObj.DisplayName ?? $teamObj.Id, "Delete Microsoft Teams team")) {
+                        [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Method Delete -Verbose:$cmdLetVerbose -ErrorAction Stop)
+                    }
                 }
                 else {
                     if ($EnableException.IsPresent) {
-                        Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Get.Failed) -f $group)
+                        Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Get.Failed) -f $teamId)
                     }
                 }
-            } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue #-RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                if (Test-PSFFunctionInterrupt) { return }
+            } -EnableException:$EnableException -Confirm:$cmdLetConfirm -PSCmdlet $PSCmdlet -Continue
             if (Test-PSFFunctionInterrupt) { return }
         }
     }
-
-    end
-    {}
+    end {}
 }

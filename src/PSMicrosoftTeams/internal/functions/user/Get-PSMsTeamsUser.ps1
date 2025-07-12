@@ -37,7 +37,7 @@
 		Get properties of Azure AD user user1@contoso.com
 
 #>
-    [OutputType('PSMicrosoftEntraID.User')]
+    [OutputType('PSMicrosoftTeams.User')]
     [CmdletBinding(DefaultParameterSetName = 'Identity')]
     param (
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]

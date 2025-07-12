@@ -1,128 +1,107 @@
 ﻿function Get-PSMsTeamsTeamChannel {
     <#
-        .SYNOPSIS
-            Get the properties of the specified team.
+.SYNOPSIS
+    Get the channels of a Microsoft Teams team.
 
-        .DESCRIPTION
-            Get the properties of the specified team.
+.DESCRIPTION
+    Returns one or more channels for a given Microsoft Teams team, by object (InputObject) or team identifier.
 
-        .PARAMETER Identity
-            MailnicName, Mail or Id of the team attribute populated in tenant/directory.
+.PARAMETER InputObject
+    Team object(s) from Get-PSMsTeamsTeam (pipeline support).
 
-        .PARAMETER DisplayName
-            DIsplayName of the group attribute populated in tenant/directory.
+.PARAMETER Identity
+    Team Id, GroupId, MailNickname, or any unique team identifier.
 
-        .PARAMETER Filter
-            Filter expressions of accounts in tenant/directory.
+.PARAMETER ChannelDisplayName
+    (Optional) Filter returned channels by their display name.
 
-        .PARAMETER AdvancedFilter
-            Switch advanced filter for filtering accounts in tenant/directory.
+.PARAMETER Filter
+    OData filter to filter returned channels (applies after team lookup).
 
-        .PARAMETER All
-            Return all accounts in tenant/directory.
+.PARAMETER EnableException
+    If set, cmdlet throws on failure. Otherwise, issues warnings.
 
-        .PARAMETER EnableException
-            This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
-            but allows catching exceptions in calling scripts.
+.EXAMPLE
+    Get-PSMsTeamsTeam -Identity team1 | Get-PSMsTeamsTeamChannel
 
-        .EXAMPLE
-            PS C:\> Get-PSMsTeamsTeam -Identity team1
-
-            Get properties of Microsoft Teams team1
-
-    #>
-    [OutputType('PSMicrosoftTeams.Team')]
-    [CmdletBinding(DefaultParameterSetName = 'Identity')]
+.EXAMPLE
+    Get-PSMsTeamsTeamChannel -Identity team1 -ChannelDisplayName "General"
+#>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+    [OutputType('PSMicrosoftTeams.Channel')]
+    [CmdletBinding(DefaultParameterSetName = 'InputObject')]
     param(
-        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'InputObject')]
+        [PSMicrosoftTeams.Teams.Team[]] $InputObject,
+
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
+        [Alias("Id", "GroupId", "TeamId", "MailNickname")]
         [ValidateGroupIdentity()]
-        [string[]]
-        [Alias("Id", "GroupId", "TeamId", "MailNickName")]
-        $Identity,
-        [Parameter(Mandatory = $true, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'DisplayName')]
-        [ValidateNotNullOrEmpty()]
-        [string[]]
-        $DisplayName,
-        [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'Filter')]
-        [ValidateNotNullOrEmpty()]
-        [string]$Filter,
-        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'Filter')]
-        [ValidateNotNullOrEmpty()]
-        [switch]$AdvancedFilter,
-        [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'All')]
-        [ValidateNotNullOrEmpty()]
-        [switch]$All,
-        [switch]$EnableException
+        [string[]] $Identity,
+
+        [Parameter(Mandatory = $false)]
+        [string] $ChannelDisplayName,
+
+        [Parameter(Mandatory = $false)]
+        [string] $Filter,
+
+        [Parameter()]
+        [switch] $EnableException
     )
-
     begin {
-        $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+        [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
-        $query = @{
+        [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
+        [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
+        [hashtable] $channelQuery = @{
+            '$top'    = 100
             '$count'  = 'true'
-            '$top'    = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
-            '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.Team).Value -join ',')
+            '$select' = 'id,displayName,description,isFavoriteByDefault,email,membershipType'
         }
-        $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
-        $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
+        if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
+            [boolean] $cmdLetVerbose = $true
+        }
+        else {
+            [boolean] $cmdLetVerbose = $false
+        }
     }
-
     process {
         switch ($PSCmdlet.ParameterSetName) {
-            'Identity' {
-                foreach ($group in $Identity) {
-                    $mailNickNameQuery = @{
-                        #'$count'  = 'true'
-                        '$top'    = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
-                        '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.Team).Value -join ',')
-                    }
-                    $mailNickNameQuery['$Filter'] = ("resourceProvisioningOptions/Any(x:x eq 'Team') and mailNickName eq '{0}'" -f $group)
+            'InputObject' {
+                foreach ($team in $InputObject) {
+                    if ([object]::Equals($team, $null) -or -not $team.Id) {
 
-                    Invoke-PSFProtectedCommand -ActionString 'Team.Get' -ActionStringValues $group -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        $mailNickName = Invoke-EntraRequest -Service $service -Path 'groups' -Query $mailNickNameQuery -Method Get -ErrorAction Stop | ConvertFrom-RestTeam
-                        if (-not([object]::Equals($mailNickName, $null))) {
-                            $groupId = $mailNickName[0].Id
+                        if ($EnableException.IsPresent) {
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Get.Failed) -f ($team.DisplayName ?? '<no team>'))
                         }
-                        else {
-                            $groupId = $group
-                        }
-                        Invoke-EntraRequest -Service $service -Path ('groups/{0}' -f $groupId) -Method Get -ErrorAction Stop | ConvertFrom-RestTeam
-                        
-                    } -EnableException $EnableException -Continue -PSCmdlet $PSCmdlet -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                    }
+                    $query = $channelQuery.Clone()
+                    if ($Filter) { $query['$filter'] = $Filter }
+                    Write-Verbose "Querying channels for Team '$($team.DisplayName ?? $team.Id)'"
+                    Invoke-PSFProtectedCommand -ActionString 'TeamChannel.Get' -ActionStringValues $team.Id -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                        Invoke-EntraRequest -Service $service -Path ("teams/$($team.Id)/channels") -Query $query -Method Get -Verbose:$cmdLetVerbose -ErrorAction Stop | ConvertFrom-RestTeamChannel
+                    } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                    if ($ChannelDisplayName) {
+                        $channels = $channels | Where-Object { $_.DisplayName -eq $ChannelDisplayName }
+                    }
                     if (Test-PSFFunctionInterrupt) { return }
                 }
             }
-            'DisplayName' {
-                foreach ($group in $DisplayName) {
-                    $query['$Filter'] = ("resourceProvisioningOptions/Any(x:x eq 'Team') and startswith(displayName,'{0}')" -f $group)
-                    Invoke-PSFProtectedCommand -ActionString 'Team.Get' -ActionStringValues $group -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        Invoke-EntraRequest -Service $service -Path 'groups' -Query $query -Method Get -ErrorAction Stop | ConvertFrom-RestTeam
-                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                    if (Test-PSFFunctionInterrupt) { return }
-                }
-            }
-            'Filter' {
-                $query['$Filter'] = ("resourceProvisioningOptions/Any(x:x eq 'Team') and {0}" -f $Filter)
-                if ($AdvancedFilter.IsPresent) {
-                    $header = @{}
-                    $header['ConsistencyLevel'] = 'eventual'
-                    Invoke-PSFProtectedCommand -ActionString 'Team.Filter' -ActionStringValues $query['$Filter'] -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        Invoke-EntraRequest -Service $service -Path 'groups' -Query $query -Method Get -Header $header -ErrorAction Stop | ConvertFrom-RestTeam
-                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                }
-                else {
-                    Invoke-PSFProtectedCommand -ActionString 'Team.Filter' -ActionStringValues $query['$Filter'] -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        Invoke-EntraRequest -Service $service -Path ('groups') -Query $query -Method Get -ErrorAction Stop | ConvertFrom-RestTeam
-                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                }
-                if (Test-PSFFunctionInterrupt) { return }
-            }
-            'All' {
-                if ($All.IsPresent) {
-                    $query['$Filter'] = "resourceProvisioningOptions/Any(x:x eq 'Team')"
-                    Invoke-PSFProtectedCommand -ActionString 'Team.List' -ActionStringValues $query['$Filter'] -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        Invoke-EntraRequest -Service $service -Path 'groups' -Query $query -Method Get -ErrorAction Stop | ConvertFrom-RestTeam
-                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+            'Identity' {
+                foreach ($teamIdentity in $Identity) {
+                    $teamObj = Get-PSMsTeamsTeam -Identity $teamIdentity -EnableException:$EnableException
+                    if ([object]::Equals($teamObj, $null) -or -not $teamObj.Id) {
+
+                        if ($EnableException.IsPresent) {
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Get.Failed) -f $teamIdentity)
+                        }
+                    }
+                    $query = $channelQuery.Clone()
+                    if ($Filter) { $query['$filter'] = $Filter }
+
+                    Invoke-PSFProtectedCommand -ActionString 'TeamChannel.Get' -ActionStringValues $teamObj.Id -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                        Invoke-EntraRequest -Service $service -Path ("teams/$($teamObj.Id)/channels") -Query $query -Method Get -Verbose:$cmdLetVerbose -ErrorAction Stop | ConvertFrom-RestTeamChannel
+                    } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                     if (Test-PSFFunctionInterrupt) { return }
                 }
             }

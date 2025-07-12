@@ -5,14 +5,14 @@
 *TempPoint*
 
 # Ignore staging info from Visual Studio
-library/PSMicrosoftEntraID/.vs/*
-library/PSMicrosoftEntraID/PSMicrosoftEntraID/bin/*
-library/PSMicrosoftEntraID/PSMicrosoftEntraID/obj/*
+library/PSMicrosoftTeams/.vs/*
+library/PSMicrosoftTeams/PSMicrosoftTeams/bin/*
+library/PSMicrosoftTeams/PSMicrosoftTeams/obj/*
 
 # ignore PowerShell Studio MetaData
-library/PSMicrosoftEntraID.csproj
-library/PSMicrosoftEntraID.csproj.bak
-library/PSMicrosoftEntraID.csprojs
+library/PSMicrosoftTeams.csproj
+library/PSMicrosoftTeams.csproj.bak
+library/PSMicrosoftTeams.csprojs
 
 # ignore the TestResults
 TestResults/*

@@ -43,17 +43,25 @@
 	# Functions to export from this module
 	FunctionsToExport = @(
 		'Connect-PSMicrosoftTeams'
+		'Disconnect-PSMicrosoftTeams'
 		'Get-PSMsTeamsTeam'
+		'Get-PSMsTeamsTeamAdditionalProperty'
 		'Get-PSMsTeamsTeamMember'
 		'New-PSMsTeamsTeam'
 		'Remove-PSMsTeamsTeam'
+		'Set-PSMsTeamsTeam'
 		'Protect-PSMsTeamsTeam'
 		'Unprotect-PSMsTeamsTeam'
 		'Add-PSMsTeamsTeamMember'
 		'Remove-PSMsTeamsTeamMember'
 		'Invoke-PSMsTeamsBatchRequest'
-		'Get-PSMsTeamsCommandRetry'
-		'Set-PSMsTeamsCommandRetry'
+		'Get-PSMsTeamsTeamUser'
+		'New-PSMsTeamsTeamChannel'
+		'Remove-PSMsTeamsTeamChannel'
+		'Get-PSMsTeamsTeamChannel'
+		'Add-PSMsTeamsTeamChannelUser'
+		'Remove-PSMsTeamsTeamChannelUser'
+		'Send-PSMsTeamsTeamChannelMessage'
 	)
 	
 	# Cmdlets to export from this module

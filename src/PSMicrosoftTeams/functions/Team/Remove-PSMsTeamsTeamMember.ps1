@@ -1,94 +1,86 @@
-function Remove-PSMsTeamsTeamMember
-{
-    <#
-    .SYNOPSIS
-        Remove member from the team.
+function Remove-PSMsTeamsTeamMember {
+<#
+.SYNOPSIS
+    Remove a member from a Microsoft Teams team.
 
-    .DESCRIPTION
-        This cmdlet remove member from the team.
+.DESCRIPTION
+    Removes a member from the specified Microsoft Teams team using the MembershipId (Graph API DELETE /teams/{id}/members/{membershipId}).
 
-    .PARAMETER Identity
-        MailNickName or Id of  team
+.PARAMETER Identity
+    Team Id, GroupId, MailNickname, or any unique attribute identifying the team.
 
-    .PARAMETER MembershipId
-        MembershipId of team memebr
+.PARAMETER MembershipId
+    MembershipId of the team member(s) to remove (as returned by Get-PSMsTeamsTeamMember).
 
-    .PARAMETER EnableException
-        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
-        but allows catching exceptions in calling scripts.
+.PARAMETER EnableException
+    If set, cmdlet throws on failure. Otherwise, issues warnings.
 
-    .PARAMETER WhatIf
-        Enables the function to simulate what it will do instead of actually executing.
+.PARAMETER Force
+    Suppresses confirmation prompts.
 
-    .PARAMETER Confirm
-        The Confirm switch instructs the command to which it is applied to stop processing before any changes are made.
-        The command then prompts you to acknowledge each action before it continues.
-        When you use the Confirm switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
-        This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
-        A confirmation prompt is displayed for each object before the Shell modifies the object.
+.PARAMETER WhatIf
+    Simulates the operation.
 
-    .EXAMPLE
-        PS C:\> Remove-PSMsTeamsTeamMember -Identity teammailnickname -MembershipId ZWUwZjVhZTItOGJjNi00YWU1LTg0NjYtN2RhZWViYmZhMDYyIyM3Mzc2MWYwNi0yYWM5LTQ2OWMtOWYxMC0yNzlhOGNjMjY3Zjk=
+.PARAMETER Confirm
+    Prompts for confirmation before removing the member.
 
-		Get properties of team members
+.EXAMPLE
+    Remove-PSMsTeamsTeamMember -Identity teammailnickname -MembershipId ZWUwZjVhZTItOGJjNi...
 
 #>
-    [OutputType('PSMicrosoftEntraID.User')]
-    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'Identity')]
-    param([Parameter(Mandatory = $True, ParameterSetName = 'Identity')]
+    [OutputType('PSMicrosoftTeams.User')]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High', DefaultParameterSetName = 'Identity')]
+    param (
+        [Parameter(Mandatory = $True, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
         [ValidateGroupIdentity()]
-        [string]$Identity,
+        [string] $Identity,
+
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
-        [string[]]$MembershipId,
-        [switch]$EnableException
+        [string[]] $MembershipId,
+
+        [Parameter()]
+        [switch] $EnableException,
+
+        [Parameter()]
+        [switch] $Force
     )
-
-    begin
-    {
-        $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
+    begin {
+        [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
-        $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
-        $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
+        [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
+        [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
+        $cmdLetConfirm = if ($Force.IsPresent) { $false } else { $true }
+        $cmdLetVerbose = $PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')
     }
+    process {
+        $team = Get-PSMsTeamsTeam -Identity $Identity
+        if ([object]::Equals($team, $null) -or -not $team.Id) {
+            $msg = "Team '$Identity' not found or missing Id. Skipping."
+            if ($EnableException.IsPresent) {
+                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Get.Failed) -f $Identity)
+            } else {
+                Write-Warning $msg
+            }
+            return
+        }
 
-    process
-    {
-        switch ($PSCmdlet.ParameterSetName)
-        {
-            'Identity'
-            {
-                foreach ($itemMembershipId in $MembershipId)
-                {
-
-                    Invoke-PSFProtectedCommand -ActionString 'TeamMember.Remove' -ActionStringValues $Identity, (($itemMembershipId | ForEach-Object { "{0}" -f $_ }) -join ',') -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        if (([object]::Equals($team, $null)))
-                        {
-                            $team = Get-PSMsTeamsTeam -Identity $Identity
+        foreach ($itemMembershipId in $MembershipId) {
+            Invoke-PSFProtectedCommand -ActionString 'TeamMember.Remove' -ActionStringValues "$($team.DisplayName ?? $team.Id)", $itemMembershipId -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                $path = "teams/$($team.Id)/members/$itemMembershipId"
+                if ($PSCmdlet.ShouldProcess($path, "Remove Teams member")) {
+                    try {
+                        [void](Invoke-EntraRequest -Service $service -Path $path -Method Delete -Verbose:$cmdLetVerbose -ErrorAction Stop)
+                    }
+                    catch {
+                        if ($EnableException.IsPresent) {
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name TeamMember.Remove.Failed) -f $itemMembershipId)
                         }
-                        if (-not([object]::Equals($team, $null)))
-                        {
-                            $path = ('teams/{0}/members/{1}' -f $team.Id, $itemMembershipId)
-                            Invoke-EntraRequest -Service $service -Path $path -Method Delete -ErrorAction Stop
-                        }
-                        else
-                        {
-                            if ($EnableException.IsPresent)
-                            {
-                                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Get.Failed) -f $itemIdentity)
-                            }
-                        }
-                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                    if (Test-PSFFunctionInterrupt)
-                    {
-                        return
                     }
                 }
-            }
+                if (Test-PSFFunctionInterrupt) { return }
+            } -EnableException:$EnableException -Confirm:$cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+            if (Test-PSFFunctionInterrupt) { return }
         }
     }
-
-    end
-    {
-
-    }
+    end {}
 }

@@ -26,6 +26,12 @@
 		<PackageReference Include="Microsoft.PowerShell.SDK" Version="7.2.12" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Reference Include="PSMicrosoftEntraID">
+	    <HintPath>..\..\..\..\PSMicrosoftEntraID\src\PSMicrosoftEntraID\bin\PSMicrosoftEntraID.dll</HintPath>
+	  </Reference>
+	</ItemGroup>
+
 	<Target Name="RemoveUnwantedOutputs" AfterTargets="Build">
 		<RemoveDir Directories="$(OutputPath)ref" />
 		<RemoveDir Directories="$(OutputPath)runtimes" />
