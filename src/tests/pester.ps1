@@ -21,8 +21,8 @@ $global:testroot = $PSScriptRoot
 $global:__pester_data = @{ }
 
 Remove-Module PSMicrosoftTeams -ErrorAction Ignore
-Import-Module "$PSScriptRoot\..\PSMicrosoftTeams.psd1"
-Import-Module "$PSScriptRoot\..\PSMicrosoftTeams.psm1" -Force
+Import-Module "$PSScriptRoot\..\PSMicrosoftTeams\PSMicrosoftTeams.psd1"
+Import-Module "$PSScriptRoot\..\PSMicrosoftTeams\PSMicrosoftTeams.psm1" -Force
 
 # Need to import explicitly so we can use the configuration class
 Import-Module Pester
