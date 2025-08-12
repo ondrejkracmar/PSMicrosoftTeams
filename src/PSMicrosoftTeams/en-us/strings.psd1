@@ -17,6 +17,7 @@
 	'Team.Filter'                    = "List teams with filter '{0}'"
 	'Team.List'                      = "List teams '{0}'"
 	'Team.New'                       = "Create new team '{0}'"
+	'Team.Set'                       = "Set team '{0}'"
 	'Team.NewTeamFromGroup'          = "Create new team from group '{0}'"
 	'Team.Delete'                    = "Delete team '{0}'"
 	'Team.Archive'                   = "Archive/Protext team '{0}'"
@@ -25,9 +26,10 @@
 	'TeamMember.Add'                 = "Add member '{0}' with the following roles {1}"
 	'TeamMember.Remove.MembershipId' = "Remove member from team '{0}' with the following MembershipId '{1}'"
 	'TeamMember.Remove'              = "Remove member from team '{0}' with the following MembershipId '{1}'"
-	'TeamMember.Add.Failed'          = "Add members to the team '{0}' failed"
 	'TeamMember.List'                = "List members from the team '{0}'"
 
+	'TeamChannel.Add'                = "Add channel '{0}' to team '{1}'"
+	'TeamChannel.Remove'             = "Remove channel '{0}' from team '{1}'"
 	'TeamChannel.Get'                = "Get channel '{0}' from team '{1}'"
 	'TeamChannel.List'               = "List channels from team '{0}'"
 
@@ -39,7 +41,6 @@
 
 	'TeamChannel.Message.Send'       = "Send message with content '{1}'"
 
-	'Request.Invoke'                 = 'Invoke request command with the following url {0}'
 	'Batch.Invoke'                   = 'Invoke batch command with the following Ids {0}'
 
 }

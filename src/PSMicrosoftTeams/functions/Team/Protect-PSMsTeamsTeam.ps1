@@ -81,7 +81,7 @@ function Protect-PSMsTeamsTeam {
                         [PSMicrosoftEntraID.Batch.Request]@{ Method = $method; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
                     }
                     else {
-                        Invoke-PSFProtectedCommand -ActionString 'Team.Archive' -ActionStringValues $itemInputObject.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name InputObject.Platform) -ScriptBlock {
+                        Invoke-PSFProtectedCommand -ActionString 'Team.Archive' -ActionStringValues $itemInputObject.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                             [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method $method -ErrorAction Stop)
                         }
                     } -EnableException:$EnableException -Confirm:$cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
@@ -108,7 +108,7 @@ function Protect-PSMsTeamsTeam {
                     }
                     else {
                         if ($EnableException.IsPresent) {
-                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Group.Get.Failed) -f $group)
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Get.Failed) -f $group)
                         }
                     }
                 }

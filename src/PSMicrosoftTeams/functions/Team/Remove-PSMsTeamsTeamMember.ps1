@@ -118,7 +118,7 @@ function Remove-PSMsTeamsTeamMember {
                     }
                     else {
                         Invoke-PSFProtectedCommand -ActionString 'TeamMember.Remove.MembershipId' -ActionStringValues $team.DisplayName, $itemMembershipId -Target $teamId -ScriptBlock {
-                            [void] (Invoke-EntraRequest -Service $service -Path $path -Method $method -Verbose:$cmdLetVerbose -ErrorAction Stop)
+                            [void] (Invoke-EntraRequest -Service $service -Path $path -Method $method -ErrorAction Stop)
                         } -EnableException:$EnableException -Confirm:$cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                         if (Test-PSFFunctionInterrupt) { return }
                     }
@@ -169,7 +169,7 @@ function Remove-PSMsTeamsTeamMember {
                 }
                 else {
                     Invoke-PSFProtectedCommand -ActionString 'TeamMember.Remove' -ActionStringValues $team.DisplayName, (($memberUserPrincipalListList | ForEach-Object { "{0}" -f $psiTEM }) -join ',') -Target $teamId -ScriptBlock {
-                        [void] (Invoke-EntraRequest -Service $service -Path $path -Method $method -Verbose:$cmdLetVerbose -ErrorAction Stop)
+                        [void] (Invoke-EntraRequest -Service $service -Path $path -Method $method  -ErrorAction Stop)
                     } -EnableException:$EnableException -Confirm:$cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                     if (Test-PSFFunctionInterrupt) { return }
                 }
@@ -183,7 +183,7 @@ function Remove-PSMsTeamsTeamMember {
                 }
                 else {
                     Invoke-PSFProtectedCommand -ActionString 'TeamMember.Remove' -ActionStringValues $team.DisplayName, (($memberUserPrincipalListList | ForEach-Object { "{0}" -f $psiTEM }) -join ',') -Target $teamId -ScriptBlock {
-                        [void] (Invoke-EntraRequest -Service $service -Path $path -Method $method -Verbose:$cmdLetVerbose -ErrorAction Stop)
+                        [void] (Invoke-EntraRequest -Service $service -Path $path -Method $method -ErrorAction Stop)
                     } -EnableException:$EnableException -Confirm:$cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                     if (Test-PSFFunctionInterrupt) { return }
                 }

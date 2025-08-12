@@ -101,7 +101,7 @@ function Remove-PSMsTeamsTeamChannelMember {
             }
             else {
                 Invoke-PSFProtectedCommand -ActionString 'TeamChannelMember.Remove' -ActionStringValues $itemMembershipId -Target $teamChannel.DisplayName, $team.DisplayName -ScriptBlock {
-                    [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Method Delete -Verbose:$cmdLetVerbose -ErrorAction Stop)
+                    [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Method Delete -ErrorAction Stop)
                 } -EnableException:$EnableException -Confirm:$cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                 if (Test-PSFFunctionInterrupt) { return }
             }

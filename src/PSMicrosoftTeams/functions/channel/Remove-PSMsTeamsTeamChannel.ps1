@@ -92,7 +92,7 @@ function Remove-PSMsTeamsTeamChannel {
         else {
             if ($PSCmdlet.ShouldProcess($ChannelId, "Delete channel from team $($team.DisplayName)")) {
                 Invoke-PSFProtectedCommand -ActionString 'TeamChannel.Remove' -ActionStringValues $ChannelId -Target $team.DisplayName -ScriptBlock {
-                    [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Method Delete -Verbose:$cmdLetVerbose -ErrorAction Stop)
+                    [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Method Delete -ErrorAction Stop)
                 } -EnableException:$EnableException -Confirm:$cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                 if (Test-PSFFunctionInterrupt) { return }
             }

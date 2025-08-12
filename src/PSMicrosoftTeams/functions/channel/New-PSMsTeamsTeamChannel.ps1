@@ -154,7 +154,7 @@ function New-PSMsTeamsTeamChannel {
         }
         else {
             Invoke-PSFProtectedCommand -ActionString 'TeamChannel.New' -ActionStringValues $DisplayName -Target $team.DisplayName -ScriptBlock {
-                ConvertFrom-RestTeamChannel -InputObject Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -Verbose:$cmdLetVerbose -ErrorAction Stop
+                ConvertFrom-RestTeamChannel -InputObject Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop
             } -EnableException:$EnableException -Confirm:$cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
             if (Test-PSFFunctionInterrupt) { return }
         }

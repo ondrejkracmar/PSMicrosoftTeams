@@ -141,7 +141,7 @@ function Add-PSMsTeamsTeamChannelMember {
                     }
                     else {
                         Invoke-PSFProtectedCommand -ActionString 'TeamChannelMember.Add' -ActionStringValues $userActionString -Target $teamChannel.DisplayName, $team.DisplayName, -ScriptBlock {
-                            [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method $requestHash.Method -Verbose $false -ErrorAction Stop)
+                            [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method $requestHash.Method -ErrorAction Stop)
                         } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                         if (Test-PSFFunctionInterrupt) { return }
                     }
@@ -167,7 +167,7 @@ function Add-PSMsTeamsTeamChannelMember {
                         }
                         else {
                             Invoke-PSFProtectedCommand -ActionString 'TeamChannel.Add' -ActionStringValues $userActionString -Target $teamChannel.DisplayName, $team.DisplayName, -ScriptBlock {
-                                [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method $requestHash.Method -Verbose $false -ErrorAction Stop)
+                                [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method $requestHash.Method -ErrorAction Stop)
                             } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                             if (Test-PSFFunctionInterrupt) { return }
                         }

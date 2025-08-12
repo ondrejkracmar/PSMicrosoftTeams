@@ -186,7 +186,7 @@
                     }
                     else {
                         if ($EnableException.IsPresent) {
-                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Set.Failed) -f $teamId)
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Get.Failed) -f $teamId)
                         }
                     }
                 }
