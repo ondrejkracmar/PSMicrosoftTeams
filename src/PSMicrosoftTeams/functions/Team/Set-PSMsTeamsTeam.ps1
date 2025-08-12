@@ -1,54 +1,75 @@
 ﻿function Set-PSMsTeamsTeam {
     <#
-.SYNOPSIS
-    Updates the specified properties of a Microsoft Teams team.
+    .SYNOPSIS
+        Updates the specified properties of a Microsoft Teams team.
 
-.DESCRIPTION
-    Updates modifiable properties of a Microsoft Teams team via Microsoft Graph API PATCH /teams/{id}.
-    Some properties must be updated in separate PATCH calls (see parameter sets).
-    Supports pipeline (InputObject), batch processing, identity lookup, and full error handling.
+    .DESCRIPTION
+        Updates modifiable properties of a Microsoft Teams team via Microsoft Graph API PATCH /teams/{id}.
+        Some properties must be updated in separate PATCH calls (see parameter sets).
+        Supports pipeline (InputObject), batch processing, identity lookup, and full error handling.
 
-.PARAMETER InputObject
-    Team object(s).
+    .PARAMETER InputObject
+        Team object(s).
 
-.PARAMETER Identity
-    Team Id or GroupId.
+    .PARAMETER Identity
+        Team Id or GroupId.
 
-.PARAMETER DisplayName
-    New display name (can be PATCHed with Description, Classification, Visibility).
+    .PARAMETER DisplayName
+        New display name (can be PATCHed with Description, Classification, Visibility).
 
-.PARAMETER Description
-    New description (can be PATCHed with DisplayName, Classification, Visibility).
+    .PARAMETER Description
+        New description (can be PATCHed with DisplayName, Classification, Visibility).
 
-.PARAMETER Classification
-    New classification (can be PATCHed with DisplayName, Description, Visibility).
+    .PARAMETER Classification
+        New classification (can be PATCHed with DisplayName, Description, Visibility).
 
-.PARAMETER Visibility
-    New visibility (Public, Private, HiddenMembership; can be PATCHed with other basic props).
+    .PARAMETER Visibility
+        New visibility (Public, Private, HiddenMembership; can be PATCHed with other basic props).
 
-.PARAMETER FunSettings
-    FunSettings hashtable/object (must be PATCHed in a separate call).
+    .PARAMETER FunSettings
+        FunSettings hashtable/object (must be PATCHed in a separate call).
 
-.PARAMETER MemberSettings
-    MemberSettings hashtable/object (must be PATCHed in a separate call).
+    .PARAMETER MemberSettings
+        MemberSettings hashtable/object (must be PATCHed in a separate call).
 
-.PARAMETER GuestSettings
-    GuestSettings hashtable/object (must be PATCHed in a separate call).
+    .PARAMETER GuestSettings
+        GuestSettings hashtable/object (must be PATCHed in a separate call).
 
-.PARAMETER MessagingSettings
-    MessagingSettings hashtable/object (must be PATCHed in a separate call).
+    .PARAMETER MessagingSettings
+        MessagingSettings hashtable/object (must be PATCHed in a separate call).
 
-.PARAMETER EnableException
-    If set, cmdlet throws on failure. Otherwise, issues warnings.
+    .PARAMETER EnableException
+        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user frien
+        dly, but allows catching exceptions in calling scripts.
 
-.PARAMETER Force
-    Suppresses confirmation prompts.
+    .PARAMETER WhatIf
+        Enables the function to simulate what it will do instead of actually executing.
 
-.EXAMPLE
-    Get-PSMsTeamsTeam -Id $id | Set-PSMsTeamsTeam -DisplayName "New Name"
+    .PARAMETER Force
+        The Force switch instructs the command to which it is applied to stop processing before any changes are made.
+        The command then prompts you to acknowledge each action before it continues.
+        When you use the Force switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
+        This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
+        A confirmation prompt is displayed for each object before the Shell modifies the object.
 
-.EXAMPLE
-    Set-PSMsTeamsTeam -Identity $id -FunSettings @{ allowGiphy = $false }
+    .PARAMETER Confirm
+        The Confirm switch instructs the command to which it is applied to stop processing before any changes are made.
+        The command then prompts you to acknowledge each action before it continues.
+        When you use the Confirm switch, you can step through changes to objects to make sure that changes are made only to the specific objects that you want to change.
+        This functionality is useful when you apply changes to many objects and want precise control over the operation of the Shell.
+        A confirmation prompt is displayed for each object before the Shell modifies the object.
+
+    .PARAMETER PassThru
+        When specified, the cmdlet will not execute the disable license action but will instead
+        return a `PSMicrosoftEntraID.Batch.Request` object for batch processing.
+
+    .EXAMPLE
+        Get-PSMsTeamsTeam -Id $id | Set-PSMsTeamsTeam -DisplayName "New Name"
+
+    .EXAMPLE
+        PS C:\> Set-PSMsTeamsTeam -Identity $id -FunSettings @{ allowGiphy = $false }
+
+        Updates the FunSettings of the specified team. If the team is not found, an error is thrown (when -EnableException is used).
 #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'InputObjectUpdateCommon')]
@@ -67,43 +88,33 @@
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityMessagingSettings')]
         [Alias("Id", "GroupId", "TeamId")]
         [string[]] $Identity,
-
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'InputObjectUpdateCommon')]
+        [Parameter(ParameterSetName = 'InputObjectUpdateCommon')]
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateCommon')]
         [string] $DisplayName,
-
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'InputObjectUpdateCommon')]
+        [Parameter(ParameterSetName = 'InputObjectUpdateCommon')]
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateCommon')]
         [string] $Description,
-
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'InputObjectUpdateCommon')]
+        [Parameter( ParameterSetName = 'InputObjectUpdateCommon')]
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateCommon')]
         [string] $Classification,
-
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'InputObjectUpdateCommon')]
+        [Parameter(ParameterSetName = 'InputObjectUpdateCommon')]
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUpdateCommon')]
         [ValidateSet('Public', 'Private', 'HiddenMembership')]
         [string] $Visibility,
-
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'InputObjectFunSettings')]
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityFunSettings')]
+        [Parameter( ParameterSetName = 'InputObjectFunSettings')]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityFunSettings')]
         [hashtable] $FunSettings,
-
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'InputObjectMemberSettings')]
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityMemberSettings')]
+        [Parameter(ParameterSetName = 'InputObjectMemberSettings')]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityMemberSettings')]
         [hashtable] $MemberSettings,
-
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'InputObjectGuestSettings')]
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityGuestSettings')]
+        [Parameter(ParameterSetName = 'InputObjectGuestSettings')]
+        [Parameter( ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityGuestSettings')]
         [hashtable] $GuestSettings,
-
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'InputObjectMessagingSettings')]
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityMessagingSettings')]
+        [Parameter(ParameterSetName = 'InputObjectMessagingSettings')]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityMessagingSettings')]
         [hashtable] $MessagingSettings,
-
         [Parameter()]
         [switch] $EnableException,
-
         [Parameter()]
         [switch] $Force
     )
@@ -113,9 +124,15 @@
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
         [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
-        [hashtable] $header = @{ 'Content-Type' = 'application/json' }
-        $cmdLetConfirm = if ($Force.IsPresent) { $false } else { $true }
-        $cmdLetVerbose = $PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')
+        $path = 'teams'
+        $header = @{ 'Content-Type' = 'application/json' }
+        $method = 'PATCH'
+        if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
+            [bool] $cmdLetConfirm = $false
+        }
+        else {
+            [bool] $cmdLetConfirm = $true
+        }
     }
 
     process {
@@ -140,28 +157,37 @@
         switch -Regex  ($PSCmdlet.ParameterSetName) {
             '^InputObject\w' {
                 foreach ($itemInputObject in $InputObject) {
-                    Invoke-PSFProtectedCommand -ActionString 'Team.Set' -ActionStringValues $itemInputObject.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        [string] $path = ("teams/{0}" -f $itemInputObject.Id)
-                        [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Patch -Verbose:$cmdLetVerbose -ErrorAction Stop)
-                    } -EnableException:$EnableException -Confirm:$cmdLetConfirm -PSCmdlet $PSCmdlet -Continue
-                    if (Test-PSFFunctionInterrupt) { return }
+                    [string] $path = ("teams/{0}" -f $itemInputObject.Id)
+                    if ($PassThru.IsPresent) {
+                        [PSMicrosoftEntraID.Batch.Request] @{ Method = $method; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
+                    }
+                    else {
+                        Invoke-PSFProtectedCommand -ActionString 'Team.Set' -ActionStringValues $itemInputObject.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                            [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method $method -ErrorAction Stop)
+                        } -EnableException:$EnableException -Confirm:$cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        if (Test-PSFFunctionInterrupt) { return }
+                    }
                 }
             }
             '^Identity\w' {
-                foreach ($teamId in $Identity) {
-                    Invoke-PSFProtectedCommand -ActionString 'Team.Set' -ActionStringValues $teamId -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        $teamObj = Get-PSMsTeamsTeam -Identity $teamId
-                        if ($null -ne $teamObj -and $teamObj.Id) {
-                            [string] $path = ("teams/{0}" -f $teamObj.Id)
-                            [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Patch -Verbose:$cmdLetVerbose -ErrorAction Stop)
+                foreach ($itemIdentity in $Identity) {
+                    [PSMicrosoftTeams.Teams.Team] $team = Get-PSMsTeamsTeam -Identity $itemIdentity
+                    if (-not ([object]::Equals($team, $null))) {
+                        [string] $path = ("teams/{0}" -f $team.Id)
+                        if ($PassThru.IsPresent) {
+                            [PSMicrosoftEntraID.Batch.Request] @{ Method = $method; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
                         }
                         else {
-                            if ($EnableException.IsPresent) {
-                                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Set.Failed) -f $teamId)
-                            }
+                            Invoke-PSFProtectedCommand -ActionString 'Team.Set' -ActionStringValues $team.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                                [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method $method -ErrorAction Stop)
+                            } -EnableException:$EnableException -Confirm:$cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                             if (Test-PSFFunctionInterrupt) { return }
-                        } -EnableException:$EnableException -Confirm:$cmdLetConfirm -PSCmdlet $PSCmdlet -Continue
-                        if (Test-PSFFunctionInterrupt) { return }
+                        }
+                    }
+                    else {
+                        if ($EnableException.IsPresent) {
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Set.Failed) -f $teamId)
+                        }
                     }
                 }
             }

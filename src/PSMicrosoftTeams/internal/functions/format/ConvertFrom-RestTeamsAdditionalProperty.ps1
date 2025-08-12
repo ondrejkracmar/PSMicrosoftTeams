@@ -20,17 +20,17 @@
 	)
 
 	if (-not $InputObject) { return }
-	$jsonString = $InputObject | ConvertTo-Json -Depth 3
+	$jsonString = $InputObject | ConvertTo-Json -Depth 4
 
-	if ($InputObject -is [array]) {
-		[byte[]] $byteArray = [System.Text.Encoding]::UTF8.GetBytes($jsonString)
-		[System.IO.MemoryStream] $stream = [System.IO.MemoryStream]::new($byteArray)
-		[System.Runtime.Serialization.Json.DataContractJsonSerializer] $serializer = [System.Runtime.Serialization.Json.DataContractJsonSerializer]::new([PSMicrosoftTeams.Teams.TeamAdditionalProperty[]])
+	$type = if ($InputObject -is [array]) {
+		[PSMicrosoftTeams.Teams.TeamAdditionalProperty[]]
 	}
 	else {
-		[byte[]] $byteArray = [System.Text.Encoding]::UTF8.GetBytes($jsonString)
-		[System.IO.MemoryStream] $stream = [System.IO.MemoryStream]::new($byteArray)
-		[System.Runtime.Serialization.Json.DataContractJsonSerializer] $serializer = [System.Runtime.Serialization.Json.DataContractJsonSerializer]::new([PSMicrosoftTeams.Teams.TeamAdditionalProperty])
+		[PSMicrosoftTeams.Teams.TeamAdditionalProperty]
 	}
+
+	$byteArray = [System.Text.Encoding]::UTF8.GetBytes($jsonString)
+	$stream = [System.IO.MemoryStream]::new($byteArray)
+	$serializer = [System.Runtime.Serialization.Json.DataContractJsonSerializer]::new($type)
 	return $serializer.ReadObject($stream)
 }

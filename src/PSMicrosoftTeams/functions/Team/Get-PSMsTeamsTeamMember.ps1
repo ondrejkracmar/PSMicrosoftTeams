@@ -32,7 +32,7 @@ function Get-PSMsTeamsTeamMember {
     [OutputType('PSMicrosoftTeams.Members.ConversationMember')]
     [CmdletBinding(DefaultParameterSetName = 'InputObject')]
     param([Parameter(Mandatory = $True, ValueFromPipeline = $True, ParameterSetName = 'InputObject')]
-        [PSMicrosoftEntraID.Groups.Group[]]$InputObject,
+        [PSMicrosoftTeams.Teams.Team[]]$InputObject,
         [Parameter(Mandatory = $True, ValueFromPipelineByPropertyName = $True, ParameterSetName = 'Identity')]
         [Alias("Id", "GroupId", "TeamId", "MailNickName")]
         [ValidateGroupIdentity()]
@@ -60,19 +60,13 @@ function Get-PSMsTeamsTeamMember {
         [hashtable] $header = @{}
         [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
-        if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
-            [boolean] $cmdLetVerbose = $true
-        }
-        else {
-            [boolean] $cmdLetVerbose = $false
-        }
     }
 
     process {
         switch ($PSCmdlet.ParameterSetName) {
             'InputObject' {
                 foreach ($itemInputObject in $InputObject) {
-                    Invoke-PSFProtectedCommand -ActionString 'TeamsMember.List' -ActionStringValues $itemInputObject.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                    Invoke-PSFProtectedCommand -ActionString 'TeamMember.List' -ActionStringValues $itemInputObject.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         [string] $path = ('teams/{0}/members' -f $itemInputObject.Id)
                         if (Test-PSFParameterBinding -ParameterName 'Filter') {
                             $query['$Filter'] = $Filter
@@ -80,15 +74,14 @@ function Get-PSMsTeamsTeamMember {
                                 $header['ConsistencyLevel'] = 'eventual'
                             }
                         }
-                        ConvertFrom-RestConversationMember -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
-                        if (Test-PSFFunctionInterrupt) { return }
-                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        ConvertFrom-RestConversationMember -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -ErrorAction Stop)
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                 }
             }
             'Identity' {
                 foreach ($itemIdentity in $Identity) {
-                    Invoke-PSFProtectedCommand -ActionString 'TeamsMember.List' -ActionStringValues $itemIdentity -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                    Invoke-PSFProtectedCommand -ActionString 'TeamMember.List' -ActionStringValues $itemIdentity -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         [PSMicrosoftTeams.Teams.Team] $team = Get-PSMsTeamsTeam -Identity $itemIdentity
                         if (-not([object]::Equals($team, $null))) {
                             [string] $path = ('teams/{0}/members' -f $team.Id)
@@ -98,7 +91,7 @@ function Get-PSMsTeamsTeamMember {
                                     $header['ConsistencyLevel'] = 'eventual'
                                 }
                             }
-                            ConvertFrom-RestConversationMember -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
+                            ConvertFrom-RestConversationMember -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -ErrorAction Stop)
                             if (Test-PSFFunctionInterrupt) { return }
                         }
                         else {
@@ -106,7 +99,7 @@ function Get-PSMsTeamsTeamMember {
                                 Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Group.Get.Failed) -f $itemIdentity)
                             }
                         }
-                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                 }
             }

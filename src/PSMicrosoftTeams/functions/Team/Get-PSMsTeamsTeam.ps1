@@ -1,34 +1,34 @@
 ﻿function Get-PSMsTeamsTeam {
     <#
-        .SYNOPSIS
-            Get the properties of the specified team.
+    .SYNOPSIS
+     Get the properties of the specified team.
 
-        .DESCRIPTION
-            Get the properties of the specified team.
+    .DESCRIPTION
+       Get the properties of the specified team.
 
-        .PARAMETER Identity
-            MailnicName, Mail or Id of the team attribute populated in tenant/directory.
+    .PARAMETER Identity
+         MailnicName, Mail or Id of the team attribute populated in tenant/directory.
 
-        .PARAMETER DisplayName
-            DIsplayName of the group attribute populated in tenant/directory.
+    .PARAMETER DisplayName
+         DIsplayName of theoup attribute populated in tenant/directory.
 
-        .PARAMETER Filter
-            Filter expressions of accounts in tenant/directory.
+    .PARAMETER Filter
+         Filter expressions of accounts in tenant/directory.
 
-        .PARAMETER AdvancedFilter
-            Switch advanced filter for filtering accounts in tenant/directory.
+    .PARAMETER AdvancedFilter
+         Switch advanced filter for filtering accounts in tenant/directory.
 
-        .PARAMETER All
-            Return all accounts in tenant/directory.
+    .PARAMETER All
+         Return all accounts in tenant/directory.
 
-        .PARAMETER EnableException
-            This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
-            but allows catching exceptions in calling scripts.
+    .PARAMETER EnableException
+         This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
+        but allows catching exceptions in calling scripts.
 
-        .EXAMPLE
-            PS C:\> Get-PSMsTeamsTeam -Identity team1
+   .EXAMPLE
+        PS C:\> Get-PSMsTeamsTeam -Identity team1
 
-            Get properties of Microsoft Teams team1
+        Get properties of Microsoft Teams team1
 
     #>
     [OutputType('PSMicrosoftTeams.Teams.Team')]
@@ -52,6 +52,7 @@
         [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'All')]
         [ValidateNotNullOrEmpty()]
         [switch]$All,
+        [Parameter()]
         [switch]$EnableException
     )
 
@@ -65,12 +66,6 @@
         }
         [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
-        if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
-            [boolean] $cmdLetVerbose = $true
-        }
-        else {
-            [boolean] $cmdLetVerbose = $false
-        }
     }
 
     process {
@@ -85,15 +80,15 @@
                     $mailNickNameQuery['$Filter'] = ("resourceProvisioningOptions/Any(x:x eq 'Team') and mailNickName eq '{0}'" -f $team)
 
                     Invoke-PSFProtectedCommand -ActionString 'Team.Get' -ActionStringValues $team -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        $mailNickName = Invoke-EntraRequest -Service $service -Path 'groups' -Query $mailNickNameQuery -Method Get -ErrorAction Stop | ConvertFrom-RestTeam
+                        [PSMicrosoftTeams.Teams.Team[]]$mailNickName = Invoke-EntraRequest -Service $service -Path 'groups' -Query $mailNickNameQuery -Method Get -ErrorAction Stop
                         if (-not([object]::Equals($mailNickName, $null))) {
                             [string] $teamId = $mailNickName[0].Id
                         }
                         else {
                             [string] $teamId = $team
                         }
-                        ConvertFrom-RestTeam -InputObject (Invoke-EntraRequest -Service $service -Path ('groups/{0}' -f $teamId) -Query $query -Method Get -Verbose:$($cmdLetVerbose) -ErrorAction Stop)
-                    } -EnableException $EnableException -Continue -PSCmdlet $PSCmdlet -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        ConvertFrom-RestTeam -InputObject (Invoke-EntraRequest -Service $service -Path ('groups/{0}' -f $teamId) -Query $query -Method Get -ErrorAction Stop)
+                    } -EnableException $EnableException -Continue -PSCmdlet $PSCmdlet -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                 }
             }
@@ -102,7 +97,7 @@
                     $query['$Filter'] = ("startswith(displayName,'{0}')" -f $team)
                     Invoke-PSFProtectedCommand -ActionString 'Team.Get' -ActionStringValues $team -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         ConvertFrom-RestTeam -InputObject (Invoke-EntraRequest -Service $service -Path 'teams' -Query $query -Method Get -ErrorAction Stop)
-                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                 }
             }
@@ -113,12 +108,12 @@
                     $header['ConsistencyLevel'] = 'eventual'
                     Invoke-PSFProtectedCommand -ActionString 'Team.Filter' -ActionStringValues $query['$Filter'] -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         ConvertFrom-RestTeam -InputObject (Invoke-EntraRequest -Service $service -Path 'teams' -Query $query -Method Get -Header $header -ErrorAction Stop)
-                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                 }
                 else {
                     Invoke-PSFProtectedCommand -ActionString 'Team.Filter' -ActionStringValues $query['$Filter'] -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        Invoke-EntraRequest -Service $service -Path ('teams') -Query $query -Method Get -ErrorAction Stop | ConvertFrom-RestTeam
-                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        ConvertFrom-RestTeam -InputObject (Invoke-EntraRequest -Service $service -Path ('teams') -Query $query -Method Get -ErrorAction Stop)
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                 }
                 if (Test-PSFFunctionInterrupt) { return }
             }
@@ -126,7 +121,7 @@
                 if ($All.IsPresent) {
                     Invoke-PSFProtectedCommand -ActionString 'Team.List' -ActionStringValues 'All' -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         ConvertFrom-RestTeam -InputObject (Invoke-EntraRequest -Service $service -Path 'teams' -Query $query -Method Get -ErrorAction Stop)
-                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                 }
             }

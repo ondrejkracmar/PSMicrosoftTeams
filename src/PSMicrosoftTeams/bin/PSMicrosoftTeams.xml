@@ -4,6 +4,93 @@
         <name>PSMicrosoftTeams</name>
     </assembly>
     <members>
+        <member name="T:PSMicrosoftTeams.Channels.Channel">
+            <summary>
+            Represents a Microsoft Teams channel, as defined by Microsoft Graph API.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Channels.Channel.CreatedDateTime">
+            <summary>
+            Read only. Timestamp at which the channel was created (ISO 8601 string).
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Channels.Channel.Description">
+            <summary>
+            Optional textual description for the channel.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Channels.Channel.DisplayName">
+            <summary>
+            Channel name as it will appear to the user in Microsoft Teams. The maximum length is 50 characters.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Channels.Channel.Email">
+            <summary>
+            The email address for sending messages to the channel. Read-only.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Channels.Channel.Id">
+            <summary>
+            The channel's unique identifier. Read-only.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Channels.Channel.IsArchived">
+            <summary>
+            Indicates whether the channel is archived. Read-only.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Channels.Channel.IsFavoriteByDefault">
+            <summary>
+            Indicates whether the channel should be marked as recommended for all members of the team to show in their channel list.
+            The property can only be set programmatically via the Create team method. The default value is false.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Channels.Channel.MembershipType">
+            <summary>
+            The type of the channel. Can be set during creation and can't be changed. 
+            The possible values are: standard, private, unknownFutureValue, shared. The default value is standard.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Channels.Channel.TenantId">
+            <summary>
+            The ID of the Microsoft Entra tenant.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Channels.Channel.WebUrl">
+            <summary>
+            A hyperlink that will go to the channel in Microsoft Teams. Read-only.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Channels.Channel.Summary">
+            <summary>
+            Contains summary information about the channel, including number of owners, members, guests, and cross-tenant members.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftTeams.Channels.ChannelSummary">
+            <summary>
+            Contains summary information about the channel.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Channels.ChannelSummary.OwnersCount">
+            <summary>
+            Number of owners of the channel.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Channels.ChannelSummary.MembersCount">
+            <summary>
+            Number of members of the channel.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Channels.ChannelSummary.GuestsCount">
+            <summary>
+            Number of guests in the channel.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Channels.ChannelSummary.CrossTenantMemberCount">
+            <summary>
+            Indicator for members from other tenants.
+            </summary>
+        </member>
         <member name="T:PSMicrosoftTeams.Commands.NewPSMsTeamsBatchRequest">
             <summary>
             Cmdlet that receives Request objects from the pipeline and produces multiple 

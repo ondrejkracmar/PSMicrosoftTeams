@@ -1,12 +1,37 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Projects\\PSModules\\PSMicrosoftTeams\\src\\library\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{D03A77F1-D42C-462E-84E1-448CA563D08E}|PSMicrosoftTeams\\PSMicrosoftTeams.csproj|c:\\projects\\psmodules\\psmicrosoftteams\\src\\library\\psmicrosoftteams\\channels\\channel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D03A77F1-D42C-462E-84E1-448CA563D08E}|PSMicrosoftTeams\\PSMicrosoftTeams.csproj|solutionrelative:psmicrosoftteams\\channels\\channel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
       "VerticalTabListWidth": 256,
-      "DocumentGroups": []
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Channel.cs",
+              "DocumentMoniker": "C:\\Projects\\PSModules\\PSMicrosoftTeams\\src\\library\\PSMicrosoftTeams\\Channels\\Channel.cs",
+              "RelativeDocumentMoniker": "PSMicrosoftTeams\\Channels\\Channel.cs",
+              "ToolTip": "C:\\Projects\\PSModules\\PSMicrosoftTeams\\src\\library\\PSMicrosoftTeams\\Channels\\Channel.cs",
+              "RelativeToolTip": "PSMicrosoftTeams\\Channels\\Channel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-04T12:58:03.706Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
     }
   ]
 }

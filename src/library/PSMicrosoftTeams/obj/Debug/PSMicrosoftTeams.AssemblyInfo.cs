@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PSMicrosoftTeams")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3fac5247b346b4f0e8a11e6bb673a5ed8efb9092")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d8d7ca9f008d9f269791398f2ed5c1a0d2a8440e")]
 [assembly: System.Reflection.AssemblyProductAttribute("PSMicrosoftTeams")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PSMicrosoftTeams")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

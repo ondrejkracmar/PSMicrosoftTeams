@@ -1,77 +1,117 @@
 ﻿function Get-PSMsTeamsTeamChannelMember {
-<#
-.SYNOPSIS
+    <#
+    .SYNOPSIS
     Get members of a Microsoft Teams channel.
 
-.DESCRIPTION
-    Returns the members (including guests, cross-tenant) of the specified Teams channel via Microsoft Graph API (GET /teams/{team-id}/channels/{channel-id}/members).
+    .DESCRIPTION
+    Returns members of the specified Teams channel using Microsoft Graph API.
+    By default, retrieves only explicit channel members (owners, members, guests) via `/teams/{team-id}/channels/{channel-id}/members`.
+    When the `-All` switch is used, retrieves **all users who have access to the channel** (including inherited membership, e.g. for standard channels – all team members; for private/shared channels – explicit channel members and any guests), via `/teams/{team-id}/channels/{channel-id}/allMembers`.
+    For details, see [List members](https://learn.microsoft.com/en-us/graph/api/channel-list-members?view=graph-rest-1.0&tabs=http) and [List allMembers](https://learn.microsoft.com/en-us/graph/api/channel-list-allmembers?view=graph-rest-1.0&tabs=http) in Microsoft Graph API documentation.
 
-.PARAMETER Identity
+    .PARAMETER Identity
     Team Id, GroupId, MailNickname, or any unique team identifier.
 
-.PARAMETER ChannelId
+    .PARAMETER Channel
     Id of the channel within the team.
 
-.PARAMETER Filter
-    Optional OData filter to restrict results (applies after retrieval).
+    .PARAMETER All
+    When specified, lists all users who have access to the channel (not just explicit channel members).
 
-.PARAMETER EnableException
-    If set, cmdlet throws on failure. Otherwise, issues warnings.
+    .PARAMETER EnableException
+        This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
+        but allows catching exceptions in calling scripts.
 
-.EXAMPLE
-    Get-PSMsTeamsTeamChannelMember -Identity team1 -ChannelId 19:...
+    .EXAMPLE
+        PS C:\> Get-PSMsTeamsTeamChannelMember -Identity team1 -Channel 19:xxxxxxxxxx@thread.tacv2
 
-.EXAMPLE
-    # With OData filter (e.g. only owners)
-    Get-PSMsTeamsTeamChannelMember -Identity team1 -ChannelId 19:... | Where-Object { $_.Roles -contains "owner" }
+        Returns explicit members of the channel (owners, members, guests – only users directly added to this channel)
+
+    .EXAMPLE
+        PS C:\> Get-PSMsTeamsTeamChannelMember -Identity team1 -Channel 19:xxxxxxxxxx@thread.tacv2 -All
+
+        Returns **all users who have access** to the channel, including inherited team membership
+
+    .EXAMPLE
+        PS C:\> Get-PSMsTeamsTeamChannelMember -Identity team1 -Channel 19:xxxxxxxxxx@thread.tacv2 | Where-Object { $_.Roles -contains 'owner' }
+
+        List only owners of the channel
+
+    .EXAMPLE
+
+        PS C:\> Get-PSMsTeamsTeamChannelMember -Identity team1 -Channel 19:xxxxxxxxxx@thread.tacv2 | Where-Object { $_.UserType -eq 'Guest' }
+
+        List all external (guest or B2B) members in a private channel
+
+    .NOTES
+        - Using the `-All` switch calls `/teams/{team-id}/channels/{channel-id}/allMembers` and includes all users with access to the channel, not just explicit channel members.
+        - Without `-All`, only direct channel members (owners, members, guests) are returned (via `/members` endpoint).
+        - See: https://learn.microsoft.com/en-us/graph/api/channel-list-members
+           https://learn.microsoft.com/en-us/graph/api/channel-list-allmembers
 #>
     [OutputType('PSMicrosoftTeams.Members.Member')]
-    [CmdletBinding(SupportsShouldProcess = $false, DefaultParameterSetName = 'Default')]
+    [CmdletBinding(SupportsShouldProcess = $false, DefaultParameterSetName = 'Channel')]
     param(
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Channel')]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'All')]
         [Alias("Id", "GroupId", "TeamId", "MailNickname")]
         [ValidateGroupIdentity()]
         [string] $Identity,
-
-        [Parameter(Mandatory = $true)]
-        [Alias("Channel")]
-        [string] $ChannelId,
-
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Channel')]
+        [Alias("ChannelId")]
+        [string] $Channel,
+        [Parameter(ParameterSetName = 'All')]
+        [ValidateNotNullOrEmpty()]
+        [switch] $All,
         [Parameter()]
         [switch] $EnableException
     )
     begin {
         [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
-        $query = @{
-            '$top'    = 100
-            '$count'  = 'true'
-            '$select' = 'id,roles,displayName,email,userId,tenantId'
-        }
-
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
+        $query = @{
+            '$count'  = 'true'
+            '$top'    = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
+            '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.ChannelMember).Value -join ',')
+        }
         [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
-        if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
-            [boolean] $cmdLetVerbose = $true
-        } else {
-            [boolean] $cmdLetVerbose = $false
-        }
-        $teamObj = Get-PSMsTeamsTeam -Identity $Identity -EnableException:$EnableException
-        if ([object]::Equals($teamObj, $null) -or -not $teamObj.Id) {
-            if ($EnableException.IsPresent) {
-                Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Get.Failed) -f $Identity)
-            }
-        }
-        $teamId = $teamObj.Id
+        [hashtable] $header = @{}
+
     }
     process {
-        
-        $path = "teams/$teamId/channels/$ChannelId/members"
-        Write-Verbose "Retrieving channel members from $path"
-        Invoke-PSFProtectedCommand -ActionString 'TeamChannelMember.Get' -ActionStringValues $ChannelId -Target $teamId -ScriptBlock {
-            Invoke-EntraRequest -Service $service -Path $path -Query $query -Method Get -Verbose:$cmdLetVerbose -ErrorAction Stop | ConvertFrom-RestTeamChannelMember
-        } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-        if (Test-PSFFunctionInterrupt) { return }
+        switch ($PSCmdlet.ParameterSetName) {
+            'All' {
+                Invoke-PSFProtectedCommand -ActionString 'TeamChannelAllMember.Get' -ActionStringValues $ChannelId -Target $teamId -ScriptBlock {
+                    [PSMicrosoftTeams.Teams.Team] $team = Get-PSMsTeamsTeam -Identity $Identity -EnableException:$EnableException
+                    if (-not([object]::Equals($team, $null))) {
+                        [string] $path = ('teams/{0}/channels/{1}/allMembers' -f $team.Id, $Channel)
+                        ConvertFrom-RestConversationMember -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -ErrorAction Stop)
+                    }
+                    else {
+                        if ($EnableException.IsPresent) {
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Get.Failed) -f $Identity)
+                        }
+                    }
+                } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+                if (Test-PSFFunctionInterrupt) { return }
+            }
+            'Channel' {
+                Invoke-PSFProtectedCommand -ActionString 'TeamChannelCahnnelMember.Get' -ActionStringValues $ChannelId -Target $teamId -ScriptBlock {
+                    [PSMicrosoftTeams.Teams.Team] $team = Get-PSMsTeamsTeam -Identity $Identity -EnableException:$EnableException
+                    if (-not([object]::Equals($team, $null))) {
+                        [string] $path = ('teams/{0}/channels/{1}/members' -f $team.Id, $Channel)
+                        ConvertFrom-RestConversationMember -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -ErrorAction Stop)
+                    }
+                    else {
+                        if ($EnableException.IsPresent) {
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Get.Failed) -f $Identity)
+                        }
+                    }
+                } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+                if (Test-PSFFunctionInterrupt) { return }
+            }
+        }
     }
     end {}
 }

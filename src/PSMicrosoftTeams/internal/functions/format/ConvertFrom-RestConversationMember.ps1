@@ -22,15 +22,15 @@
 	if (-not $InputObject) { return }
 	$jsonString = $InputObject | ConvertTo-Json -Depth 4
 
-	if ($InputObject -is [array]) {
-		[byte[]] $byteArray = [System.Text.Encoding]::UTF8.GetBytes($jsonString)
-		[System.IO.MemoryStream] $stream = [System.IO.MemoryStream]::new($byteArray)
-		[System.Runtime.Serialization.Json.DataContractJsonSerializer] $serializer = [System.Runtime.Serialization.Json.DataContractJsonSerializer]::new([PSMicrosoftTeams.Members.ConversationMember[]])
+	$type = if ($InputObject -is [array]) {
+		[PSMicrosoftTeams.Members.ConversationMember[]]
 	}
 	else {
-		[byte[]] $byteArray = [System.Text.Encoding]::UTF8.GetBytes($jsonString)
-		[System.IO.MemoryStream] $stream = [System.IO.MemoryStream]::new($byteArray)
-		[System.Runtime.Serialization.Json.DataContractJsonSerializer] $serializer = [System.Runtime.Serialization.Json.DataContractJsonSerializer]::new([PSMicrosoftTeams.Members.ConversationMember])
+		[PSMicrosoftTeams.Members.ConversationMember]
 	}
+
+	$byteArray = [System.Text.Encoding]::UTF8.GetBytes($jsonString)
+	$stream = [System.IO.MemoryStream]::new($byteArray)
+	$serializer = [System.Runtime.Serialization.Json.DataContractJsonSerializer]::new($type)
 	return $serializer.ReadObject($stream)
 }

@@ -9,14 +9,14 @@
         (such as those produced by New-PSEntraIDBatchRequest).
         Each BatchRequestPayload contains up to 20 sub-requests (ID=1..20).
 
-        For each batch payload, this function can validate the requests (Test-PSEntraIDBatchRequestBatchRequest),
+        For each batch payload, this function can validate the requests (Test-PSMicrosoftEntraIDBatchRequest),
         then send them to the Graph $batch endpoint (via Invoke-EntraRequest).
         It captures the Graph response (which typically has a "responses" array)
         and outputs a combined [pscustomobject] with:
            .requests   = the sub-requests
            .responses  = the sub-responses from Graph
 
-        This allows a subsequent cmdlet (e.g. Invoke-PSMsTeamsBatchResponse) to correlate them by id.
+        This allows a subsequent cmdlet (e.g. Invoke-PSMicrosoftEntraIDBatchResponse) to correlate them by id.
 
     .PARAMETER InputObject
         An array of BatchRequestPayload objects to be processed. Each object
@@ -41,7 +41,7 @@
         and want precise control over the operation of the Shell.
 
     .EXAMPLE
-        # Suppose $payloads are returned from New-PSMsTeamsBatchRequest -InputObject $requests
+        # Suppose $payloads are returned from New-PSEntraIDBatchRequest -InputObject $requests
         $payloads = New-PSEntraIDBatchRequest -InputObject $requests
 
         # Then call:
@@ -52,7 +52,7 @@
 
     #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
-    [OutputType([pscustomobject])]
+    [OutputType([PSMicrosoftEntraID.Batch.BatchResponsePayload])]
     [CmdletBinding(
         SupportsShouldProcess = $true, # enables -WhatIf and -Confirm
         ConfirmImpact = 'High'
@@ -63,7 +63,7 @@
             ValueFromPipeline = $true,
             HelpMessage = "One or more BatchRequestPayload objects, each with up to 20 sub-requests."
         )]
-        [PSMicrosoftTeams.Batch.BatchRequestPayload[]] $InputObject,
+        [PSMicrosoftEntraID.Batch.BatchRequestPayload[]] $InputObject,
         [Parameter()]
         [switch] $EnableException,
         [Parameter()]
@@ -71,26 +71,17 @@
     )
 
     Begin {
-        # Example lines (depending on your environment):
         [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
         [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         [TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
         [string] $path = '$batch'
-
-        # Figure out confirm logic:
+        [hashtable] $header = @{ 'Content-Type' = 'application/json' }
         if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
             [bool] $cmdLetConfirm = $false
         }
         else {
             [bool] $cmdLetConfirm = $true
-        }
-
-        if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey('Verbose')) {
-            [boolean] $cmdLetVerbose = $true
-        }
-        else {
-            [boolean] $cmdLetVerbose = $false
         }
     }
 
@@ -98,40 +89,33 @@
         foreach ($payload in $InputObject) {
 
             [hashtable] $body = @{
-                'requests' = $payload.Requests
+                'requests' = @($payload.Requests | Select-Object -Property @{ Name = 'id'; Expression = { $PSItem.Id } } `
+                        , @{ Name = 'method'; Expression = { $PSItem.Method } } `
+                        , @{ Name = 'url'; Expression = { $PSItem.Url } } `
+                        , @{ Name = 'headers'; Expression = { $PSItem.Headers } } `
+                        , @{ Name = 'body'; Expression = { $PSItem.Body } }
+                )
             }
 
-            if (Test-PSMicrosoftTeamsBatchRequest -Requests $payload.Requests -EnableException:$EnableException) {
-                Invoke-PSFProtectedCommand -ActionString 'Batch.Invoke' -ActionStringValues ($payload.Requests.Id -join ",") `
-                    -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) `
-                    -ScriptBlock {
-                    try {
-
-                        $batchResponse = Invoke-EntraRequest -Service $service -Path $path -Body $body -Method Post -Verbose:$cmdLetVerbose -ErrorAction Stop
-
-
-                        [pscustomobject]@{
-                            requests  = $payload.Requests
-                            responses = $batchResponse.responses
-                        }
-                    }
-                    catch {
-                        if ($EnableException.IsPresent) {
-                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message (Get-PSFLocalizedString -Module $script:ModuleName -Name Batch.Invoke.Failed)
-                        }
-                        else {
-                            Write-Warning "Failed to invoke batch request: $($_.Exception.Message)"
-                        }
-                    }
-                } -EnableException:$EnableException -Confirm:$cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait |
-                if (Test-PSFFunctionInterrupt) {
-                    return
+            Invoke-PSFProtectedCommand -ActionString 'Batch.Invoke' -ActionStringValues ($payload.Requests.Id -join ",") `
+                -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) `
+                -ScriptBlock {
+                $batchResponseList = [System.Collections.Generic.List[psobject]]::New()
+                [psobject] $batchResponse = Invoke-EntraRequest -Service $service -Header $header -Path $path -Body $body -Method Post -ErrorAction Stop
+                $batchResponse.Responses | ForEach-Object { [void] $batchResponseList.Add($PSItem) }
+                [PSMicrosoftEntraID.Batch.BatchResponsePayload]@{
+                    Requests  = $payload.Requests
+                    Responses = [PSMicrosoftEntraID.Batch.Response[]] ($batchResponseList | Select-Object -Property @{ Name = 'Id'; Expression = { $PSItem.Id } } `
+                            , @{ Name = 'Status'; Expression = { $PSItem.status } } `
+                            , @{ Name = 'Headers'; Expression = { $PSItem.headers } } `
+                            , @{ Name = 'Body'; Expression = { $PSItem.body } })
                 }
-            }
+            } -EnableException:$EnableException -Confirm:$cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+            if (Test-PSFFunctionInterrupt) { return }
         }
     }
 
     End {
-        # final summary if needed
+
     }
 }
