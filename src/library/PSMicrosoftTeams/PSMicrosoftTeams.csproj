@@ -15,9 +15,6 @@
 		<RuntimeIdentifier></RuntimeIdentifier>
 		<!-- žádný RID = žádné runtimes -->
 	</PropertyGroup>
-    <ItemGroup>
-	  <ProjectReference Include="..\..\..\..\PSMicrosoftEntraID\src\library\PSMicrosoftEntraID\PSMicrosoftEntraID.csproj" />
-	</ItemGroup>
 	<ItemGroup Condition="'$(OS)' == 'Windows_NT'">
 		<PackageReference Include="Microsoft.PowerShell.SDK" Version="7.2.24" />
 	</ItemGroup>
