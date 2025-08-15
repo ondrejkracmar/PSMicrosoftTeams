@@ -38,9 +38,9 @@
         [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
         [hashtable] $query = @{
-            '$count'  = 'true'
-            '$top'    = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
-            '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.TeamAdditionalProperty).Value -join ',') + ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.GroupProperty).Value -join ',')
+            #'$count'  = 'true'
+            #'$top'    = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
+            '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.TeamAdditionalProperty).Value -join ',')
         }
         [hashtable] $header = @{}
         [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
@@ -51,7 +51,7 @@
         switch ($PSCmdlet.ParameterSetName) {
             'InputObject' {
                 foreach ($itemInputObject in $InputObject) {
-                    Invoke-PSFProtectedCommand -ActionString 'Team.AdditionalProperty' -ActionStringValues $itemInputObject.MailNickname -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                    Invoke-PSFProtectedCommand -ActionString 'Team.AdditionalProperty' -ActionStringValues $itemInputObject.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         [string] $path = ('teams/{0}' -f $itemInputObject.Id)
                         ConvertFrom-RestTeamAdditionalProperty -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -ErrorAction Stop)
                     } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
@@ -63,7 +63,7 @@
                     Invoke-PSFProtectedCommand -ActionString 'Team.AdditionalProperty' -ActionStringValues $itemIdentity -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         [PSMicrosoftTeams.Teams.Team] $team = Get-PSMsTeamsTeam -Identity $itemIdentity
                         if (-not([object]::Equals($team, $null))) {
-                            [string] $path = ('teams/{0}' -f $itemIdentity.Id)
+                            [string] $path = ('teams/{0}' -f $team.Id)
                             ConvertFrom-RestTeamAdditionalProperty -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -ErrorAction Stop)
                         }
                         else {

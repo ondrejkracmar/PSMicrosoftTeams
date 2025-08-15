@@ -34,13 +34,11 @@
 #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType('PSMicrosoftTeams.Channels.Channel')]
-    [CmdletBinding(DefaultParameterSetName = 'IdentityChannelTypeMembershipType')]
-    param(
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityChannelTypeMembershipType')]
+    [CmdletBinding(DefaultParameterSetName = 'IdentityChannelType')]
+    param([Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityChannel')]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityChannelDisplayName')]
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityChannelMembershipType')]
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityChannelType')]
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityChannel')]
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityChannelDisplayName')]
         [Alias("Id", "GroupId", "TeamId", "MailNickname")]
         [ValidateGroupIdentity()]
         [string] $Identity,
@@ -49,17 +47,15 @@
         [string] $Channel,
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityChannelDisplayName')]
         [ValidateNotNullOrEmpty()]
-        [string[]] $DisplayName,
-        [Parameter(Mandatory = $true, ParameterSetName = 'IdentityChannelTypeMembershipType')]
-        [Parameter(Mandatory = $true, ParameterSetName = 'IdentityChannelMembershipType')]
+        [string] $DisplayName,
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityChannelMembershipType')]
         [ValidateSet('Standard', 'Private', 'Shared')]
         [ValidateNotNullOrEmpty()]
-        [string] $MembershipType,
+        [string] $MembershipType = 'Standard',
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityChannelType')]
         [ValidateSet('Team', 'Incomming', 'All')]
-        [Parameter(Mandatory = $true, ParameterSetName = 'IdentityChannelTypeMembershipType')]
-        [Parameter(Mandatory = $true, ParameterSetName = 'IdentityChannelType')]
         [ValidateNotNullOrEmpty()]
-        [switch] $ChannelType,
+        [string] $ChannelType = 'All',
         [Parameter()]
         [switch] $EnableException
     )
@@ -78,7 +74,7 @@
         switch ($PSCmdlet.ParameterSetName) {
             'IdentityChannel' {
                 Invoke-PSFProtectedCommand -ActionString 'TeamChannel.Get' -ActionStringValues $Channel, $Identity -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                    [PSMicrosoftTeams.teams.Teeam]$team = Get-PSMsTeamsTeam -Identity $Identity
+                    [PSMicrosoftTeams.Teams.Team]$team = Get-PSMsTeamsTeam -Identity $Identity
                     if (-not([object]::Equals($team, $null))) {
                         $path = ("teams/{0}/channels/{1}") -f $team.Id, $Channel
                         ConvertFrom-RestTeamChannel -InputObject( Invoke-EntraRequest -Service $service -Path $path -Query $query -Method Get -ErrorAction Stop)
@@ -93,7 +89,7 @@
             }
             'IdentityChannelDisplayName' {
                 Invoke-PSFProtectedCommand -ActionString 'TeamChannel.Get' -ActionStringValues $DisplayName, $Identity -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                    [PSMicrosoftTeams.teams.Teeam]$team = Get-PSMsTeamsTeam -Identity $Identity
+                    [PSMicrosoftTeams.Teams.Team]$team = Get-PSMsTeamsTeam -Identity $Identity
                     if (-not([object]::Equals($team, $null))) {
                         $query['$Filter'] = ("startswith(displayName,'{0}')" -f $DisplayName)
                         $path = ("teams/{0}/allChannels/") -f $team.Id, $Channel
@@ -108,11 +104,12 @@
                 if (Test-PSFFunctionInterrupt) { return }
             }
             'IdentityChannelMembershipType' {
-                Invoke-PSFProtectedCommand -ActionString 'TeamChannel.List' -ActionStringValues $MembershipType -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                    [PSMicrosoftTeams.teams.Teeam] $team = Get-PSMsTeamsTeam -Identity $Identity
+                Invoke-PSFProtectedCommand -ActionString 'TeamChannel.List' -ActionStringValues $MembershipType -Target $Identity -ScriptBlock {
+                    [PSMicrosoftTeams.Teams.Team] $team = Get-PSMsTeamsTeam -Identity $Identity
                     if (-not([object]::Equals($team, $null))) {
+                        [hashtable] $query = @{}
                         $query['$Filter'] = ("membershipType eq '{0}'" -f $MembershipType)
-                        $path = ("teams/{0}/allChannels") -f $team.Id
+                        [string] $path = ("teams/{0}/allChannels") -f $team.Id
                         ConvertFrom-RestTeamChannel -InputObject( Invoke-EntraRequest -Service $service -Path $path -Query $query -Method Get -ErrorAction Stop)
                     }
                     else {
@@ -123,29 +120,44 @@
                 } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                 if (Test-PSFFunctionInterrupt) { return }
             }
-            'IdentityChannelType\w' {
-                Invoke-PSFProtectedCommand -ActionString 'TeamChannel.Get' -ActionStringValues $ChannelType -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                    [PSMicrosoftTeams.teams.Teeam] $team = Get-PSMsTeamsTeam -Identity $Identity
-                    if (Test-PSFParameterBinding -ParameterName 'MembershipType') { $query['$Filter'] = ("membershipType eq '{0}'" -f $MembershipType) }
+            'IdentityChannelType' {
+
+                Invoke-PSFProtectedCommand -ActionString 'TeamChannel.List' -ActionStringValues $ChannelType -Target $Identity -ScriptBlock {
+                    [PSMicrosoftTeams.Teams.Team] $team = Get-PSMsTeamsTeam -Identity $Identity
+
                     if (-not([object]::Equals($team, $null))) {
+                        [hashtable] $query = @{}
                         switch ($ChannelType) {
                             'Team' {
-                                $path = ("teams/{0}/channels") -f $team.Id
+                                [string] $path = ('teams/{0}/channels' -f $team.Id)
                             }
                             'Incomming' {
-                                $path = ("teams/{0}/incomingChannels") -f $team.Id
+                                [string] $path = ('teams/{0}/incomingChannels' -f $team.Id)
                             }
                             'All' {
-                                $path = ("teams/{0}/allChannels") -f $team.Id
+                                [string] $path = ('teams/{0}/allChannels' -f $team.Id)
                             }
+                            'Default' {
+                                [string] $path = ('teams/{0}/allChannels' -f $team.Id)
+                            }
+
                         }
+                        if (Test-PSFParameterBinding -ParameterName 'MembershipType') {
+                            $query['$Filter'] = ('membershipType eq ''{0}''' -f $MembershipType.ToLower())
+                        }
+                        else {
+                            $query['$Filter'] = ('membershipType eq ''{0}''' -f 'Standard')
+                        }
+                        
                         ConvertFrom-RestTeamChannel -InputObject( Invoke-EntraRequest -Service $service -Path $path -Query $query -Method Get -ErrorAction Stop)
                     }
                     else {
+
                         if ($EnableException.IsPresent) {
                             Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Get.Failed) -f $teamIdentity)
                         }
                     }
+                    'Pica'
                 } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                 if (Test-PSFFunctionInterrupt) { return }
             }
