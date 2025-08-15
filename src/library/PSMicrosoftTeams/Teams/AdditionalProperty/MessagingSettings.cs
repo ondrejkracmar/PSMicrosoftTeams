@@ -1,13 +1,13 @@
 ﻿using System.Runtime.Serialization;
 
-namespace PSMicrosoftTeams.Teams
+namespace PSMicrosoftTeams.Teams.AdditionalProperty
 {
     /// <summary>
     /// Represents settings to configure messaging and mentions in a team.
     /// Resource type: microsoft.graph.teamMessagingSettings
     /// </summary>
     [DataContract]
-    public class TeamMessagingSettings
+    public class MessagingSettings
     {
         /// <summary>
         /// Gets or sets a value indicating whether users can edit their messages.

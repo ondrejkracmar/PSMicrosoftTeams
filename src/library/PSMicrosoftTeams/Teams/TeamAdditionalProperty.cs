@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using PSMicrosoftTeams.Teams;
+using PSMicrosoftTeams.Teams.AdditionalProperty;
 
 namespace PSMicrosoftTeams.Teams
 {
@@ -26,13 +26,13 @@ namespace PSMicrosoftTeams.Teams
         /// Gets or sets the class settings. Available only when the team represents a class.
         /// </summary>
         [DataMember(Name = "classSettings", EmitDefaultValue = false)]
-        public TeamClassSettings ClassSettings { get; set; }
+        public ClassSettings ClassSettings { get; set; }
 
         /// <summary>
         /// Gets or sets the timestamp at which the team was created.
         /// </summary>
         [DataMember(Name = "createdDateTime", EmitDefaultValue = false)]
-        public DateTimeOffset? CreatedDateTime { get; set; }
+        public string CreatedDateTime { get; set; }
 
         /// <summary>
         /// Gets or sets an optional description for the team. Maximum length: 1,024 characters.
@@ -56,13 +56,13 @@ namespace PSMicrosoftTeams.Teams
         /// Gets or sets the settings to configure use of Giphy, memes, and stickers in the team.
         /// </summary>
         [DataMember(Name = "funSettings", EmitDefaultValue = false)]
-        public TeamFunSettings FunSettings { get; set; }
+        public FunSettings FunSettings { get; set; }
 
         /// <summary>
         /// Gets or sets the settings to configure whether guests can create, update, or delete channels in the team.
         /// </summary>
         [DataMember(Name = "guestSettings", EmitDefaultValue = false)]
-        public TeamGuestSettings GuestSettings { get; set; }
+        public GuestSettings GuestSettings { get; set; }
 
         /// <summary>
         /// Gets or sets a unique ID for the team used in some places such as the audit log.
@@ -80,25 +80,25 @@ namespace PSMicrosoftTeams.Teams
         /// Gets or sets the settings to configure whether members can perform certain actions in the team.
         /// </summary>
         [DataMember(Name = "memberSettings", EmitDefaultValue = false)]
-        public TeamMemberSettings MemberSettings { get; set; }
+        public MemberSettings MemberSettings { get; set; }
 
         /// <summary>
         /// Gets or sets the settings to configure messaging and mentions in the team.
         /// </summary>
         [DataMember(Name = "messagingSettings", EmitDefaultValue = false)]
-        public TeamMessagingSettings MessagingSettings { get; set; }
+        public MessagingSettings MessagingSettings { get; set; }
 
         /// <summary>
         /// Gets or sets the team specialization.
         /// </summary>
         [DataMember(Name = "specialization", EmitDefaultValue = false)]
-        public TeamSpecialization? Specialization { get; set; }
+        public string? Specialization { get; set; }
 
         /// <summary>
         /// Gets or sets the summary information about the team, including number of owners, members, and guests.
         /// </summary>
         [DataMember(Name = "summary", EmitDefaultValue = false)]
-        public TeamSummary Summary { get; set; }
+        public Summary Summary { get; set; }
 
         /// <summary>
         /// Gets or sets the ID of the Microsoft Entra tenant.

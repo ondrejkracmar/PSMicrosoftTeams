@@ -1,13 +1,13 @@
 ﻿using System.Runtime.Serialization;
 
-namespace PSMicrosoftTeams.Teams
+namespace PSMicrosoftTeams.Teams.AdditionalProperty
 {
     /// <summary>
     /// Represents fun settings to configure use of Giphy, memes, and stickers in a team.
     /// Resource type: microsoft.graph.teamFunSettings
     /// </summary>
     [DataContract]
-    public class TeamFunSettings
+    public class FunSettings
     {
         /// <summary>
         /// Gets or sets a value indicating whether users can include custom memes.

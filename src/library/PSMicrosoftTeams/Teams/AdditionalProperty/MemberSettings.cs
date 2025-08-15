@@ -1,13 +1,13 @@
 ﻿using System.Runtime.Serialization;
 
-namespace PSMicrosoftTeams.Teams
+namespace PSMicrosoftTeams.Teams.AdditionalProperty
 {
     /// <summary>
     /// Represents member settings to configure what actions members can perform in a team.
     /// Resource type: microsoft.graph.teamMemberSettings
     /// </summary>
     [DataContract]
-    public class TeamMemberSettings
+    public class MemberSettings
     {
         /// <summary>
         /// Gets or sets a value indicating whether members can add and remove apps.

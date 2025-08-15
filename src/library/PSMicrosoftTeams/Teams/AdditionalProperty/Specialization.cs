@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace PSMicrosoftTeams.Teams
+namespace PSMicrosoftTeams.Teams.AdditionalProperty
 {
     /// <summary>
     /// Indicates whether the team is intended for a particular use case.
@@ -8,7 +8,7 @@ namespace PSMicrosoftTeams.Teams
     /// Resource type: microsoft.graph.teamSpecialization (enum)
     /// </summary>
     [DataContract]
-    public enum TeamSpecialization
+    public enum Specialization
     {
         /// <summary>
         /// Default type for a team that gives the standard team experience.

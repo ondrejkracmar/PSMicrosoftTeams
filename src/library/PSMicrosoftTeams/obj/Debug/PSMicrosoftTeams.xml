@@ -9,14 +9,9 @@
             Represents a Microsoft Teams channel, as defined by Microsoft Graph API.
             </summary>
         </member>
-        <member name="P:PSMicrosoftTeams.Channels.Channel.CreatedDateTime">
+        <member name="P:PSMicrosoftTeams.Channels.Channel.Id">
             <summary>
-            Read only. Timestamp at which the channel was created (ISO 8601 string).
-            </summary>
-        </member>
-        <member name="P:PSMicrosoftTeams.Channels.Channel.Description">
-            <summary>
-            Optional textual description for the channel.
+            The channel's unique identifier. Read-only.
             </summary>
         </member>
         <member name="P:PSMicrosoftTeams.Channels.Channel.DisplayName">
@@ -24,14 +19,19 @@
             Channel name as it will appear to the user in Microsoft Teams. The maximum length is 50 characters.
             </summary>
         </member>
+        <member name="P:PSMicrosoftTeams.Channels.Channel.Description">
+            <summary>
+            Optional textual description for the channel.
+            </summary>
+        </member>
         <member name="P:PSMicrosoftTeams.Channels.Channel.Email">
             <summary>
             The email address for sending messages to the channel. Read-only.
             </summary>
         </member>
-        <member name="P:PSMicrosoftTeams.Channels.Channel.Id">
+        <member name="P:PSMicrosoftTeams.Channels.Channel.CreatedDateTime">
             <summary>
-            The channel's unique identifier. Read-only.
+            Read only. Timestamp at which the channel was created (ISO 8601 string).
             </summary>
         </member>
         <member name="P:PSMicrosoftTeams.Channels.Channel.IsArchived">
@@ -66,27 +66,27 @@
             Contains summary information about the channel, including number of owners, members, guests, and cross-tenant members.
             </summary>
         </member>
-        <member name="T:PSMicrosoftTeams.Channels.ChannelSummary">
+        <member name="T:PSMicrosoftTeams.Channels.Summary">
             <summary>
             Contains summary information about the channel.
             </summary>
         </member>
-        <member name="P:PSMicrosoftTeams.Channels.ChannelSummary.OwnersCount">
+        <member name="P:PSMicrosoftTeams.Channels.Summary.OwnersCount">
             <summary>
             Number of owners of the channel.
             </summary>
         </member>
-        <member name="P:PSMicrosoftTeams.Channels.ChannelSummary.MembersCount">
+        <member name="P:PSMicrosoftTeams.Channels.Summary.MembersCount">
             <summary>
             Number of members of the channel.
             </summary>
         </member>
-        <member name="P:PSMicrosoftTeams.Channels.ChannelSummary.GuestsCount">
+        <member name="P:PSMicrosoftTeams.Channels.Summary.GuestsCount">
             <summary>
             Number of guests in the channel.
             </summary>
         </member>
-        <member name="P:PSMicrosoftTeams.Channels.ChannelSummary.CrossTenantMemberCount">
+        <member name="P:PSMicrosoftTeams.Channels.Summary.CrossTenantMemberCount">
             <summary>
             Indicator for members from other tenants.
             </summary>
@@ -170,6 +170,206 @@
             Gets or sets the roles assigned to the user. 
             May include 'owner', 'guest', or other role qualifiers relevant to the member.
             For a basic member, this should be empty.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftTeams.Teams.AdditionalProperty.ClassSettings">
+            <summary>
+            Represents class-specific settings for a Microsoft Teams team.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Teams.AdditionalProperty.ClassSettings.NotifyGuardiansAboutAssignments">
+            <summary>
+            Gets or sets a value indicating whether sending of weekly assignments digest emails to parents/guardians is enabled.
+            This requires the tenant admin to have enabled the setting globally.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftTeams.Teams.AdditionalProperty.FunSettings">
+            <summary>
+            Represents fun settings to configure use of Giphy, memes, and stickers in a team.
+            Resource type: microsoft.graph.teamFunSettings
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Teams.AdditionalProperty.FunSettings.AllowCustomMemes">
+            <summary>
+            Gets or sets a value indicating whether users can include custom memes.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Teams.AdditionalProperty.FunSettings.AllowGiphy">
+            <summary>
+            Gets or sets a value indicating whether Giphy is allowed in the team.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Teams.AdditionalProperty.FunSettings.AllowStickersAndMemes">
+            <summary>
+            Gets or sets a value indicating whether users can include stickers and memes.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Teams.AdditionalProperty.FunSettings.GiphyContentRating">
+            <summary>
+            Gets or sets the Giphy content rating. Possible values: "moderate", "strict".
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftTeams.Teams.AdditionalProperty.GuestSettings">
+            <summary>
+            Represents settings to configure what guests can do in the team.
+            Resource type: microsoft.graph.teamGuestSettings
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Teams.AdditionalProperty.GuestSettings.AllowCreateUpdateChannels">
+            <summary>
+            Gets or sets a value indicating whether guests can create or update channels.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Teams.AdditionalProperty.GuestSettings.AllowDeleteChannels">
+            <summary>
+            Gets or sets a value indicating whether guests can delete channels.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftTeams.Teams.AdditionalProperty.MemberSettings">
+            <summary>
+            Represents member settings to configure what actions members can perform in a team.
+            Resource type: microsoft.graph.teamMemberSettings
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Teams.AdditionalProperty.MemberSettings.AllowAddRemoveApps">
+            <summary>
+            Gets or sets a value indicating whether members can add and remove apps.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Teams.AdditionalProperty.MemberSettings.AllowCreatePrivateChannels">
+            <summary>
+            Gets or sets a value indicating whether members can add and update private channels.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Teams.AdditionalProperty.MemberSettings.AllowCreateUpdateChannels">
+            <summary>
+            Gets or sets a value indicating whether members can add and update channels.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Teams.AdditionalProperty.MemberSettings.AllowCreateUpdateRemoveConnectors">
+            <summary>
+            Gets or sets a value indicating whether members can add, update, and remove connectors.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Teams.AdditionalProperty.MemberSettings.AllowCreateUpdateRemoveTabs">
+            <summary>
+            Gets or sets a value indicating whether members can add, update, and remove tabs.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Teams.AdditionalProperty.MemberSettings.AllowDeleteChannels">
+            <summary>
+            Gets or sets a value indicating whether members can delete channels.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftTeams.Teams.AdditionalProperty.MessagingSettings">
+            <summary>
+            Represents settings to configure messaging and mentions in a team.
+            Resource type: microsoft.graph.teamMessagingSettings
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Teams.AdditionalProperty.MessagingSettings.AllowUserEditMessages">
+            <summary>
+            Gets or sets a value indicating whether users can edit their messages.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Teams.AdditionalProperty.MessagingSettings.AllowUserDeleteMessages">
+            <summary>
+            Gets or sets a value indicating whether users can delete their messages.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Teams.AdditionalProperty.MessagingSettings.AllowOwnerDeleteMessages">
+            <summary>
+            Gets or sets a value indicating whether owners can delete messages.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Teams.AdditionalProperty.MessagingSettings.AllowTeamMentions">
+            <summary>
+            Gets or sets a value indicating whether @team mentions are allowed.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Teams.AdditionalProperty.MessagingSettings.AllowChannelMentions">
+            <summary>
+            Gets or sets a value indicating whether @channel mentions are allowed.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftTeams.Teams.AdditionalProperty.Specialization">
+            <summary>
+            Indicates whether the team is intended for a particular use case.
+            Each team specialization has access to unique behaviors and experiences targeted to its use case.
+            Resource type: microsoft.graph.teamSpecialization (enum)
+            </summary>
+        </member>
+        <member name="F:PSMicrosoftTeams.Teams.AdditionalProperty.Specialization.None">
+            <summary>
+            Default type for a team that gives the standard team experience.
+            </summary>
+        </member>
+        <member name="F:PSMicrosoftTeams.Teams.AdditionalProperty.Specialization.EducationStandard">
+            <summary>
+            Team created by an education user. All teams created by education user are of type Edu.
+            </summary>
+        </member>
+        <member name="F:PSMicrosoftTeams.Teams.AdditionalProperty.Specialization.EducationClass">
+            <summary>
+            Team experience optimized for a class.
+            </summary>
+        </member>
+        <member name="F:PSMicrosoftTeams.Teams.AdditionalProperty.Specialization.EducationProfessionalLearningCommunity">
+            <summary>
+            Team experience optimized for a PLC (Professional Learning Community).
+            </summary>
+        </member>
+        <member name="F:PSMicrosoftTeams.Teams.AdditionalProperty.Specialization.EducationStaff">
+            <summary>
+            Team type for an optimized experience for staff in an organization.
+            </summary>
+        </member>
+        <member name="F:PSMicrosoftTeams.Teams.AdditionalProperty.Specialization.UnknownFutureValue">
+            <summary>
+            Sentinel value reserved as a placeholder for future expansion of the enum.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftTeams.Teams.AdditionalProperty.Summary">
+            <summary>
+            Contains summary information about the team, including the number of owners, members, and guests.
+            Resource type: microsoft.graph.teamSummary
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Teams.AdditionalProperty.Summary.GuestsCount">
+            <summary>
+            Gets or sets the number of guests in the team.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Teams.AdditionalProperty.Summary.MembersCount">
+            <summary>
+            Gets or sets the number of members in the team.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Teams.AdditionalProperty.Summary.OwnersCount">
+            <summary>
+            Gets or sets the number of owners in the team.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftTeams.Teams.AdditionalProperty.TeamVisibilityType">
+            <summary>
+            Describes the visibility of a team.
+            Resource type: microsoft.graph.teamVisibilityType (enum)
+            </summary>
+        </member>
+        <member name="F:PSMicrosoftTeams.Teams.AdditionalProperty.TeamVisibilityType.Private">
+            <summary>
+            Anyone can see the team, but only the owner can add a user to the team.
+            </summary>
+        </member>
+        <member name="F:PSMicrosoftTeams.Teams.AdditionalProperty.TeamVisibilityType.Public">
+            <summary>
+            Anyone can join the team.
+            </summary>
+        </member>
+        <member name="F:PSMicrosoftTeams.Teams.AdditionalProperty.TeamVisibilityType.HiddenMembership">
+            <summary>
+            Only administrators (global, company, user, and helpdesk) can view the members of a team.
+            Owner permissions are required to join a team.
             </summary>
         </member>
         <member name="T:PSMicrosoftTeams.Teams.Team">
@@ -285,206 +485,6 @@
         <member name="P:PSMicrosoftTeams.Teams.TeamAdditionalProperty.WebUrl">
             <summary>
             Gets or sets the hyperlink to the team in the Microsoft Teams client.
-            </summary>
-        </member>
-        <member name="T:PSMicrosoftTeams.Teams.TeamClassSettings">
-            <summary>
-            Represents class-specific settings for a Microsoft Teams team.
-            </summary>
-        </member>
-        <member name="P:PSMicrosoftTeams.Teams.TeamClassSettings.NotifyGuardiansAboutAssignments">
-            <summary>
-            Gets or sets a value indicating whether sending of weekly assignments digest emails to parents/guardians is enabled.
-            This requires the tenant admin to have enabled the setting globally.
-            </summary>
-        </member>
-        <member name="T:PSMicrosoftTeams.Teams.TeamFunSettings">
-            <summary>
-            Represents fun settings to configure use of Giphy, memes, and stickers in a team.
-            Resource type: microsoft.graph.teamFunSettings
-            </summary>
-        </member>
-        <member name="P:PSMicrosoftTeams.Teams.TeamFunSettings.AllowCustomMemes">
-            <summary>
-            Gets or sets a value indicating whether users can include custom memes.
-            </summary>
-        </member>
-        <member name="P:PSMicrosoftTeams.Teams.TeamFunSettings.AllowGiphy">
-            <summary>
-            Gets or sets a value indicating whether Giphy is allowed in the team.
-            </summary>
-        </member>
-        <member name="P:PSMicrosoftTeams.Teams.TeamFunSettings.AllowStickersAndMemes">
-            <summary>
-            Gets or sets a value indicating whether users can include stickers and memes.
-            </summary>
-        </member>
-        <member name="P:PSMicrosoftTeams.Teams.TeamFunSettings.GiphyContentRating">
-            <summary>
-            Gets or sets the Giphy content rating. Possible values: "moderate", "strict".
-            </summary>
-        </member>
-        <member name="T:PSMicrosoftTeams.Teams.TeamGuestSettings">
-            <summary>
-            Represents settings to configure what guests can do in the team.
-            Resource type: microsoft.graph.teamGuestSettings
-            </summary>
-        </member>
-        <member name="P:PSMicrosoftTeams.Teams.TeamGuestSettings.AllowCreateUpdateChannels">
-            <summary>
-            Gets or sets a value indicating whether guests can create or update channels.
-            </summary>
-        </member>
-        <member name="P:PSMicrosoftTeams.Teams.TeamGuestSettings.AllowDeleteChannels">
-            <summary>
-            Gets or sets a value indicating whether guests can delete channels.
-            </summary>
-        </member>
-        <member name="T:PSMicrosoftTeams.Teams.TeamMemberSettings">
-            <summary>
-            Represents member settings to configure what actions members can perform in a team.
-            Resource type: microsoft.graph.teamMemberSettings
-            </summary>
-        </member>
-        <member name="P:PSMicrosoftTeams.Teams.TeamMemberSettings.AllowAddRemoveApps">
-            <summary>
-            Gets or sets a value indicating whether members can add and remove apps.
-            </summary>
-        </member>
-        <member name="P:PSMicrosoftTeams.Teams.TeamMemberSettings.AllowCreatePrivateChannels">
-            <summary>
-            Gets or sets a value indicating whether members can add and update private channels.
-            </summary>
-        </member>
-        <member name="P:PSMicrosoftTeams.Teams.TeamMemberSettings.AllowCreateUpdateChannels">
-            <summary>
-            Gets or sets a value indicating whether members can add and update channels.
-            </summary>
-        </member>
-        <member name="P:PSMicrosoftTeams.Teams.TeamMemberSettings.AllowCreateUpdateRemoveConnectors">
-            <summary>
-            Gets or sets a value indicating whether members can add, update, and remove connectors.
-            </summary>
-        </member>
-        <member name="P:PSMicrosoftTeams.Teams.TeamMemberSettings.AllowCreateUpdateRemoveTabs">
-            <summary>
-            Gets or sets a value indicating whether members can add, update, and remove tabs.
-            </summary>
-        </member>
-        <member name="P:PSMicrosoftTeams.Teams.TeamMemberSettings.AllowDeleteChannels">
-            <summary>
-            Gets or sets a value indicating whether members can delete channels.
-            </summary>
-        </member>
-        <member name="T:PSMicrosoftTeams.Teams.TeamMessagingSettings">
-            <summary>
-            Represents settings to configure messaging and mentions in a team.
-            Resource type: microsoft.graph.teamMessagingSettings
-            </summary>
-        </member>
-        <member name="P:PSMicrosoftTeams.Teams.TeamMessagingSettings.AllowUserEditMessages">
-            <summary>
-            Gets or sets a value indicating whether users can edit their messages.
-            </summary>
-        </member>
-        <member name="P:PSMicrosoftTeams.Teams.TeamMessagingSettings.AllowUserDeleteMessages">
-            <summary>
-            Gets or sets a value indicating whether users can delete their messages.
-            </summary>
-        </member>
-        <member name="P:PSMicrosoftTeams.Teams.TeamMessagingSettings.AllowOwnerDeleteMessages">
-            <summary>
-            Gets or sets a value indicating whether owners can delete messages.
-            </summary>
-        </member>
-        <member name="P:PSMicrosoftTeams.Teams.TeamMessagingSettings.AllowTeamMentions">
-            <summary>
-            Gets or sets a value indicating whether @team mentions are allowed.
-            </summary>
-        </member>
-        <member name="P:PSMicrosoftTeams.Teams.TeamMessagingSettings.AllowChannelMentions">
-            <summary>
-            Gets or sets a value indicating whether @channel mentions are allowed.
-            </summary>
-        </member>
-        <member name="T:PSMicrosoftTeams.Teams.TeamSpecialization">
-            <summary>
-            Indicates whether the team is intended for a particular use case.
-            Each team specialization has access to unique behaviors and experiences targeted to its use case.
-            Resource type: microsoft.graph.teamSpecialization (enum)
-            </summary>
-        </member>
-        <member name="F:PSMicrosoftTeams.Teams.TeamSpecialization.None">
-            <summary>
-            Default type for a team that gives the standard team experience.
-            </summary>
-        </member>
-        <member name="F:PSMicrosoftTeams.Teams.TeamSpecialization.EducationStandard">
-            <summary>
-            Team created by an education user. All teams created by education user are of type Edu.
-            </summary>
-        </member>
-        <member name="F:PSMicrosoftTeams.Teams.TeamSpecialization.EducationClass">
-            <summary>
-            Team experience optimized for a class.
-            </summary>
-        </member>
-        <member name="F:PSMicrosoftTeams.Teams.TeamSpecialization.EducationProfessionalLearningCommunity">
-            <summary>
-            Team experience optimized for a PLC (Professional Learning Community).
-            </summary>
-        </member>
-        <member name="F:PSMicrosoftTeams.Teams.TeamSpecialization.EducationStaff">
-            <summary>
-            Team type for an optimized experience for staff in an organization.
-            </summary>
-        </member>
-        <member name="F:PSMicrosoftTeams.Teams.TeamSpecialization.UnknownFutureValue">
-            <summary>
-            Sentinel value reserved as a placeholder for future expansion of the enum.
-            </summary>
-        </member>
-        <member name="T:PSMicrosoftTeams.Teams.TeamSummary">
-            <summary>
-            Contains summary information about the team, including the number of owners, members, and guests.
-            Resource type: microsoft.graph.teamSummary
-            </summary>
-        </member>
-        <member name="P:PSMicrosoftTeams.Teams.TeamSummary.GuestCount">
-            <summary>
-            Gets or sets the number of guests in the team.
-            </summary>
-        </member>
-        <member name="P:PSMicrosoftTeams.Teams.TeamSummary.MemberCount">
-            <summary>
-            Gets or sets the number of members in the team.
-            </summary>
-        </member>
-        <member name="P:PSMicrosoftTeams.Teams.TeamSummary.OwnerCount">
-            <summary>
-            Gets or sets the number of owners in the team.
-            </summary>
-        </member>
-        <member name="T:PSMicrosoftTeams.Teams.TeamVisibilityType">
-            <summary>
-            Describes the visibility of a team.
-            Resource type: microsoft.graph.teamVisibilityType (enum)
-            </summary>
-        </member>
-        <member name="F:PSMicrosoftTeams.Teams.TeamVisibilityType.Private">
-            <summary>
-            Anyone can see the team, but only the owner can add a user to the team.
-            </summary>
-        </member>
-        <member name="F:PSMicrosoftTeams.Teams.TeamVisibilityType.Public">
-            <summary>
-            Anyone can join the team.
-            </summary>
-        </member>
-        <member name="F:PSMicrosoftTeams.Teams.TeamVisibilityType.HiddenMembership">
-            <summary>
-            Only administrators (global, company, user, and helpdesk) can view the members of a team.
-            Owner permissions are required to join a team.
             </summary>
         </member>
     </members>

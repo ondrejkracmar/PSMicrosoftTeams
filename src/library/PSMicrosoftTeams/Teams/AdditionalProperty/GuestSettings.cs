@@ -1,13 +1,13 @@
 ﻿using System.Runtime.Serialization;
 
-namespace PSMicrosoftTeams.Teams
+namespace PSMicrosoftTeams.Teams.AdditionalProperty
 {
     /// <summary>
     /// Represents settings to configure what guests can do in the team.
     /// Resource type: microsoft.graph.teamGuestSettings
     /// </summary>
     [DataContract]
-    public class TeamGuestSettings
+    public class GuestSettings
     {
         /// <summary>
         /// Gets or sets a value indicating whether guests can create or update channels.

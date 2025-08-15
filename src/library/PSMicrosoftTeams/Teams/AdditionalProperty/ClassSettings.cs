@@ -1,12 +1,12 @@
 ﻿using System.Runtime.Serialization;
 
-namespace PSMicrosoftTeams.Teams
+namespace PSMicrosoftTeams.Teams.AdditionalProperty
 {
     /// <summary>
     /// Represents class-specific settings for a Microsoft Teams team.
     /// </summary>
     [DataContract]
-    public class TeamClassSettings
+    public class ClassSettings
     {
         /// <summary>
         /// Gets or sets a value indicating whether sending of weekly assignments digest emails to parents/guardians is enabled.

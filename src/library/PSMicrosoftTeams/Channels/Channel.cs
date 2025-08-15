@@ -15,16 +15,10 @@ namespace PSMicrosoftTeams.Channels
     public class Channel
     {
         /// <summary>
-        /// Read only. Timestamp at which the channel was created (ISO 8601 string).
+        /// The channel's unique identifier. Read-only.
         /// </summary>
-        [DataMember(Name = "createdDateTime", EmitDefaultValue = false)]
-        public string CreatedDateTime { get; set; }
-
-        /// <summary>
-        /// Optional textual description for the channel.
-        /// </summary>
-        [DataMember(Name = "description", EmitDefaultValue = false)]
-        public string Description { get; set; }
+        [DataMember(Name = "id", EmitDefaultValue = false)]
+        public string Id { get; set; }
 
         /// <summary>
         /// Channel name as it will appear to the user in Microsoft Teams. The maximum length is 50 characters.
@@ -33,16 +27,22 @@ namespace PSMicrosoftTeams.Channels
         public string DisplayName { get; set; }
 
         /// <summary>
+        /// Optional textual description for the channel.
+        /// </summary>
+        [DataMember(Name = "description", EmitDefaultValue = false)]
+        public string Description { get; set; }
+
+        /// <summary>
         /// The email address for sending messages to the channel. Read-only.
         /// </summary>
         [DataMember(Name = "email", EmitDefaultValue = false)]
         public string Email { get; set; }
 
         /// <summary>
-        /// The channel's unique identifier. Read-only.
+        /// Read only. Timestamp at which the channel was created (ISO 8601 string).
         /// </summary>
-        [DataMember(Name = "id", EmitDefaultValue = false)]
-        public string Id { get; set; }
+        [DataMember(Name = "createdDateTime", EmitDefaultValue = false)]
+        public string CreatedDateTime { get; set; }
 
         /// <summary>
         /// Indicates whether the channel is archived. Read-only.
@@ -80,7 +80,7 @@ namespace PSMicrosoftTeams.Channels
         /// Contains summary information about the channel, including number of owners, members, guests, and cross-tenant members.
         /// </summary>
         [DataMember(Name = "summary", EmitDefaultValue = false)]
-        public ChannelSummary Summary { get; set; }
+        public Summary Summary { get; set; }
     }
 }
 

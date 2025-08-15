@@ -11,7 +11,7 @@ namespace PSMicrosoftTeams.Channels
     /// Contains summary information about the channel.
     /// </summary>
     [DataContract]
-    public class ChannelSummary
+    public class Summary
     {
         /// <summary>
         /// Number of owners of the channel.
