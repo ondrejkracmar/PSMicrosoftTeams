@@ -28,12 +28,11 @@
 	'TeamMember.Remove'              = "Remove member from team '{0}' with the following users '{1}'"
 	'TeamMember.List'                = "List members from the team '{0}'"
 
-	'TeamChannel.Add'                = "Add channel '{0}' to team '{1}'"
+	'TeamChannel.New'                = "Create new channel '{0}'"
 	'TeamChannel.Remove'             = "Remove channel '{0}'"
 	'TeamChannel.Get'                = "Get channel '{0}' from team '{1}'"
 	'TeamChannel.List'               = "List channels with property '{0}'"
 
-	'TeamChannel.New'                = "Create new channel '{0}'"
 	"TeamChannelMember.Add"          = "Add user '{0}' to channel {1}"
 	'TeamChannelMember.Remove'       = "Remove membershipid '{0}'"
 	'TeamChannelCahnnelMember.Get'   = "Get members from channel '{0}'"
