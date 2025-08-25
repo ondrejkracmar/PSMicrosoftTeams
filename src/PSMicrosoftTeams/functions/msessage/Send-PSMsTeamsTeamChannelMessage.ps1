@@ -2,26 +2,26 @@
     <#
     .SYNOPSIS
         Send a formatted message to a Microsoft Teams channel via Microsoft Graph API.
-    
+
     .DESCRIPTION
         Sends a message (plain text or HTML) to a specified Teams channel. Supports basic formatting (bold, italics, links, lists) via HTML.
         Uses POST /teams/{team-id}/channels/{channel-id}/messages.
-    
+
     .PARAMETER Identity
         Team Id, GroupId, MailNickname, or any unique team identifier.
-    
-    .PARAMETER ChannelId
+
+    .PARAMETER Channel
         Id of the channel to post the message to.
-    
+
     .PARAMETER Message
         The message content (string) or object (pipeline input supported).
-    
+
     .PARAMETER ContentType
         Format of message: "text" (default) or "html". "html" supports formatting (bold, links, etc).
-    
+
     .PARAMETER Subject
         Optional subject/title for the message (shown in activity feed and channel).
-    
+
     .PARAMETER EnableException
         This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
         but allows catching exceptions in calling scripts.
@@ -46,16 +46,16 @@
     .PARAMETER PassThru
         When specified, the cmdlet will not execute the disable license action but will instead
         return a `PSMicrosoftEntraID.Batch.Request` object for batch processing.
-    
+
     .EXAMPLE
         PS C:\> Send-PSMsTeamsTeamChannelMessage -Identity team1 -ChannelId channel1 -Message "Hello, team!"
-    
+
         Send plain text
 
     .EXAMPLE
         PS C:\> $html = "<b>Build completed:</b> <a href='https://dev.azure.com'>Check logs here</a><ul><li>Step 1 OK</li><li>Step 2 OK</li></ul>"
         PS C:\> Send-PSMsTeamsTeamChannelMessage -Identity team1 -ChannelId channel1 -Message $html -ContentType html
-    
+
         Send HTML-formatted message
 #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
@@ -67,14 +67,14 @@
         [ValidateGroupIdentity()]
         [string] $Identity,
         [Parameter(ParameterSetName = 'SendMessage', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
-        [Alias("Channel")]
+        [Alias("ChannelId")]
         [string] $Channel,
-        [Parameter()]
+        [Parameter(ParameterSetName = 'SendMessage', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [string] $Subject,
         [Parameter(ParameterSetName = 'SendMessage', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [string] $Message,
-        [Parameter()]
-        [hashtable()] $Attachments,
+        [Parameter(ParameterSetName = 'SendMessage', ValueFromPipelineByPropertyName = $true)]
+        [hashtable[]] $Attachments,
         [Parameter()]
         [ValidateSet('Text', 'Html')]
         [string] $ContentType = 'Text',
@@ -119,7 +119,7 @@
             [PSMicrosoftEntraID.Batch.Request]@{ Method = $method; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
         }
         else {
-            Invoke-PSFProtectedCommand -ActionString 'TeamChannel.Message.Send' -ActionStringValues ($Message.Substring(0, [Math]::Min($Message.Length, 32))) -Target $team.Id, $teamChannel.Id -ScriptBlock {
+            Invoke-PSFProtectedCommand -ActionString 'TeamChannel.Message.Send' -ActionStringValues $Subject, $teamChannel.DisplayName -Target $team.DisplayName -ScriptBlock {
                 [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
             } -EnableException:$EnableException -Confirm:$Force -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
             if (Test-PSFFunctionInterrupt) { return }

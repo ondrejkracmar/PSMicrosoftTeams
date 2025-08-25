@@ -76,7 +76,8 @@
                 Invoke-PSFProtectedCommand -ActionString 'TeamChannel.Get' -ActionStringValues $Channel, $Identity -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                     [PSMicrosoftTeams.Teams.Team]$team = Get-PSMsTeamsTeam -Identity $Identity
                     if (-not([object]::Equals($team, $null))) {
-                        $path = ("teams/{0}/channels/{1}") -f $team.Id, $Channel
+                        [hashtable] $query = @{}
+                        [string] $path = ("teams/{0}/channels/{1}") -f $team.Id, $Channel
                         ConvertFrom-RestTeamChannel -InputObject( Invoke-EntraRequest -Service $service -Path $path -Query $query -Method Get -ErrorAction Stop)
                     }
                     else {
@@ -91,8 +92,9 @@
                 Invoke-PSFProtectedCommand -ActionString 'TeamChannel.Get' -ActionStringValues $DisplayName, $Identity -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                     [PSMicrosoftTeams.Teams.Team]$team = Get-PSMsTeamsTeam -Identity $Identity
                     if (-not([object]::Equals($team, $null))) {
+                        [hashtable] $query = @{}
                         $query['$Filter'] = ("startswith(displayName,'{0}')" -f $DisplayName)
-                        $path = ("teams/{0}/allChannels/") -f $team.Id, $Channel
+                        [string] $path = ("teams/{0}/allChannels/") -f $team.Id, $Channel
                         ConvertFrom-RestTeamChannel -InputObject( Invoke-EntraRequest -Service $service -Path $path -Query $query -Method Get -ErrorAction Stop)
                     }
                     else {
@@ -124,7 +126,6 @@
 
                 Invoke-PSFProtectedCommand -ActionString 'TeamChannel.List' -ActionStringValues $ChannelType -Target $Identity -ScriptBlock {
                     [PSMicrosoftTeams.Teams.Team] $team = Get-PSMsTeamsTeam -Identity $Identity
-
                     if (-not([object]::Equals($team, $null))) {
                         [hashtable] $query = @{}
                         switch ($ChannelType) {
@@ -148,7 +149,6 @@
                         else {
                             $query['$Filter'] = ('membershipType eq ''{0}''' -f 'Standard')
                         }
-                        
                         ConvertFrom-RestTeamChannel -InputObject( Invoke-EntraRequest -Service $service -Path $path -Query $query -Method Get -ErrorAction Stop)
                     }
                     else {
@@ -157,7 +157,6 @@
                             Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Get.Failed) -f $teamIdentity)
                         }
                     }
-                    'Pica'
                 } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                 if (Test-PSFFunctionInterrupt) { return }
             }

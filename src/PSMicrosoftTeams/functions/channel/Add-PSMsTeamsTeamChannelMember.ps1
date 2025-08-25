@@ -72,7 +72,6 @@ function Add-PSMsTeamsTeamChannelMember {
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'IdentityInputObject')]
         [PSMicrosoftEntraID.Users.User[]] $InputObject,
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUser')]
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityChannel')]
         [Alias("UserId", "UserPrincipalName", "Mail")]
         [ValidateUserIdentity()]
         [string[]] $User,
@@ -116,7 +115,7 @@ function Add-PSMsTeamsTeamChannelMember {
     process {
         switch ($PSCmdlet.ParameterSetName) {
             'IdentityUser' {
-                [string] $userActionString = ($User | ForEach-Object { "{0}" -f $_ }) -join ','
+                [string] $userActionString = ($User | ForEach-Object { "{0}" -f $PSItem }) -join ','
             }
             'IdentityInputObject' {
                 [string] $userActionString = ($InputObject.UserPrincipalName | ForEach-Object { "{0}" -f $_ }) -join ','
@@ -126,8 +125,8 @@ function Add-PSMsTeamsTeamChannelMember {
             'IdentityInputObject' {
                 foreach ($itemInputObject in $InputObject) {
                     [hashtable] $body = @{}
-                    $body['@odata.type'] = 'microsoft.graph.aadUserConversationMember'
-                    $body['user@odata.bind'] = ("{0}/users/'1}'" -f (Get-EntraService -Name $service).ServiceUrl, $itemInputObject.Id)
+                    $body['@odata.type'] = '#microsoft.graph.aadUserConversationMember'
+                    $body['user@odata.bind'] = ('{0}/users(''{1}'')' -f (Get-EntraService -Name $service).ServiceUrl, $itemInputObject.Id)
                     if (Test-PSFParameterBinding -ParameterName 'Roles') {
                         $body['roles'] = @($Role.ToLower())
                     }
@@ -135,13 +134,13 @@ function Add-PSMsTeamsTeamChannelMember {
                         $body['roles'] = @($Role.ToLower())
                     }
                     if (Test-PSFParameterBinding -ParameterName 'TenantId') { $body['tenantId'] = $TenantID }
-                    [string] $path = ("teams/{0}/channels/{1}/members" -f $team.Id, $Channel)
+                    [string] $path = ("teams/{0}/channels/{1}/members" -f $team.Id, $teamChannel.Id)
                     if ($PassThru.IsPresent) {
                         [PSMicrosoftTeams.Batch.Request] @{ Method = 'POST'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
                     }
                     else {
-                        Invoke-PSFProtectedCommand -ActionString 'TeamChannelMember.Add' -ActionStringValues $userActionString -Target $teamChannel.DisplayName, $team.DisplayName, -ScriptBlock {
-                            [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method $requestHash.Method -ErrorAction Stop)
+                        Invoke-PSFProtectedCommand -ActionString 'TeamChannelMember.Add' -ActionStringValues $userActionString, $teamChannel.DisplayName -Target $team.DisplayName -ScriptBlock {
+                            [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method 'POST' -ErrorAction Stop)
                         } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                         if (Test-PSFFunctionInterrupt) { return }
                     }
@@ -152,8 +151,8 @@ function Add-PSMsTeamsTeamChannelMember {
                     [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSMsTeamsTeamUser -Identity $itemUser
                     if (-not([object]::Equals($aADUser, $null))) {
                         [hashtable] $body = @{}
-                        $body['@odata.type'] = 'microsoft.graph.aadUserConversationMember'
-                        $body['user@odata.bind'] = ("{0}/users/'1}'" -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id)
+                        $body['@odata.type'] = '#microsoft.graph.aadUserConversationMember'
+                        $body['user@odata.bind'] = ('{0}/users(''{1}'')' -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id)
                         if (Test-PSFParameterBinding -ParameterName 'Roles') {
                             $body['roles'] = @($Role.ToLower())
                         }
@@ -161,13 +160,13 @@ function Add-PSMsTeamsTeamChannelMember {
                             $body['roles'] = @($Role.ToLower())
                         }
                         if (Test-PSFParameterBinding -ParameterName 'TenantId') { $body['tenantId'] = $TenantID }
-                        [string] $path = ("teams/{0}/channels/{1}/members" -f $team.Id, $Channel)
+                        [string] $path = ("teams/{0}/channels/{1}/members" -f $team.Id, $teamChannel.Id)
                         if ($PassThru.IsPresent) {
                             [PSMicrosoftTeams.Batch.Request] @{ Method = 'POST'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
                         }
                         else {
-                            Invoke-PSFProtectedCommand -ActionString 'TeamChannel.Add' -ActionStringValues $userActionString -Target $teamChannel.DisplayName, $team.DisplayName, -ScriptBlock {
-                                [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method $requestHash.Method -ErrorAction Stop)
+                            Invoke-PSFProtectedCommand -ActionString 'TeamChannelMember.Add' -ActionStringValues $userActionString, $teamChannel.DisplayName -Target $team.DisplayName -ScriptBlock {
+                                [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method 'POST' -ErrorAction Stop)
                             } -EnableException $EnableException -Confirm:$($cmdLetConfirm) -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                             if (Test-PSFFunctionInterrupt) { return }
                         }

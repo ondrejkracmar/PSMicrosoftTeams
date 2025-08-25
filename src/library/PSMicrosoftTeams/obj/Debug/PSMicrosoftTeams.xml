@@ -140,24 +140,24 @@
             Represents a conversation member as defined in Microsoft Graph API, including the mail property (for AAD members).
             </summary>
         </member>
-        <member name="P:PSMicrosoftTeams.Members.ConversationMember.DisplayName">
-            <summary>
-            Gets or sets the display name of the user.
-            </summary>
-        </member>
         <member name="P:PSMicrosoftTeams.Members.ConversationMember.Id">
             <summary>
             Gets or sets the unique identifier of the user.
             </summary>
         </member>
-        <member name="P:PSMicrosoftTeams.Members.ConversationMember.Mail">
-            <summary>
-            Gets or sets the user's email address (present in AAD members).
-            </summary>
-        </member>
         <member name="P:PSMicrosoftTeams.Members.ConversationMember.UserId">
             <summary>
             Gets or sets the user's id guid address.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Members.ConversationMember.DisplayName">
+            <summary>
+            Gets or sets the display name of the user.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Members.ConversationMember.Mail">
+            <summary>
+            Gets or sets the user's email address (present in AAD members).
             </summary>
         </member>
         <member name="P:PSMicrosoftTeams.Members.ConversationMember.TenantId">

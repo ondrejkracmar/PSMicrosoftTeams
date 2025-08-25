@@ -184,5 +184,58 @@
 				</TableRowEntries>
 			</TableControl>
 		</View>
+		<View>
+			<Name>PSMicrosoftTeams.Members.ConversationMember</Name>
+			<ViewSelectedBy>
+				<TypeName>PSMicrosoftTeams.Members.ConversationMember</TypeName>
+			</ViewSelectedBy>
+			<TableControl>
+				<AutoSize/>
+				<TableHeaders>
+					<TableColumnHeader>
+            			<Width>8</Width>
+          			</TableColumnHeader>
+          			<TableColumnHeader>
+            			<Width>8</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Width>8</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Width>8</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Width>8</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Width>16</Width>
+					</TableColumnHeader>
+				</TableHeaders>
+				<TableRowEntries>
+					<TableRowEntry>
+						<TableColumnItems>
+							<TableColumnItem>
+								<PropertyName>UserId</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>DisplayName</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>Mail</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>TenantId</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>Roles</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>Id</PropertyName>
+							</TableColumnItem>
+						</TableColumnItems>
+					</TableRowEntry>
+				</TableRowEntries>
+			</TableControl>
+		</View>
 	</ViewDefinitions>
 </Configuration>

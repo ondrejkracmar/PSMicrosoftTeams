@@ -11,16 +11,22 @@ namespace PSMicrosoftTeams.Members
     public class ConversationMember
     {
         /// <summary>
-        /// Gets or sets the display name of the user.
-        /// </summary>
-        [DataMember(Name = "displayName", EmitDefaultValue = false)]
-        public string DisplayName { get; set; }
-
-        /// <summary>
         /// Gets or sets the unique identifier of the user.
         /// </summary>
         [DataMember(Name = "id", EmitDefaultValue = false)]
         public string Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user's id guid address.
+        /// </summary>
+        [DataMember(Name = "userId", EmitDefaultValue = false)]
+        public string UserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the display name of the user.
+        /// </summary>
+        [DataMember(Name = "displayName", EmitDefaultValue = false)]
+        public string DisplayName { get; set; }
 
         /// <summary>
         /// Gets or sets the user's email address (present in AAD members).
@@ -28,11 +34,6 @@ namespace PSMicrosoftTeams.Members
         [DataMember(Name = "email", EmitDefaultValue = false)]
         public string Mail { get; set; }
 
-        /// <summary>
-        /// Gets or sets the user's id guid address.
-        /// </summary>
-        [DataMember(Name = "userId", EmitDefaultValue = false)]
-        public string UserId { get; set; }
 
         /// <summary>
         /// Gets or sets the user's tenantid.

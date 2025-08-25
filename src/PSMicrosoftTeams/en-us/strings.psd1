@@ -25,21 +25,20 @@
 
 	'TeamMember.Add'                 = "Add member '{0}' with the following roles {1}"
 	'TeamMember.Remove.MembershipId' = "Remove member from team '{0}' with the following MembershipId '{1}'"
-	'TeamMember.Remove'              = "Remove member from team '{0}' with the following MembershipId '{1}'"
+	'TeamMember.Remove'              = "Remove member from team '{0}' with the following users '{1}'"
 	'TeamMember.List'                = "List members from the team '{0}'"
 
 	'TeamChannel.Add'                = "Add channel '{0}' to team '{1}'"
-	'TeamChannel.Remove'             = "Remove channel '{0}' from team '{1}'"
+	'TeamChannel.Remove'             = "Remove channel '{0}'"
 	'TeamChannel.Get'                = "Get channel '{0}' from team '{1}'"
 	'TeamChannel.List'               = "List channels with property '{0}'"
 
 	'TeamChannel.New'                = "Create new channel '{0}'"
-	"TeamChannelMember.Add"          = "Add user '{0}' to channel"
+	"TeamChannelMember.Add"          = "Add user '{0}' to channel {1}"
 	'TeamChannelMember.Remove'       = "Remove membershipid '{0}'"
 	'TeamChannelCahnnelMember.Get'   = "Get members from channel '{0}'"
-	'TeamChannelAllMember.Get'       = "Get all members from channel '{0}'"
 
-	'TeamChannel.Message.Send'       = "Send message with content '{1}'"
+	'TeamChannel.Message.Send'       = "Send message with sibject '{0}' to channel '{1}'"
 
 	'Batch.Invoke'                   = 'Invoke batch command with the following Ids {0}'
 

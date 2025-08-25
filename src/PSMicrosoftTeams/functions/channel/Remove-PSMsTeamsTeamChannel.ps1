@@ -44,10 +44,10 @@ function Remove-PSMsTeamsTeamChannel {
         Deletes the channel with Id `19:
 #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
-    [OutputType('PSMicrosoftTeams.Channel')]
+    [OutputType()]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High', DefaultParameterSetName = 'RemoveChannel')]
     param(
-        [Parameter(ParameterSetName = 'RemoveChannel', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
+        [Parameter(ParameterSetName = 'RemoveChannel', Mandatory = $true)]
         [Alias("Id", "GroupId", "TeamId", "MailNickname")]
         [ValidateGroupIdentity()]
         [string] $Identity,
@@ -75,27 +75,24 @@ function Remove-PSMsTeamsTeamChannel {
         else {
             [bool] $cmdLetConfirm = $true
         }
-    }
-
-    process {
         [PSMicrosoftTeams.Teams.Team] $team = Get-PSMsTeamsTeam -Identity $Identity
         if ([object]::Equals($team, $null)) {
             if ($EnableException.IsPresent) {
                 Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Get.Failed) -f $Identity)
             }
         }
-        [string] $path = "teams/{0}/channels/{1}" -f $team.Id, $ChannelId
+        [string] $path = "teams/{0}/channels/{1}" -f $team.Id, $Channel
+    }
 
+    process {
         if ($PassThru.IsPresent) {
             [PSMicrosoftEntraID.Batch.Request] @{Method = 'DELETE'; Url = ('/{0}' -f $path); Headers = $header }
         }
         else {
-            if ($PSCmdlet.ShouldProcess($ChannelId, "Delete channel from team $($team.DisplayName)")) {
-                Invoke-PSFProtectedCommand -ActionString 'TeamChannel.Remove' -ActionStringValues $ChannelId -Target $team.DisplayName -ScriptBlock {
-                    [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Method Delete -ErrorAction Stop)
-                } -EnableException:$EnableException -Confirm:$cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
-                if (Test-PSFFunctionInterrupt) { return }
-            }
+            Invoke-PSFProtectedCommand -ActionString 'TeamChannel.Remove' -ActionStringValues $Channel -Target $team.DisplayName -ScriptBlock {
+                [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Method Delete -ErrorAction Stop)
+            } -EnableException:$EnableException -Confirm:$cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+            if (Test-PSFFunctionInterrupt) { return }
         }
     }
     end {}

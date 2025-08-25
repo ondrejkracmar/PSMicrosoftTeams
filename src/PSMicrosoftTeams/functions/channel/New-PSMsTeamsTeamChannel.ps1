@@ -56,14 +56,14 @@ function New-PSMsTeamsTeamChannel {
 
         Creates a private channel named "IT Only" in the team identified by `team1`, with specified owners and members.
 #>
-    [OutputType('PSMicrosoftTeams.Channel')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+    [OutputType()]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium', DefaultParameterSetName = 'CreateChannel')]
     param(
-        [Parameter(ParameterSetName = 'CreateChannel', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
+        [Parameter(ParameterSetName = 'CreateChannel', Mandatory = $true)]
         [Alias("Id", "GroupId", "TeamId", "MailNickname")]
         [ValidateGroupIdentity()]
         [string] $Identity,
-
         [Parameter(ParameterSetName = 'CreateChannel', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
         [ValidateLength(1, 50)]
@@ -71,8 +71,8 @@ function New-PSMsTeamsTeamChannel {
         [Parameter(ParameterSetName = 'CreateChannel', ValueFromPipelineByPropertyName = $true)]
         [string] $Description,
         [Parameter(ParameterSetName = 'CreateChannel', ValueFromPipelineByPropertyName = $true)]
-        [ValidateSet('standard', 'private', 'shared')]
-        [string] $MembershipType = 'standard',
+        [ValidateSet('Standard', 'Private', 'Shared')]
+        [string] $MembershipType = 'Standard',
         [Parameter(ParameterSetName = 'CreateChannel', ValueFromPipelineByPropertyName = $true)]
         [ValidateUserIdentity()]
         [string[]] $Owners,
@@ -99,9 +99,6 @@ function New-PSMsTeamsTeamChannel {
         else {
             [bool] $cmdLetConfirm = $true
         }
-    }
-
-    process {
         [PSMicrosoftTeams.Teams.Team] $team = Get-PSMsTeamsTeam -Identity $Identity
         if ([object]::Equals($team, $null)) {
             if ($EnableException.IsPresent) {
@@ -109,6 +106,9 @@ function New-PSMsTeamsTeamChannel {
             }
         }
         [string] $path = "teams/{0}/channels" -f $team.Id
+    }
+
+    process {
         [hashtable] $body = @{}
         $body['displayName'] = $DisplayName
         $body['membershipType'] = $MembershipType
@@ -116,12 +116,13 @@ function New-PSMsTeamsTeamChannel {
         $userIdUriPathList = [System.Collections.ArrayList]::new()
 
         foreach ($owner in $Owners) {
-            [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSMsTeamsTeamUser -Identity $itemUser
+            [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSMsTeamsTeamUser -Identity $owner
             if (-not([object]::Equals($aADUser, $null))) {
-                [void] $userIdUriPathList.Add(@{
+                [void] $userIdUriPathList.Add(
+                    @{
                         '@odata.type'     = '#microsoft.graph.aadUserConversationMember'
                         'roles'           = @('owner')
-                        'user@odata.bind' = ("{0}/users/'1}'" -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id)
+                        'user@odata.bind' = ('{0}/users(''{1}'')' -f (Get-EntraService -Name $service).ServiceUrl, $aAdUser.Id)
                     }
                 )
             }
@@ -132,13 +133,13 @@ function New-PSMsTeamsTeamChannel {
             }
         }
         foreach ($member in $Members) {
-            [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSMsTeamsTeamUser -Identity $itemUser
+            [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSMsTeamsTeamUser -Identity $member
             if (-not([object]::Equals($aADUser, $null))) {
                 [void]$userIdUriPathList.Add(
                     @{
                         '@odata.type'     = '#microsoft.graph.aadUserConversationMember'
                         'roles'           = @('member')
-                        'user@odata.bind' = ("{0}/users/'1}'" -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id)
+                        'user@odata.bind' = ('{0}/users(''{1}'')' -f (Get-EntraService -Name $service).ServiceUrl, $aAdUser.Id)
                     }
                 )
             }
@@ -154,7 +155,7 @@ function New-PSMsTeamsTeamChannel {
         }
         else {
             Invoke-PSFProtectedCommand -ActionString 'TeamChannel.New' -ActionStringValues $DisplayName -Target $team.DisplayName -ScriptBlock {
-                ConvertFrom-RestTeamChannel -InputObject Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop
+                [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
             } -EnableException:$EnableException -Confirm:$cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
             if (Test-PSFFunctionInterrupt) { return }
         }

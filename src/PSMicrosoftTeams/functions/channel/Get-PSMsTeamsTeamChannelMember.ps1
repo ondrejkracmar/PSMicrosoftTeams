@@ -49,18 +49,17 @@
         - See: https://learn.microsoft.com/en-us/graph/api/channel-list-members
            https://learn.microsoft.com/en-us/graph/api/channel-list-allmembers
 #>
-    [OutputType('PSMicrosoftTeams.Members.Member')]
-    [CmdletBinding(SupportsShouldProcess = $false, DefaultParameterSetName = 'Channel')]
+    [OutputType('PSMicrosoftTeams.Members.ConversationMember')]
+    [CmdletBinding(SupportsShouldProcess = $false, DefaultParameterSetName = 'IdentityChannel')]
     param(
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Channel')]
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'All')]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityChannel')]
         [Alias("Id", "GroupId", "TeamId", "MailNickname")]
         [ValidateGroupIdentity()]
         [string] $Identity,
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Channel')]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityChannel')]
         [Alias("ChannelId")]
         [string] $Channel,
-        [Parameter(ParameterSetName = 'All')]
+        [Parameter()]
         [ValidateNotNullOrEmpty()]
         [switch] $All,
         [Parameter()]
@@ -70,9 +69,9 @@
         [string] $service = Get-PSFConfigValue -FullName ('{0}.Settings.DefaultService' -f $script:ModuleName)
         Assert-EntraConnection -Service $service -Cmdlet $PSCmdlet
         $query = @{
-            '$count'  = 'true'
-            '$top'    = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
-            '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.ChannelMember).Value -join ',')
+            #'$count'  = 'true'
+            '$top' = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
+            #'$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.ChannelMember).Value -join ',')
         }
         [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
@@ -81,26 +80,16 @@
     }
     process {
         switch ($PSCmdlet.ParameterSetName) {
-            'All' {
-                Invoke-PSFProtectedCommand -ActionString 'TeamChannelAllMember.Get' -ActionStringValues $ChannelId -Target $teamId -ScriptBlock {
+            'IdentityChannel' {
+                Invoke-PSFProtectedCommand -ActionString 'TeamChannelCahnnelMember.Get' -ActionStringValues $Channel -Target $Identity -ScriptBlock {
                     [PSMicrosoftTeams.Teams.Team] $team = Get-PSMsTeamsTeam -Identity $Identity -EnableException:$EnableException
                     if (-not([object]::Equals($team, $null))) {
-                        [string] $path = ('teams/{0}/channels/{1}/allMembers' -f $team.Id, $Channel)
-                        ConvertFrom-RestConversationMember -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -ErrorAction Stop)
-                    }
-                    else {
-                        if ($EnableException.IsPresent) {
-                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Get.Failed) -f $Identity)
+                        if (Test-PSFParameterBinding -ParameterName 'All') {
+                            [string] $path = ('teams/{0}/channels/{1}/allMembers' -f $team.Id, $Channel)
                         }
-                    }
-                } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
-                if (Test-PSFFunctionInterrupt) { return }
-            }
-            'Channel' {
-                Invoke-PSFProtectedCommand -ActionString 'TeamChannelCahnnelMember.Get' -ActionStringValues $ChannelId -Target $teamId -ScriptBlock {
-                    [PSMicrosoftTeams.Teams.Team] $team = Get-PSMsTeamsTeam -Identity $Identity -EnableException:$EnableException
-                    if (-not([object]::Equals($team, $null))) {
-                        [string] $path = ('teams/{0}/channels/{1}/members' -f $team.Id, $Channel)
+                        else {
+                            [string] $path = ('teams/{0}/channels/{1}/members' -f $team.Id, $Channel)
+                        }
                         ConvertFrom-RestConversationMember -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -ErrorAction Stop)
                     }
                     else {

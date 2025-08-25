@@ -59,8 +59,9 @@
 		'New-PSMsTeamsTeamChannel'
 		'Remove-PSMsTeamsTeamChannel'
 		'Get-PSMsTeamsTeamChannel'
-		'Add-PSMsTeamsTeamChannelUser'
-		'Remove-PSMsTeamsTeamChannelUser'
+		'Get-PSMsTeamsTeamChannelMember'
+		'Add-PSMsTeamsTeamChannelMember'
+		'Remove-PSMsTeamsTeamChannelMember'
 		'Send-PSMsTeamsTeamChannelMessage'
 	)
 	

@@ -58,15 +58,16 @@
         [Alias("Id", "GroupId", "TeamId", "MailNickName")]
         [ValidateGroupIdentity()]
         [string] $Identity,
-        [Parameter(Mandatory = $true, ParameterSetName = 'User', ValueFromPipelineByPropertyName = $true)]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUser')]
         [Alias("UserId", "UserPrincipalName", "Mail")]
         [ValidateUserIdentity()]
         [string[]] $User,
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'IdentityInputObject')]
-        [PSMicrosoftTeams.Users.User[]] $InputObject,
+        [PSMicrosoftEntraID.Users.User[]] $InputObject,
         [Parameter(ParameterSetName = 'IdentityInputObject')]
         [Parameter(ParameterSetName = 'IdentityUser')]
         [ValidateSet("Member", "Owner")]
+        [ValidateNotNullOrEmpty()]
         [string] $Role = "Member",
         [Parameter()]
         [switch] $EnableException,
@@ -100,11 +101,11 @@
         switch ($PSCmdlet.ParameterSetName) {
             'IdentityInputObject' {
                 foreach ($itemInputObject in $InputObject) {
-                    [void] $bodyMemberUrlListt.Add(
+                    [void] $bodyMemberUrlList.Add(
                         @{
                             '@odata.type'     = '#microsoft.graph.aadUserConversationMember'
                             'roles'           = @($Role.ToLower())
-                            'user@odata.bind' = ('{0}/users/(''{1}'')' -f (Get-EntraService -Name $service).ServiceUrl, $itemInputObject.Id)
+                            'user@odata.bind' = ('{0}/users(''{1}'')' -f (Get-EntraService -Name $service).ServiceUrl, $itemInputObject.Id)
                         }
                     )
                     [void] $memberUserPrincipalListList.Add($itemInputObject.UserPrincipalName)
@@ -119,7 +120,7 @@
                             @{
                                 '@odata.type'     = "#microsoft.graph.aadUserConversationMember"
                                 'roles'           = @($Role.ToLower())
-                                'user@odata.bind' = ('{0}/users/(''{1}'')' -f (Get-EntraService -Name $service).ServiceUrl, $itemInputObject.Id)
+                                'user@odata.bind' = ('{0}/users(''{1}'')' -f (Get-EntraService -Name $service).ServiceUrl, $itemInputObject.Id)
                             }
                         )
                         [void] $memberUserPrincipalListList.Add($teamUser.UserPrincipalName)
@@ -147,7 +148,7 @@
             $method = 'POST'
         }
 
-        Invoke-PSFProtectedCommand -ActionString 'TeamMember.Add' -ActionStringValues (($memberUserPrincipalListList | ForEach-Object { "{0}" -f $psiTEM }) -join ',') -Target $Identity -ScriptBlock {
+        Invoke-PSFProtectedCommand -ActionString 'TeamMember.Add' -ActionStringValues (($memberUserPrincipalListList | ForEach-Object { "{0}" -f $PSItem }) -join ','), $Role -Target $team.DisplayName -ScriptBlock {
             if ($PassThru.IsPresent) {
                 [PSMicrosoftEntraID.Batch.Request] @{ Method = $method; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
             }

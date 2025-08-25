@@ -62,12 +62,13 @@ function Remove-PSMsTeamsTeamMember {
         Remove users from team1 by resolving their membershipId from the pipeline.
 #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
-    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'InputObject')]
+    [OutputType()]
+    [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'IdentityInputObject')]
     param(
         # Team identity
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'MembershipId')]
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityUser')]
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityInputObject')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'MembershipId')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'IdentityUser')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'IdentityInputObject')]
         [Alias("Id", "GroupId", "TeamId", "MailNickname")]
         [ValidateGroupIdentity()]
         [string] $Identity,
@@ -78,7 +79,7 @@ function Remove-PSMsTeamsTeamMember {
         [ValidateUserIdentity()]
         [string[]] $User,
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = 'IdentityInputObject')]
-        [PSMicrosoftTeams.Users.User[]] $InputObject,
+        [PSMicrosoftTeams.Members.ConversationMember[]] $InputObject,
         [Parameter()]
         [switch] $EnableException,
         [Parameter()]
@@ -117,40 +118,39 @@ function Remove-PSMsTeamsTeamMember {
                         [PSMicrosoftEntraID.Batch.Request] @{ Method = $method; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
                     }
                     else {
-                        Invoke-PSFProtectedCommand -ActionString 'TeamMember.Remove.MembershipId' -ActionStringValues $team.DisplayName, $itemMembershipId -Target $teamId -ScriptBlock {
-                            [void] (Invoke-EntraRequest -Service $service -Path $path -Method $method -ErrorAction Stop)
+                        Invoke-PSFProtectedCommand -ActionString 'TeamMember.Remove.MembershipId' -ActionStringValues $team.DisplayName, $itemMembershipId -Target $team.DisplayName -ScriptBlock {
+                            [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body  -Method $method -ErrorAction Stop)
                         } -EnableException:$EnableException -Confirm:$cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                         if (Test-PSFFunctionInterrupt) { return }
                     }
                 }
             }
-            'IdentityUser' {
+            'IdentityInputObject' {
                 foreach ($itemInputObject in $InputObject) {
-                    [void] $bodyMemberUrlListt.Add(
+                    [void] $bodyMemberUrlList.Add(
                         @{
                             '@odata.type'     = '#microsoft.graph.aadUserConversationMember'
-                            'user@odata.bind' = ('{0}/users/(''{1}'')' -f (Get-EntraService -Name $service).ServiceUrl, $itemInputObject.Id)
+                            'user@odata.bind' = ('{0}/users(''{1}'')' -f (Get-EntraService -Name $service).ServiceUrl, $itemInputObject.UserId)
                         }
                     )
-                    [void] $memberUserPrincipalListList.Add($itemInputObject.UserPrincipalName)
+                    [void] $memberUserPrincipalListList.Add($itemInputObject.Mail)
                 }
             }
             'IdentityUser' {
                 foreach ($itemUser in $User) {
                     [PSMicrosoftTeams.Users.User] $teamUser = Get-PSMsTeamsUser -Identity $itemUser
                     if (-not([object]::Equals($teamUser, $null))) {
-                        $userUrl = "{0}/users/{1}" -f (Get-EntraService -Name $service).ServiceUrl, $userObj.Id
                         [void] $bodyMemberUrlList.Add(
                             @{
                                 '@odata.type'     = "#microsoft.graph.aadUserConversationMember"
-                                'user@odata.bind' = ('{0}/users/(''{1}'')' -f (Get-EntraService -Name $service).ServiceUrl, $itemInputObject.Id)
+                                'user@odata.bind' = ('{0}/users(''{1}'')' -f (Get-EntraService -Name $service).ServiceUrl, $teamUsert.Id)
                             }
                         )
                         [void] $memberUserPrincipalListList.Add($teamUser.UserPrincipalName)
                     }
                     else {
                         if ($EnableException.IsPresent) {
-                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $userId)
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $itemUser)
                         }
                     }
                 }
@@ -159,7 +159,7 @@ function Remove-PSMsTeamsTeamMember {
     }
     end {
         switch ($PSCmdlet.ParameterSetName) {
-            'IdentityUser' {
+            'IdentityInputObject' {
                 $method = 'DELETE'
                 $path = ('teams/{0}/members/remove' -f $team.Id)
                 $body = @{ values = @($bodyMemberUrlList) }
@@ -168,8 +168,8 @@ function Remove-PSMsTeamsTeamMember {
                     [PSMicrosoftEntraID.Batch.Request] @{ Method = $method; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
                 }
                 else {
-                    Invoke-PSFProtectedCommand -ActionString 'TeamMember.Remove' -ActionStringValues $team.DisplayName, (($memberUserPrincipalListList | ForEach-Object { "{0}" -f $psiTEM }) -join ',') -Target $teamId -ScriptBlock {
-                        [void] (Invoke-EntraRequest -Service $service -Path $path -Method $method  -ErrorAction Stop)
+                    Invoke-PSFProtectedCommand -ActionString 'TeamMember.Remove' -ActionStringValues $team.DisplayName, (($memberUserPrincipalListList | ForEach-Object { "{0}" -f $psiTEM }) -join ',') -Target $team.DisplayName -ScriptBlock {
+                        [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body  -Method $method -ErrorAction Stop)
                     } -EnableException:$EnableException -Confirm:$cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                     if (Test-PSFFunctionInterrupt) { return }
                 }
@@ -182,8 +182,8 @@ function Remove-PSMsTeamsTeamMember {
                     [PSMicrosoftEntraID.Batch.Request] @{ Method = $method; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
                 }
                 else {
-                    Invoke-PSFProtectedCommand -ActionString 'TeamMember.Remove' -ActionStringValues $team.DisplayName, (($memberUserPrincipalListList | ForEach-Object { "{0}" -f $psiTEM }) -join ',') -Target $teamId -ScriptBlock {
-                        [void] (Invoke-EntraRequest -Service $service -Path $path -Method $method -ErrorAction Stop)
+                    Invoke-PSFProtectedCommand -ActionString 'TeamMember.Remove' -ActionStringValues $team.DisplayName, (($memberUserPrincipalListList | ForEach-Object { "{0}" -f $psiTEM }) -join ',') -Target $team.DisplayName -ScriptBlock {
+                        [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body  -Method $method -ErrorAction Stop)
                     } -EnableException:$EnableException -Confirm:$cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                     if (Test-PSFFunctionInterrupt) { return }
                 }

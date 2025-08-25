@@ -72,6 +72,7 @@
         Updates the FunSettings of the specified team. If the team is not found, an error is thrown (when -EnableException is used).
 #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+    [OutputType()]
     [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = 'InputObjectUpdateCommon')]
     param (
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObjectUpdateCommon')]
