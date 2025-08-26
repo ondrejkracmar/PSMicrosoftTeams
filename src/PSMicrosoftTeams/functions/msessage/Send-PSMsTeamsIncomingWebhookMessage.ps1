@@ -128,7 +128,7 @@
         }
 
         $json = $card | ConvertTo-Json -Depth 10
-        Invoke-PSFProtectedCommand -ActionString 'Webhook.Send' -ActionStringValues $Title -Target $WebhookUrl -ScriptBlock {
+        Invoke-PSFProtectedCommand -ActionString 'Webhook.Message.Send' -ActionStringValues $Title -Target $WebhookUrl -ScriptBlock {
             Invoke-RestMethod -Method Post -Uri $WebhookUrl -Body $json -ContentType 'application/json' -ErrorAction Stop | Out-Null
         } -EnableException:$EnableException -Confirm:$cmdLetConfirm -PSCmdlet $PSCmdlet -Continue
         if (Test-PSFFunctionInterrupt) { return }

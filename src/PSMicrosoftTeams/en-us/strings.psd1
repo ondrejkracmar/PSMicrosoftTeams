@@ -37,7 +37,9 @@
 	'TeamChannelMember.Remove'       = "Remove membershipid '{0}'"
 	'TeamChannelCahnnelMember.Get'   = "Get members from channel '{0}'"
 
-	'TeamChannel.Message.Send'       = "Send message with sibject '{0}' to channel '{1}'"
+	'TeamChannel.Message.Send'       = "Send message with subject '{0}' to channel '{1}'"
+
+	'Webhook.Message.Send'       = "Send message with subject '{0}' to webhook"
 
 	'Batch.Invoke'                   = 'Invoke batch command with the following Ids {0}'
 
