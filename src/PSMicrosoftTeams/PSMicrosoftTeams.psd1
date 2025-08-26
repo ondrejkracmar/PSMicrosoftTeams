@@ -63,6 +63,7 @@
 		'Add-PSMsTeamsTeamChannelMember'
 		'Remove-PSMsTeamsTeamChannelMember'
 		'Send-PSMsTeamsTeamChannelMessage'
+		'Send-PSMsTeamsIncomingWebhookMessage'
 	)
 	
 	# Cmdlets to export from this module
