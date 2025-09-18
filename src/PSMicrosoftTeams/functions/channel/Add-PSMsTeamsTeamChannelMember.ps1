@@ -1,4 +1,4 @@
-function Add-PSMsTeamsTeamChannelMember {
+﻿function Add-PSMsTeamsTeamChannelMember {
     <#
     .SYNOPSIS
     Add a user (member/owner/guest) to a Microsoft Teams channel (standard/private/shared), including cross-tenant users.
@@ -136,7 +136,7 @@ function Add-PSMsTeamsTeamChannelMember {
                     if (Test-PSFParameterBinding -ParameterName 'TenantId') { $body['tenantId'] = $TenantID }
                     [string] $path = ("teams/{0}/channels/{1}/members" -f $team.Id, $teamChannel.Id)
                     if ($PassThru.IsPresent) {
-                        [PSMicrosoftTeams.Batch.Request] @{ Method = 'POST'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
+                        [PSMicrosoftEntraID.Batch.Request] @{ Method = 'POST'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
                     }
                     else {
                         Invoke-PSFProtectedCommand -ActionString 'TeamChannelMember.Add' -ActionStringValues $userActionString, $teamChannel.DisplayName -Target $team.DisplayName -ScriptBlock {
@@ -162,7 +162,7 @@ function Add-PSMsTeamsTeamChannelMember {
                         if (Test-PSFParameterBinding -ParameterName 'TenantId') { $body['tenantId'] = $TenantID }
                         [string] $path = ("teams/{0}/channels/{1}/members" -f $team.Id, $teamChannel.Id)
                         if ($PassThru.IsPresent) {
-                            [PSMicrosoftTeams.Batch.Request] @{ Method = 'POST'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
+                            [PSMicrosoftEntraID.Batch.Request] @{ Method = 'POST'; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
                         }
                         else {
                             Invoke-PSFProtectedCommand -ActionString 'TeamChannelMember.Add' -ActionStringValues $userActionString, $teamChannel.DisplayName -Target $team.DisplayName -ScriptBlock {

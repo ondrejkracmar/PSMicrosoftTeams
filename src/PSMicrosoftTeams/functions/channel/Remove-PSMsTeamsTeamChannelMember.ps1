@@ -97,7 +97,7 @@ function Remove-PSMsTeamsTeamChannelMember {
         foreach ($itemMembershipId in $MembershipId) {
             [string] $path = "teams/{0}/channels/{1}/members/{2}" -f $team.Id, $teamChannel.Id, $itemMembershipId
             if ($PassThru.IsPresent) {
-                [PSMicrosoftTeams.Batch.Request] @{Method = 'DELETE'; Url = ('/{0}' -f $path); Headers = $header}
+                [PSMicrosoftEntraID.Batch.Request] @{Method = 'DELETE'; Url = ('/{0}' -f $path); Headers = $header}
             }
             else {
                 Invoke-PSFProtectedCommand -ActionString 'TeamChannelMember.Remove' -ActionStringValues $itemMembershipId -Target $teamChannel.DisplayName, $team.DisplayName -ScriptBlock {

@@ -64,6 +64,8 @@
 		'Remove-PSMsTeamsTeamChannelMember'
 		'Send-PSMsTeamsTeamChannelMessage'
 		'Send-PSMsTeamsIncomingWebhookMessage'
+		'Get-PSMsTeamsCommandRetry'
+		'Set-PSMsTeamsCommandRetry'
 	)
 	
 	# Cmdlets to export from this module

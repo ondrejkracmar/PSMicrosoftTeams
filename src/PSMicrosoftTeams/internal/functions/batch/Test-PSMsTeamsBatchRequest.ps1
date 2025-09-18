@@ -30,7 +30,7 @@
                 ValueFromPipeline = $true,
                 HelpMessage = "Provide an array of batch request objects (either PSCustomObject or Hashtable)."
             )]
-            [PSMicrosoftTeams.Batch.Request[]]$Requests,
+            [PSMicrosoftEntraID.Batch.Request[]]$Requests,
             [switch]$EnableException
         )
 

@@ -42,7 +42,7 @@
 
     .EXAMPLE
         # Suppose $payloads are returned from New-PSEntraIDBatchRequest -InputObject $requests
-        $payloads = New-PSEntraIDBatchRequest -InputObject $requests
+        $payloads = New-PSMsTeamsBatchRequest -InputObject $requests
 
         # Then call:
         $result = $payloads | Invoke-PSMsTeamsBatchRequest -EnableException -WhatIf -Force
