@@ -1,0 +1,66 @@
+﻿using System;
+using System.Runtime.Serialization;
+
+namespace PSMicrosoftTeams.Channels
+{
+    /// <summary>
+    /// Represents the filesFolder entity of a Microsoft Teams channel as returned by Microsoft Graph API.
+    /// </summary>
+    [DataContract]
+    public class ChannelFileFolder
+    {
+        /// <summary>
+        /// The unique identifier of the folder.
+        /// </summary>
+        [DataMember(Name = "id", EmitDefaultValue = false)]
+        public string Id { get; set; }
+
+        /// <summary>
+        /// The date and time the folder was created (ISO 8601 format).
+        /// </summary>
+        [DataMember(Name = "createdDateTime", EmitDefaultValue = false)]
+        public string CreatedDateTime { get; set; }
+
+        /// <summary>
+        /// The date and time the folder was last modified (ISO 8601 format).
+        /// </summary>
+        [DataMember(Name = "lastModifiedDateTime", EmitDefaultValue = false)]
+        public string LastModifiedDateTime { get; set; }
+
+        /// <summary>
+        /// The name of the folder.
+        /// </summary>
+        [DataMember(Name = "name", EmitDefaultValue = false)]
+        public string Name { get; set; }
+
+        /// <summary>
+        /// The web URL to access the folder in SharePoint or Teams.
+        /// </summary>
+        [DataMember(Name = "webUrl", EmitDefaultValue = false)]
+        public string WebUrl { get; set; }
+
+        /// <summary>
+        /// The size of the folder in bytes.
+        /// </summary>
+        [DataMember(Name = "size", EmitDefaultValue = false)]
+        public long? Size { get; set; }
+
+        /// <summary>
+        /// Reference to the parent drive and drive type.
+        /// </summary>
+        [DataMember(Name = "parentReference", EmitDefaultValue = false)]
+        public ParentReference ParentReference { get; set; }
+
+        /// <summary>
+        /// File system information for the folder.
+        /// </summary>
+        [DataMember(Name = "fileSystemInfo", EmitDefaultValue = false)]
+        public FileSystemInfo FileSystemInfo { get; set; }
+
+        /// <summary>
+        /// Folder metadata, such as child count.
+        /// </summary>
+        [DataMember(Name = "folder", EmitDefaultValue = false)]
+        public Folder Folder { get; set; }
+    }
+}

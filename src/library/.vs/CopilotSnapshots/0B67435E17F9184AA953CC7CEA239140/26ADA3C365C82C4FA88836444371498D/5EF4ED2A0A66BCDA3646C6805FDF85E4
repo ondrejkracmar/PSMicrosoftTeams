@@ -1,0 +1,24 @@
+﻿using System;
+using System.Runtime.Serialization;
+
+namespace PSMicrosoftTeams.Channels
+{
+    /// <summary>
+    /// Represents a reference to the parent drive and its type for a folder in Microsoft Teams.
+    /// </summary>
+    [DataContract]
+    public class ParentReference
+    {
+        /// <summary>
+        /// The unique identifier of the drive.
+        /// </summary>
+        [DataMember(Name = "driveId", EmitDefaultValue = false)]
+        public string DriveId { get; set; }
+
+        /// <summary>
+        /// The type of the drive (e.g., documentLibrary).
+        /// </summary>
+        [DataMember(Name = "driveType", EmitDefaultValue = false)]
+        public string DriveType { get; set; }
+    }
+}

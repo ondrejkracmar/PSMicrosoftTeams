@@ -1,0 +1,66 @@
+﻿using System;
+using System.Runtime.Serialization;
+
+namespace PSMicrosoftTeams.Channels
+{
+    /// <summary>
+    /// Represents the filesFolder entity of a Microsoft Teams channel as returned by Microsoft Graph API.
+    /// </summary>
+    [DataContract]
+    public class ChannelFileFolder
+    {
+        [DataMember(Name = "id", EmitDefaultValue = false)]
+        public string Id { get; set; }
+
+        [DataMember(Name = "createdDateTime", EmitDefaultValue = false)]
+        public string CreatedDateTime { get; set; }
+
+        [DataMember(Name = "lastModifiedDateTime", EmitDefaultValue = false)]
+        public string LastModifiedDateTime { get; set; }
+
+        [DataMember(Name = "name", EmitDefaultValue = false)]
+        public string Name { get; set; }
+
+        [DataMember(Name = "webUrl", EmitDefaultValue = false)]
+        public string WebUrl { get; set; }
+
+        [DataMember(Name = "size", EmitDefaultValue = false)]
+        public long? Size { get; set; }
+
+        [DataMember(Name = "parentReference", EmitDefaultValue = false)]
+        public ParentReference ParentReference { get; set; }
+
+        [DataMember(Name = "fileSystemInfo", EmitDefaultValue = false)]
+        public FileSystemInfo FileSystemInfo { get; set; }
+
+        [DataMember(Name = "folder", EmitDefaultValue = false)]
+        public Folder Folder { get; set; }
+    }
+
+    [DataContract]
+    public class ParentReference
+    {
+        [DataMember(Name = "driveId", EmitDefaultValue = false)]
+        public string DriveId { get; set; }
+
+        [DataMember(Name = "driveType", EmitDefaultValue = false)]
+        public string DriveType { get; set; }
+    }
+
+    [DataContract]
+    public class FileSystemInfo
+    {
+        [DataMember(Name = "createdDateTime", EmitDefaultValue = false)]
+        public string CreatedDateTime { get; set; }
+
+        [DataMember(Name = "lastModifiedDateTime", EmitDefaultValue = false)]
+        public string LastModifiedDateTime { get; set; }
+    }
+
+    [DataContract]
+    public class Folder
+    {
+        [DataMember(Name = "childCount", EmitDefaultValue = false)]
+        public int? ChildCount { get; set; }
+    }
+}

@@ -66,6 +66,96 @@
             Contains summary information about the channel, including number of owners, members, guests, and cross-tenant members.
             </summary>
         </member>
+        <member name="T:PSMicrosoftTeams.Channels.FileFolder.ChannelFileFolder">
+            <summary>
+            Represents the filesFolder entity of a Microsoft Teams channel as returned by Microsoft Graph API.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Channels.FileFolder.ChannelFileFolder.Id">
+            <summary>
+            The unique identifier of the folder.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Channels.FileFolder.ChannelFileFolder.CreatedDateTime">
+            <summary>
+            The date and time the folder was created (ISO 8601 format).
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Channels.FileFolder.ChannelFileFolder.LastModifiedDateTime">
+            <summary>
+            The date and time the folder was last modified (ISO 8601 format).
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Channels.FileFolder.ChannelFileFolder.Name">
+            <summary>
+            The name of the folder.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Channels.FileFolder.ChannelFileFolder.WebUrl">
+            <summary>
+            The web URL to access the folder in SharePoint or Teams.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Channels.FileFolder.ChannelFileFolder.Size">
+            <summary>
+            The size of the folder in bytes.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Channels.FileFolder.ChannelFileFolder.ParentReference">
+            <summary>
+            Reference to the parent drive and drive type.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Channels.FileFolder.ChannelFileFolder.FileSystemInfo">
+            <summary>
+            File system information for the folder.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Channels.FileFolder.ChannelFileFolder.Folder">
+            <summary>
+            Folder metadata, such as child count.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftTeams.Channels.FileFolder.FileSystemInfo">
+            <summary>
+            Contains file system information for a folder, such as creation and last modification times.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Channels.FileFolder.FileSystemInfo.CreatedDateTime">
+            <summary>
+            The date and time the folder was created (ISO 8601 format).
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Channels.FileFolder.FileSystemInfo.LastModifiedDateTime">
+            <summary>
+            The date and time the folder was last modified (ISO 8601 format).
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftTeams.Channels.FileFolder.Folder">
+            <summary>
+            Represents folder metadata, including the number of child items in the folder.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Channels.FileFolder.Folder.ChildCount">
+            <summary>
+            The number of child items in the folder.
+            </summary>
+        </member>
+        <member name="T:PSMicrosoftTeams.Channels.FileFolder.ParentReference">
+            <summary>
+            Represents a reference to the parent drive and its type for a folder in Microsoft Teams.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Channels.FileFolder.ParentReference.DriveId">
+            <summary>
+            The unique identifier of the drive.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Channels.FileFolder.ParentReference.DriveType">
+            <summary>
+            The type of the drive (e.g., documentLibrary).
+            </summary>
+        </member>
         <member name="T:PSMicrosoftTeams.Channels.Summary">
             <summary>
             Contains summary information about the channel.

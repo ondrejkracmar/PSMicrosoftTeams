@@ -32,6 +32,7 @@
 	'TeamChannel.Remove'             = "Remove channel '{0}'"
 	'TeamChannel.Get'                = "Get channel '{0}' from team '{1}'"
 	'TeamChannel.List'               = "List channels with property '{0}'"
+	'TeamChannelFilesFolder.Get'     = "Get files folder for channel '{0}' from team '{1}'"
 
 	"TeamChannelMember.Add"          = "Add user '{0}' to channel {1}"
 	'TeamChannelMember.Remove'       = "Remove membershipid '{0}'"

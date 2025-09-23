@@ -1,0 +1,24 @@
+using System;
+using System.Runtime.Serialization;
+
+namespace PSMicrosoftTeams.Channels.FileFolder
+{
+    /// <summary>
+    /// Contains file system information for a folder, such as creation and last modification times.
+    /// </summary>
+    [DataContract]
+    public class FileSystemInfo
+    {
+        /// <summary>
+        /// The date and time the folder was created (ISO 8601 format).
+        /// </summary>
+        [DataMember(Name = "createdDateTime", EmitDefaultValue = false)]
+        public string CreatedDateTime { get; set; }
+
+        /// <summary>
+        /// The date and time the folder was last modified (ISO 8601 format).
+        /// </summary>
+        [DataMember(Name = "lastModifiedDateTime", EmitDefaultValue = false)]
+        public string LastModifiedDateTime { get; set; }
+    }
+}

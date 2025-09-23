@@ -59,6 +59,7 @@
 		'New-PSMsTeamsTeamChannel'
 		'Remove-PSMsTeamsTeamChannel'
 		'Get-PSMsTeamsTeamChannel'
+		'Get-PSMsTeamsTeamChannelFilesFolder'
 		'Get-PSMsTeamsTeamChannelMember'
 		'Add-PSMsTeamsTeamChannelMember'
 		'Remove-PSMsTeamsTeamChannelMember'

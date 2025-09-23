@@ -1,0 +1,18 @@
+﻿using System;
+using System.Runtime.Serialization;
+
+namespace PSMicrosoftTeams.Channels.FileFolder
+{
+    /// <summary>
+    /// Represents folder metadata, including the number of child items in the folder.
+    /// </summary>
+    [DataContract]
+    public class Folder
+    {
+        /// <summary>
+        /// The number of child items in the folder.
+        /// </summary>
+        [DataMember(Name = "childCount", EmitDefaultValue = false)]
+        public int? ChildCount { get; set; }
+    }
+}
