@@ -86,7 +86,7 @@
             Number of guests in the channel.
             </summary>
         </member>
-        <member name="P:PSMicrosoftTeams.Channels.Summary.CrossTenantMemberCount">
+        <member name="P:PSMicrosoftTeams.Channels.Summary.HasMembersFromOtherTenants">
             <summary>
             Indicator for members from other tenants.
             </summary>

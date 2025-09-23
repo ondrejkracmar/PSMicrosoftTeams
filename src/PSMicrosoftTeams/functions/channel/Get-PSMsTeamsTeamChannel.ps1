@@ -65,9 +65,9 @@
         [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
         [hashtable] $channelQuery = @{
-            '$count'  = 'true'
-            '$top'    = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
-            '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.Cahnnel).Value -join ',')
+            #'$count'  = 'true'
+            #'$top'    = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
+            '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.Channel).Value -join ',')
         }
     }
     process {
@@ -76,9 +76,8 @@
                 Invoke-PSFProtectedCommand -ActionString 'TeamChannel.Get' -ActionStringValues $Channel, $Identity -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                     [PSMicrosoftTeams.Teams.Team]$team = Get-PSMsTeamsTeam -Identity $Identity
                     if (-not([object]::Equals($team, $null))) {
-                        [hashtable] $query = @{}
                         [string] $path = ("teams/{0}/channels/{1}") -f $team.Id, $Channel
-                        ConvertFrom-RestTeamChannel -InputObject( Invoke-EntraRequest -Service $service -Path $path -Query $query -Method Get -ErrorAction Stop)
+                        ConvertFrom-RestTeamChannel -InputObject( Invoke-EntraRequest -Service $service -Path $path -Query $channelQuery -Method Get -ErrorAction Stop)
                     }
                     else {
                         if ($EnableException.IsPresent) {
@@ -92,10 +91,12 @@
                 Invoke-PSFProtectedCommand -ActionString 'TeamChannel.Get' -ActionStringValues $DisplayName, $Identity -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                     [PSMicrosoftTeams.Teams.Team]$team = Get-PSMsTeamsTeam -Identity $Identity
                     if (-not([object]::Equals($team, $null))) {
-                        [hashtable] $query = @{}
                         $query['$Filter'] = ("startswith(displayName,'{0}')" -f $DisplayName)
                         [string] $path = ("teams/{0}/allChannels/") -f $team.Id, $Channel
-                        ConvertFrom-RestTeamChannel -InputObject( Invoke-EntraRequest -Service $service -Path $path -Query $query -Method Get -ErrorAction Stop)
+                        [PSMicrosoftTeams.Channels.Channel[]] $channelList =ConvertFrom-RestTeamChannel -InputObject( Invoke-EntraRequest -Service $service -Path $path -Query $query -Method Get -ErrorAction Stop)
+                        foreach ($itemChannel in $channelList) {
+                            Get-PSMsTeamsTeamChannel -Identity $team.Id -Channel $itemChannel.Id
+                        }
                     }
                     else {
                         if ($EnableException.IsPresent) {
@@ -112,7 +113,10 @@
                         [hashtable] $query = @{}
                         $query['$Filter'] = ("membershipType eq '{0}'" -f $MembershipType)
                         [string] $path = ("teams/{0}/allChannels") -f $team.Id
-                        ConvertFrom-RestTeamChannel -InputObject( Invoke-EntraRequest -Service $service -Path $path -Query $query -Method Get -ErrorAction Stop)
+                        [PSMicrosoftTeams.Channels.Channel[]] $channelList = ConvertFrom-RestTeamChannel -InputObject( Invoke-EntraRequest -Service $service -Path $path -Query $query -Method Get -ErrorAction Stop)
+                        foreach ($itemChannel in $channelList) {
+                            Get-PSMsTeamsTeamChannel -Identity $team.Id -Channel $itemChannel.Id
+                        }
                     }
                     else {
                         if ($EnableException.IsPresent) {
@@ -123,11 +127,10 @@
                 if (Test-PSFFunctionInterrupt) { return }
             }
             'IdentityChannelType' {
-
                 Invoke-PSFProtectedCommand -ActionString 'TeamChannel.List' -ActionStringValues $ChannelType -Target $Identity -ScriptBlock {
                     [PSMicrosoftTeams.Teams.Team] $team = Get-PSMsTeamsTeam -Identity $Identity
+                    [hashtable] $query = @{}
                     if (-not([object]::Equals($team, $null))) {
-                        [hashtable] $query = @{}
                         switch ($ChannelType) {
                             'Team' {
                                 [string] $path = ('teams/{0}/channels' -f $team.Id)
@@ -149,7 +152,10 @@
                         else {
                             $query['$Filter'] = ('membershipType eq ''{0}''' -f 'Standard')
                         }
-                        ConvertFrom-RestTeamChannel -InputObject( Invoke-EntraRequest -Service $service -Path $path -Query $query -Method Get -ErrorAction Stop)
+                        [PSMicrosoftTeams.Channels.Channel[]] $channelList =  ConvertFrom-RestTeamChannel -InputObject( Invoke-EntraRequest -Service $service -Path $path -Query $query -Method Get -ErrorAction Stop)
+                        foreach ($itemChannel in $channelList) {
+                            Get-PSMsTeamsTeamChannel -Identity $team.Id -Channel $itemChannel.Id
+                        }
                     }
                     else {
 

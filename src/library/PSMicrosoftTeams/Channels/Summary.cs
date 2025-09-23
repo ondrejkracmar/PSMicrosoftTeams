@@ -34,7 +34,7 @@ namespace PSMicrosoftTeams.Channels
         /// <summary>
         /// Indicator for members from other tenants.
         /// </summary>
-        [DataMember(Name = "crossTenantMemberCount", EmitDefaultValue = false)]
-        public int? CrossTenantMemberCount { get; set; }
+        [DataMember(Name = "hasMembersFromOtherTenants", EmitDefaultValue = false)]
+        public Boolean? HasMembersFromOtherTenants { get; set; }
     }
 }
