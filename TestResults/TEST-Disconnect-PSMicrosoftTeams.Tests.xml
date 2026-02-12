@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="1" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-02-12" time="14:00:49">
+  <environment user="root" nunit-version="2.5.8.0" clr-version="9.0.1" os-version="6.6.87.2-microsoft-standard-WSL2" machine-name="dfab52a26652" user-domain="" platform="Linux" cwd="/workspaces/PSMicrosoftTeams/src" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="0.1153" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftTeams/src/tests/functions/authentication/Disconnect-PSMicrosoftTeams.Tests.ps1" executed="True" result="Success" success="True" time="0.1153" asserts="0" description="/workspaces/PSMicrosoftTeams/src/tests/functions/authentication/Disconnect-PSMicrosoftTeams.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Disconnect-PSMicrosoftTeams" executed="True" result="Success" success="True" time="0.02" asserts="0" description="Disconnect-PSMicrosoftTeams">
+            <results>
+              <test-suite type="TestFixture" name="Disconnect-PSMicrosoftTeams.Parameter validation" executed="True" result="Success" success="True" time="0.0125" asserts="0" description="Disconnect-PSMicrosoftTeams.Parameter validation">
+                <results>
+                  <test-case description="Should have Service parameter" name="Disconnect-PSMicrosoftTeams.Parameter validation.Should have Service parameter" time="0.0075" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

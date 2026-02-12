@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="6" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-02-12" time="14:01:09">
+  <environment user="root" nunit-version="2.5.8.0" clr-version="9.0.1" os-version="6.6.87.2-microsoft-standard-WSL2" machine-name="dfab52a26652" user-domain="" platform="Linux" cwd="/workspaces/PSMicrosoftTeams/src" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="0.1463" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftTeams/src/tests/functions/core/Set-PSMsTeamsCommandRetry.Tests.ps1" executed="True" result="Success" success="True" time="0.1463" asserts="0" description="/workspaces/PSMicrosoftTeams/src/tests/functions/core/Set-PSMsTeamsCommandRetry.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Set-PSMsTeamsCommandRetry" executed="True" result="Success" success="True" time="0.0902" asserts="0" description="Set-PSMsTeamsCommandRetry">
+            <results>
+              <test-suite type="TestFixture" name="Set-PSMsTeamsCommandRetry.Parameter validation" executed="True" result="Success" success="True" time="0.0241" asserts="0" description="Set-PSMsTeamsCommandRetry.Parameter validation">
+                <results>
+                  <test-case description="Should exist as an exported function" name="Set-PSMsTeamsCommandRetry.Parameter validation.Should exist as an exported function" time="0.0112" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have RetryCount parameter" name="Set-PSMsTeamsCommandRetry.Parameter validation.Should have RetryCount parameter" time="0.0058" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have RetryWaitInSeconds parameter" name="Set-PSMsTeamsCommandRetry.Parameter validation.Should have RetryWaitInSeconds parameter" time="0.0051" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Set-PSMsTeamsCommandRetry.Setting retry configuration" executed="True" result="Success" success="True" time="0.0859" asserts="0" description="Set-PSMsTeamsCommandRetry.Setting retry configuration">
+                <results>
+                  <test-case description="Should call Set-PSFConfig twice (RetryCount and RetryWaitInSeconds)" name="Set-PSMsTeamsCommandRetry.Setting retry configuration.Should call Set-PSFConfig twice (RetryCount and RetryWaitInSeconds)" time="0.047" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have RetryCount parameter with ValidateRange(0,10)" name="Set-PSMsTeamsCommandRetry.Setting retry configuration.Should have RetryCount parameter with ValidateRange(0,10)" time="0.0074" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have RetryWaitInSeconds parameter with ValidateRange(0,10)" name="Set-PSMsTeamsCommandRetry.Setting retry configuration.Should have RetryWaitInSeconds parameter with ValidateRange(0,10)" time="0.0056" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

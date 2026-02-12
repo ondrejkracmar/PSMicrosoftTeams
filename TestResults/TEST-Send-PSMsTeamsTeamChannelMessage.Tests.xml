@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="12" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-02-12" time="14:01:11">
+  <environment user="root" nunit-version="2.5.8.0" clr-version="9.0.1" os-version="6.6.87.2-microsoft-standard-WSL2" machine-name="dfab52a26652" user-domain="" platform="Linux" cwd="/workspaces/PSMicrosoftTeams/src" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="0.3558" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftTeams/src/tests/functions/message/Send-PSMsTeamsTeamChannelMessage.Tests.ps1" executed="True" result="Success" success="True" time="0.3558" asserts="0" description="/workspaces/PSMicrosoftTeams/src/tests/functions/message/Send-PSMsTeamsTeamChannelMessage.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Send-PSMsTeamsTeamChannelMessage" executed="True" result="Success" success="True" time="0.3059" asserts="0" description="Send-PSMsTeamsTeamChannelMessage">
+            <results>
+              <test-suite type="TestFixture" name="Send-PSMsTeamsTeamChannelMessage.Parameter validation" executed="True" result="Success" success="True" time="0.1335" asserts="0" description="Send-PSMsTeamsTeamChannelMessage.Parameter validation">
+                <results>
+                  <test-case description="Should support ShouldProcess" name="Send-PSMsTeamsTeamChannelMessage.Parameter validation.Should support ShouldProcess" time="0.0157" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have mandatory Subject parameter" name="Send-PSMsTeamsTeamChannelMessage.Parameter validation.Should have mandatory Subject parameter" time="0.018" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have mandatory Message parameter" name="Send-PSMsTeamsTeamChannelMessage.Parameter validation.Should have mandatory Message parameter" time="0.0198" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have Channel parameter with ChannelId alias" name="Send-PSMsTeamsTeamChannelMessage.Parameter validation.Should have Channel parameter with ChannelId alias" time="0.0198" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have valid ContentType values" name="Send-PSMsTeamsTeamChannelMessage.Parameter validation.Should have valid ContentType values" time="0.0202" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have optional Attachments parameter" name="Send-PSMsTeamsTeamChannelMessage.Parameter validation.Should have optional Attachments parameter" time="0.0178" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have PassThru switch" name="Send-PSMsTeamsTeamChannelMessage.Parameter validation.Should have PassThru switch" time="0.0187" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Send-PSMsTeamsTeamChannelMessage.Sending a message" executed="True" result="Success" success="True" time="0.225" asserts="0" description="Send-PSMsTeamsTeamChannelMessage.Sending a message">
+                <results>
+                  <test-case description="Should resolve team and POST to channel messages endpoint" name="Send-PSMsTeamsTeamChannelMessage.Sending a message.Should resolve team and POST to channel messages endpoint" time="0.0825" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Send-PSMsTeamsTeamChannelMessage.Pipeline input" executed="True" result="Success" success="True" time="0.2975" asserts="0" description="Send-PSMsTeamsTeamChannelMessage.Pipeline input">
+                <results>
+                  <test-case description="Should accept Identity from pipeline by property name" name="Send-PSMsTeamsTeamChannelMessage.Pipeline input.Should accept Identity from pipeline by property name" time="0.0176" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should accept Channel from pipeline by property name" name="Send-PSMsTeamsTeamChannelMessage.Pipeline input.Should accept Channel from pipeline by property name" time="0.02" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should accept Subject from pipeline by property name" name="Send-PSMsTeamsTeamChannelMessage.Pipeline input.Should accept Subject from pipeline by property name" time="0.016" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should accept Message from pipeline by property name" name="Send-PSMsTeamsTeamChannelMessage.Pipeline input.Should accept Message from pipeline by property name" time="0.013" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

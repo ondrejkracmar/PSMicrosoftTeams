@@ -18,6 +18,8 @@
 	'Team.List'                      = "List teams '{0}'"
 	'Team.New'                       = "Create new team '{0}'"
 	'Team.Set'                       = "Set team '{0}'"
+	'Team.Label.Get'                 = "Get sensitivity labels for team '{0}'"
+	'Team.Label.Set'                 = "Set sensitivity labels on team '{0}'"
 	'Team.NewTeamFromGroup'          = "Create new team from group '{0}'"
 	'Team.Delete'                    = "Delete team '{0}'"
 	'Team.Archive'                   = "Archive/Protext team '{0}'"

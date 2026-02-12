@@ -24,6 +24,41 @@ Remove-Module PSMicrosoftTeams -ErrorAction Ignore
 Import-Module "$PSScriptRoot\..\PSMicrosoftTeams\PSMicrosoftTeams.psd1"
 Import-Module "$PSScriptRoot\..\PSMicrosoftTeams\PSMicrosoftTeams.psm1" -Force
 
+# Register global EntraToken C# stub so Pester mocks can resolve [EntraToken] type
+# across session state boundaries (e.g. when called through compiled PSFramework cmdlets)
+if (-not ('EntraToken' -as [type])) {
+    Add-Type -TypeDefinition @'
+public class EntraToken {
+    public string AccessToken { get; set; }
+    public System.DateTime ValidAfter { get; set; }
+    public System.DateTime ValidUntil { get; set; }
+    public string[] Scopes { get; set; }
+    public string RefreshToken { get; set; }
+    public string Audience { get; set; }
+    public string Issuer { get; set; }
+    public object TokenData { get; set; }
+    public string Service { get; set; }
+    public string Type { get; set; }
+    public string ClientID { get; set; }
+    public string TenantID { get; set; }
+    public string ServiceUrl { get; set; }
+    public string AuthenticationUrl { get; set; }
+    public System.Collections.Hashtable Header { get; set; }
+    public System.Collections.Hashtable Query { get; set; }
+    public bool RawOnly { get; set; }
+    public EntraToken() {
+        Header = new System.Collections.Hashtable();
+        Query = new System.Collections.Hashtable();
+    }
+    public System.Collections.Hashtable GetHeader() {
+        var h = Header != null ? new System.Collections.Hashtable(Header) : new System.Collections.Hashtable();
+        h["Authorization"] = "Bearer " + (AccessToken ?? "");
+        return h;
+    }
+}
+'@
+}
+
 # Need to import explicitly so we can use the configuration class
 Import-Module Pester
 

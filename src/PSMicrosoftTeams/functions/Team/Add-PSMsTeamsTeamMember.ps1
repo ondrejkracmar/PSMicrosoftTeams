@@ -113,7 +113,7 @@
             }
             'IdentityUser' {
                 foreach ($itemUser in $User) {
-                    [PSMicrosoftTeams.Users.User] $teamUser = Get-PSMsTeamsUser -Identity $itemUser
+                    [PSMicrosoftEntraID.Users.User] $teamUser = Get-PSMsTeamsUser -Identity $itemUser
                     if (-not([object]::Equals($teamUser, $null))) {
                         $userUrl = "{0}/users/{1}" -f (Get-EntraService -Name $service).ServiceUrl, $userObj.Id
                         [void] $bodyMemberUrlList.Add(

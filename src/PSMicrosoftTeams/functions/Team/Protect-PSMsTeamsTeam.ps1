@@ -44,7 +44,7 @@ function Protect-PSMsTeamsTeam {
     [OutputType()]
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium', DefaultParameterSetName = 'InputObject')]
     param ([Parameter(Mandatory = $True, ValueFromPipeline = $true, ParameterSetName = 'InputObject')]
-        [PSMicrosoftTeams.Teamss.Team[]] $InputObject,
+        [PSMicrosoftTeams.Teams.Team[]] $InputObject,
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
         [Alias("Id", "TeamId", "GroupId", "MailNickname")]
         [string[]]$Identity,
@@ -83,14 +83,15 @@ function Protect-PSMsTeamsTeam {
                     else {
                         Invoke-PSFProtectedCommand -ActionString 'Team.Archive' -ActionStringValues $itemInputObject.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                             [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method $method -ErrorAction Stop)
-                        }
-                    } -EnableException:$EnableException -Confirm:$cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        } -EnableException:$EnableException -Confirm:$cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
+                        if (Test-PSFFunctionInterrupt) { return }
+                    }
                 }
 
             }
             'Identity' {
                 foreach ($itemIdentity in $Identity) {
-                    [PSMicrosoftEntraID.Teamss.Team] $team = Get-PSMsTeamsTeam -Identity $itemIdentity
+                    [PSMicrosoftTeams.Teams.Team] $team = Get-PSMsTeamsTeam -Identity $itemIdentity
                     if (-not([object]::Equals($team, $null))) {
                         [string] $path = ("teams/{0}/archive" -f $team.Id)
                         $body = @{

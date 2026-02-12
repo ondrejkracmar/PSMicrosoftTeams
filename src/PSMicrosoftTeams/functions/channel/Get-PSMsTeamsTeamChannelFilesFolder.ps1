@@ -64,7 +64,7 @@
             [PSMicrosoftTeams.Teams.Team] $team = Get-PSMsTeamsTeam -Identity $Identity -EnableException:$EnableException
             if (-not([object]::Equals($team, $null))) {
                 [string] $path = ("teams/{0}/channels/{1}/filesFolder") -f $team.Id, $Channel
-                ConvertFrom-RestTeamChannelFilesFolder -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $channelQuery -Method Get -ErrorAction Stop)
+                ConvertFrom-RestObject -Type ([PSMicrosoftTeams.Channels.FileFolder.ChannelFileFolder]) -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $channelQuery -Method Get -ErrorAction Stop)
             }
             else {
                 if ($EnableException.IsPresent) {

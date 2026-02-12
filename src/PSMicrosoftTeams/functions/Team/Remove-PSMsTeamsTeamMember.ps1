@@ -19,7 +19,7 @@ function Remove-PSMsTeamsTeamMember {
         One or more users (UPN or Id) to remove from the team; their membershipId will be resolved before deletion.
 
     .PARAMETER InputObject
-        Pipeline of user objects (PSMicrosoftTeams.Users.User) to remove; their membershipId will be resolved.
+        Pipeline of user objects (PSMicrosoftEntraID.Users.User) to remove; their membershipId will be resolved.
 
     .PARAMETER EnableException
         This parameters disables user-friendly warnings and enables the throwing of exceptions. This is less user friendly,
@@ -138,7 +138,7 @@ function Remove-PSMsTeamsTeamMember {
             }
             'IdentityUser' {
                 foreach ($itemUser in $User) {
-                    [PSMicrosoftTeams.Users.User] $teamUser = Get-PSMsTeamsUser -Identity $itemUser
+                    [PSMicrosoftEntraID.Users.User] $teamUser = Get-PSMsTeamsUser -Identity $itemUser
                     if (-not([object]::Equals($teamUser, $null))) {
                         [void] $bodyMemberUrlList.Add(
                             @{

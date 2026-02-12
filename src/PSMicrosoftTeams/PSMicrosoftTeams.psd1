@@ -67,6 +67,8 @@
 		'Send-PSMsTeamsIncomingWebhookMessage'
 		'Get-PSMsTeamsCommandRetry'
 		'Set-PSMsTeamsCommandRetry'
+		'Get-PSMsTeamsTeamLabel'
+		'Set-PSMsTeamsTeamLabel'
 	)
 	
 	# Cmdlets to export from this module

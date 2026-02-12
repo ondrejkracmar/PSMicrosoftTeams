@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="9" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-02-12" time="14:01:44">
+  <environment user="root" nunit-version="2.5.8.0" clr-version="9.0.1" os-version="6.6.87.2-microsoft-standard-WSL2" machine-name="dfab52a26652" user-domain="" platform="Linux" cwd="/workspaces/PSMicrosoftTeams/src" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="15.437" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftTeams/src/tests/functions/team/Get-PSMsTeamsTeamMember.Tests.ps1" executed="True" result="Success" success="True" time="15.437" asserts="0" description="/workspaces/PSMicrosoftTeams/src/tests/functions/team/Get-PSMsTeamsTeamMember.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Get-PSMsTeamsTeamMember" executed="True" result="Success" success="True" time="15.3558" asserts="0" description="Get-PSMsTeamsTeamMember">
+            <results>
+              <test-suite type="TestFixture" name="Get-PSMsTeamsTeamMember.Parameter validation" executed="True" result="Success" success="True" time="0.1525" asserts="0" description="Get-PSMsTeamsTeamMember.Parameter validation">
+                <results>
+                  <test-case description="Should have InputObject as default parameter set" name="Get-PSMsTeamsTeamMember.Parameter validation.Should have InputObject as default parameter set" time="0.0406" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should declare correct OutputType" name="Get-PSMsTeamsTeamMember.Parameter validation.Should declare correct OutputType" time="0.0215" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have Identity parameter with correct aliases" name="Get-PSMsTeamsTeamMember.Parameter validation.Should have Identity parameter with correct aliases" time="0.0238" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should accept InputObject from pipeline" name="Get-PSMsTeamsTeamMember.Parameter validation.Should accept InputObject from pipeline" time="0.0257" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have Filter parameter" name="Get-PSMsTeamsTeamMember.Parameter validation.Should have Filter parameter" time="0.0188" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have AdvancedFilter switch parameter" name="Get-PSMsTeamsTeamMember.Parameter validation.Should have AdvancedFilter switch parameter" time="0.0192" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSMsTeamsTeamMember.Identity parameter set" executed="True" result="Success" success="True" time="15.3171" asserts="0" description="Get-PSMsTeamsTeamMember.Identity parameter set">
+                <results>
+                  <test-case description="Should resolve team and query members endpoint" name="Get-PSMsTeamsTeamMember.Identity parameter set.Should resolve team and query members endpoint" time="0.0547" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should handle team not found with EnableException" name="Get-PSMsTeamsTeamMember.Identity parameter set.Should handle team not found with EnableException" time="15.108" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSMsTeamsTeamMember.Error handling" executed="True" result="Success" success="True" time="15.3428" asserts="0" description="Get-PSMsTeamsTeamMember.Error handling">
+                <results>
+                  <test-case description="Should assert connection before executing" name="Get-PSMsTeamsTeamMember.Error handling.Should assert connection before executing" time="0.0229" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

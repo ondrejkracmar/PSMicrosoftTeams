@@ -74,13 +74,13 @@
 		}
 
 		$body = @{
-			resource              = $Resource
+			scope                 = '{0}/.default' -f $Resource
 			client_id             = $ClientID
 			client_assertion_type = 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer'
 			client_assertion      = $myAssertion
 			grant_type            = 'client_credentials'
 		}
-		try { $authResponse = Invoke-RestMethod -Method Post -Uri "$AuthenticationUrl/$TenantId/oauth2/token" -Body $body -ContentType 'application/x-www-form-urlencoded' -ErrorAction Stop }
+		try { $authResponse = Invoke-RestMethod -Method Post -Uri "$AuthenticationUrl/$TenantId/oauth2/v2.0/token" -Body $body -ContentType 'application/x-www-form-urlencoded' -ErrorAction Stop }
 		catch { throw }
 		
 		Read-AuthResponse -AuthResponse $authResponse

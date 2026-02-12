@@ -90,7 +90,7 @@
                         else {
                             [string] $path = ('teams/{0}/channels/{1}/members' -f $team.Id, $Channel)
                         }
-                        ConvertFrom-RestConversationMember -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -ErrorAction Stop)
+                        ConvertFrom-RestObject -Type ([PSMicrosoftTeams.Members.ConversationMember]) -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -ErrorAction Stop)
                     }
                     else {
                         if ($EnableException.IsPresent) {

@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="7" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-02-12" time="14:01:07">
+  <environment user="root" nunit-version="2.5.8.0" clr-version="9.0.1" os-version="6.6.87.2-microsoft-standard-WSL2" machine-name="dfab52a26652" user-domain="" platform="Linux" cwd="/workspaces/PSMicrosoftTeams/src" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="0.2811" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftTeams/src/tests/functions/channel/Get-PSMsTeamsTeamChannelFilesFolder.Tests.ps1" executed="True" result="Success" success="True" time="0.2811" asserts="0" description="/workspaces/PSMicrosoftTeams/src/tests/functions/channel/Get-PSMsTeamsTeamChannelFilesFolder.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Get-PSMsTeamsTeamChannelFilesFolder" executed="True" result="Success" success="True" time="0.2084" asserts="0" description="Get-PSMsTeamsTeamChannelFilesFolder">
+            <results>
+              <test-suite type="TestFixture" name="Get-PSMsTeamsTeamChannelFilesFolder.Parameter validation" executed="True" result="Success" success="True" time="0.0981" asserts="0" description="Get-PSMsTeamsTeamChannelFilesFolder.Parameter validation">
+                <results>
+                  <test-case description="Should have correct OutputType" name="Get-PSMsTeamsTeamChannelFilesFolder.Parameter validation.Should have correct OutputType" time="0.0231" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should require Channel parameter with ChannelId alias" name="Get-PSMsTeamsTeamChannelFilesFolder.Parameter validation.Should require Channel parameter with ChannelId alias" time="0.0249" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have Identity parameter with correct aliases" name="Get-PSMsTeamsTeamChannelFilesFolder.Parameter validation.Should have Identity parameter with correct aliases" time="0.0227" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have EnableException parameter" name="Get-PSMsTeamsTeamChannelFilesFolder.Parameter validation.Should have EnableException parameter" time="0.0234" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSMsTeamsTeamChannelFilesFolder.FilesFolder retrieval" executed="True" result="Success" success="True" time="0.1617" asserts="0" description="Get-PSMsTeamsTeamChannelFilesFolder.FilesFolder retrieval">
+                <results>
+                  <test-case description="Should resolve team and query filesFolder endpoint" name="Get-PSMsTeamsTeamChannelFilesFolder.FilesFolder retrieval.Should resolve team and query filesFolder endpoint" time="0.0585" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSMsTeamsTeamChannelFilesFolder.Pipeline input" executed="True" result="Success" success="True" time="0.2049" asserts="0" description="Get-PSMsTeamsTeamChannelFilesFolder.Pipeline input">
+                <results>
+                  <test-case description="Should accept Identity from pipeline by property name" name="Get-PSMsTeamsTeamChannelFilesFolder.Pipeline input.Should accept Identity from pipeline by property name" time="0.0172" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should accept Channel from pipeline by property name" name="Get-PSMsTeamsTeamChannelFilesFolder.Pipeline input.Should accept Channel from pipeline by property name" time="0.0235" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

@@ -69,6 +69,7 @@
     }
 
     process {
+        [hashtable] $queryLocal = $query.Clone()
         switch ($PSCmdlet.ParameterSetName) {
             'Identity' {
                 foreach ($team in $Identity) {
@@ -87,32 +88,32 @@
                         else {
                             [string] $teamId = $team
                         }
-                        ConvertFrom-RestTeam -InputObject (Invoke-EntraRequest -Service $service -Path ('groups/{0}' -f $teamId) -Query $query -Method Get -ErrorAction Stop)
+                        ConvertFrom-RestObject -Type ([PSMicrosoftTeams.Teams.Team]) -InputObject (Invoke-EntraRequest -Service $service -Path ('groups/{0}' -f $teamId) -Query $queryLocal -Method Get -ErrorAction Stop)
                     } -EnableException $EnableException -Continue -PSCmdlet $PSCmdlet -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                 }
             }
             'DisplayName' {
                 foreach ($team in $DisplayName) {
-                    $query['$Filter'] = ("startswith(displayName,'{0}')" -f $team)
+                    $queryLocal['$Filter'] = ("startswith(displayName,'{0}')" -f $team)
                     Invoke-PSFProtectedCommand -ActionString 'Team.Get' -ActionStringValues $team -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        ConvertFrom-RestTeam -InputObject (Invoke-EntraRequest -Service $service -Path 'teams' -Query $query -Method Get -ErrorAction Stop)
+                        ConvertFrom-RestObject -Type ([PSMicrosoftTeams.Teams.Team]) -InputObject (Invoke-EntraRequest -Service $service -Path 'teams' -Query $queryLocal -Method Get -ErrorAction Stop)
                     } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                 }
             }
             'Filter' {
-                $query['$Filter'] = ("resourceProvisioningOptions/Any(x:x eq 'Team') and {0}" -f $Filter)
+                $queryLocal['$Filter'] = ("resourceProvisioningOptions/Any(x:x eq 'Team') and {0}" -f $Filter)
                 if ($AdvancedFilter.IsPresent) {
                     [hashtable] $header = @{}
                     $header['ConsistencyLevel'] = 'eventual'
-                    Invoke-PSFProtectedCommand -ActionString 'Team.Filter' -ActionStringValues $query['$Filter'] -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        ConvertFrom-RestTeam -InputObject (Invoke-EntraRequest -Service $service -Path 'teams' -Query $query -Method Get -Header $header -ErrorAction Stop)
+                    Invoke-PSFProtectedCommand -ActionString 'Team.Filter' -ActionStringValues $queryLocal['$Filter'] -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                        ConvertFrom-RestObject -Type ([PSMicrosoftTeams.Teams.Team]) -InputObject (Invoke-EntraRequest -Service $service -Path 'teams' -Query $queryLocal -Method Get -Header $header -ErrorAction Stop)
                     } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                 }
                 else {
-                    Invoke-PSFProtectedCommand -ActionString 'Team.Filter' -ActionStringValues $query['$Filter'] -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        ConvertFrom-RestTeam -InputObject (Invoke-EntraRequest -Service $service -Path ('teams') -Query $query -Method Get -ErrorAction Stop)
+                    Invoke-PSFProtectedCommand -ActionString 'Team.Filter' -ActionStringValues $queryLocal['$Filter'] -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                        ConvertFrom-RestObject -Type ([PSMicrosoftTeams.Teams.Team]) -InputObject (Invoke-EntraRequest -Service $service -Path ('teams') -Query $queryLocal -Method Get -ErrorAction Stop)
                     } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                 }
                 if (Test-PSFFunctionInterrupt) { return }
@@ -120,7 +121,7 @@
             'All' {
                 if ($All.IsPresent) {
                     Invoke-PSFProtectedCommand -ActionString 'Team.List' -ActionStringValues 'All' -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        ConvertFrom-RestTeam -InputObject (Invoke-EntraRequest -Service $service -Path 'teams' -Query $query -Method Get -ErrorAction Stop)
+                        ConvertFrom-RestObject -Type ([PSMicrosoftTeams.Teams.Team]) -InputObject (Invoke-EntraRequest -Service $service -Path 'teams' -Query $queryLocal -Method Get -ErrorAction Stop)
                     } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                 }

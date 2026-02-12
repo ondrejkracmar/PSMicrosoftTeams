@@ -1,7 +1,104 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Types>
+  <!-- PSMicrosoftTeams.Teams.Team — Get-PSMsTeamsTeam -->
   <Type>
-    <Name>PSMicrosoftTeams.User</Name>
+    <Name>PSMicrosoftTeams.Teams.Team</Name>
+    <Members>
+      <CodeProperty IsHidden="true">
+        <Name>SerializationData</Name>
+        <GetCodeReference>
+          <TypeName>PSFramework.Serialization.SerializationTypeConverter</TypeName>
+          <MethodName>GetSerializationData</MethodName>
+        </GetCodeReference>
+      </CodeProperty>
+    </Members>
+    <TypeConverter>
+      <TypeName>PSFramework.Serialization.SerializationTypeConverter</TypeName>
+    </TypeConverter>
+  </Type>
+  <!-- PSMicrosoftTeams.Teams.TeamAdditionalProperty — Get-PSMsTeamsTeamAdditionalProperty -->
+  <Type>
+    <Name>PSMicrosoftTeams.Teams.TeamAdditionalProperty</Name>
+    <Members>
+      <CodeProperty IsHidden="true">
+        <Name>SerializationData</Name>
+        <GetCodeReference>
+          <TypeName>PSFramework.Serialization.SerializationTypeConverter</TypeName>
+          <MethodName>GetSerializationData</MethodName>
+        </GetCodeReference>
+      </CodeProperty>
+    </Members>
+    <TypeConverter>
+      <TypeName>PSFramework.Serialization.SerializationTypeConverter</TypeName>
+    </TypeConverter>
+  </Type>
+  <!-- PSMicrosoftTeams.Channels.Channel — Get-PSMsTeamsTeamChannel -->
+  <Type>
+    <Name>PSMicrosoftTeams.Channels.Channel</Name>
+    <Members>
+      <CodeProperty IsHidden="true">
+        <Name>SerializationData</Name>
+        <GetCodeReference>
+          <TypeName>PSFramework.Serialization.SerializationTypeConverter</TypeName>
+          <MethodName>GetSerializationData</MethodName>
+        </GetCodeReference>
+      </CodeProperty>
+    </Members>
+    <TypeConverter>
+      <TypeName>PSFramework.Serialization.SerializationTypeConverter</TypeName>
+    </TypeConverter>
+  </Type>
+  <!-- PSMicrosoftTeams.Channels.FileFolder.ChannelFileFolder — Get-PSMsTeamsTeamChannelFilesFolder -->
+  <Type>
+    <Name>PSMicrosoftTeams.Channels.FileFolder.ChannelFileFolder</Name>
+    <Members>
+      <CodeProperty IsHidden="true">
+        <Name>SerializationData</Name>
+        <GetCodeReference>
+          <TypeName>PSFramework.Serialization.SerializationTypeConverter</TypeName>
+          <MethodName>GetSerializationData</MethodName>
+        </GetCodeReference>
+      </CodeProperty>
+    </Members>
+    <TypeConverter>
+      <TypeName>PSFramework.Serialization.SerializationTypeConverter</TypeName>
+    </TypeConverter>
+  </Type>
+  <!-- PSMicrosoftTeams.Members.ConversationMember — Get-PSMsTeamsTeamMember / Get-PSMsTeamsTeamChannelMember -->
+  <Type>
+    <Name>PSMicrosoftTeams.Members.ConversationMember</Name>
+    <Members>
+      <CodeProperty IsHidden="true">
+        <Name>SerializationData</Name>
+        <GetCodeReference>
+          <TypeName>PSFramework.Serialization.SerializationTypeConverter</TypeName>
+          <MethodName>GetSerializationData</MethodName>
+        </GetCodeReference>
+      </CodeProperty>
+    </Members>
+    <TypeConverter>
+      <TypeName>PSFramework.Serialization.SerializationTypeConverter</TypeName>
+    </TypeConverter>
+  </Type>
+  <!-- PSMicrosoftEntraID.Users.User — Get-PSMsTeamsTeamUser -->
+  <Type>
+    <Name>PSMicrosoftEntraID.Users.User</Name>
+    <Members>
+      <CodeProperty IsHidden="true">
+        <Name>SerializationData</Name>
+        <GetCodeReference>
+          <TypeName>PSFramework.Serialization.SerializationTypeConverter</TypeName>
+          <MethodName>GetSerializationData</MethodName>
+        </GetCodeReference>
+      </CodeProperty>
+    </Members>
+    <TypeConverter>
+      <TypeName>PSFramework.Serialization.SerializationTypeConverter</TypeName>
+    </TypeConverter>
+  </Type>
+  <!-- PSMicrosoftEntraID.Groups.AssignedLabel — Get-PSMsTeamsTeamLabel -->
+  <Type>
+    <Name>PSMicrosoftEntraID.Groups.AssignedLabel</Name>
     <Members>
       <CodeProperty IsHidden="true">
         <Name>SerializationData</Name>

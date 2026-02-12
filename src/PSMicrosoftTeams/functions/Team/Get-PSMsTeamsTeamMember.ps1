@@ -1,4 +1,4 @@
-﻿using namespace PSMicrosoftTeams.Users
+﻿using namespace PSMicrosoftEntraID.Users
 function Get-PSMsTeamsTeamMember {
     <#
     .SYNOPSIS
@@ -74,7 +74,7 @@ function Get-PSMsTeamsTeamMember {
                                 $header['ConsistencyLevel'] = 'eventual'
                             }
                         }
-                        ConvertFrom-RestConversationMember -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -ErrorAction Stop)
+                        ConvertFrom-RestObject -Type ([PSMicrosoftTeams.Members.ConversationMember]) -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -ErrorAction Stop)
                     } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                 }
@@ -91,7 +91,7 @@ function Get-PSMsTeamsTeamMember {
                                     $header['ConsistencyLevel'] = 'eventual'
                                 }
                             }
-                            ConvertFrom-RestConversationMember -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -ErrorAction Stop)
+                            ConvertFrom-RestObject -Type ([PSMicrosoftTeams.Members.ConversationMember]) -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -ErrorAction Stop)
                             if (Test-PSFFunctionInterrupt) { return }
                         }
                         else {

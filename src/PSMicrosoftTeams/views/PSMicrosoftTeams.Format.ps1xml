@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-16"?>
 <Configuration>
 	<ViewDefinitions>
+		<!-- PSMicrosoftEntraID.Users.User — Get-PSMsTeamsTeamUser -->
 		<View>
 			<Name>PSMicrosoftEntraID.Users.User</Name>
 			<ViewSelectedBy>
@@ -10,37 +11,37 @@
 				<AutoSize/>
 				<TableHeaders>
 					<TableColumnHeader>
-            			<Width>16</Width>
-          			</TableColumnHeader>
-          			<TableColumnHeader>
-            			<Width>16</Width>
+						<Width>36</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Width>30</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Width>30</Width>
 					</TableColumnHeader>
 					<TableColumnHeader>
 						<Width>16</Width>
 					</TableColumnHeader>
 					<TableColumnHeader>
-						<Width>8</Width>
+						<Width>10</Width>
 					</TableColumnHeader>
 					<TableColumnHeader>
-						<Width>8</Width>
+						<Width>16</Width>
 					</TableColumnHeader>
 					<TableColumnHeader>
-						<Width>8</Width>
+						<Width>16</Width>
 					</TableColumnHeader>
 					<TableColumnHeader>
-						<Width>8</Width>
+						<Width>20</Width>
 					</TableColumnHeader>
 					<TableColumnHeader>
-						<Width>8</Width>
+						<Width>16</Width>
 					</TableColumnHeader>
 					<TableColumnHeader>
-						<Width>8</Width>
+						<Width>12</Width>
 					</TableColumnHeader>
 					<TableColumnHeader>
-						<Width>8</Width>
-					</TableColumnHeader>
-					<TableColumnHeader>
-						<Width>8</Width>
+						<Width>10</Width>
 					</TableColumnHeader>
 					<TableColumnHeader>
 						<Width>8</Width>
@@ -90,6 +91,7 @@
 				</TableRowEntries>
 			</TableControl>
 		</View>
+		<!-- PSMicrosoftTeams.Teams.Team — Get-PSMsTeamsTeam -->
 		<View>
 			<Name>PSMicrosoftTeams.Teams.Team</Name>
 			<ViewSelectedBy>
@@ -99,13 +101,13 @@
 				<AutoSize/>
 				<TableHeaders>
 					<TableColumnHeader>
-            			<Width>16</Width>
-          			</TableColumnHeader>
-          			<TableColumnHeader>
-            			<Width>16</Width>
+						<Width>36</Width>
 					</TableColumnHeader>
 					<TableColumnHeader>
-						<Width>16</Width>
+						<Width>30</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Width>40</Width>
 					</TableColumnHeader>
 				</TableHeaders>
 				<TableRowEntries>
@@ -125,6 +127,7 @@
 				</TableRowEntries>
 			</TableControl>
 		</View>
+		<!-- PSMicrosoftTeams.Teams.TeamAdditionalProperty — Get-PSMsTeamsTeamAdditionalProperty -->
 		<View>
 			<Name>PSMicrosoftTeams.Teams.TeamAdditionalProperty</Name>
 			<ViewSelectedBy>
@@ -134,25 +137,25 @@
 				<AutoSize/>
 				<TableHeaders>
 					<TableColumnHeader>
-            			<Width>16</Width>
-          			</TableColumnHeader>
-          			<TableColumnHeader>
-            			<Width>16</Width>
+						<Width>36</Width>
 					</TableColumnHeader>
 					<TableColumnHeader>
-						<Width>16</Width>
+						<Width>24</Width>
 					</TableColumnHeader>
 					<TableColumnHeader>
-						<Width>8</Width>
+						<Width>30</Width>
 					</TableColumnHeader>
 					<TableColumnHeader>
-						<Width>16</Width>
+						<Width>20</Width>
 					</TableColumnHeader>
 					<TableColumnHeader>
-						<Width>16</Width>
+						<Width>12</Width>
 					</TableColumnHeader>
 					<TableColumnHeader>
-						<Width>8</Width>
+						<Width>36</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Width>60</Width>
 					</TableColumnHeader>
 				</TableHeaders>
 				<TableRowEntries>
@@ -184,6 +187,103 @@
 				</TableRowEntries>
 			</TableControl>
 		</View>
+		<!-- PSMicrosoftTeams.Channels.Channel — Get-PSMsTeamsTeamChannel -->
+		<View>
+			<Name>PSMicrosoftTeams.Channels.Channel</Name>
+			<ViewSelectedBy>
+				<TypeName>PSMicrosoftTeams.Channels.Channel</TypeName>
+			</ViewSelectedBy>
+			<TableControl>
+				<AutoSize/>
+				<TableHeaders>
+					<TableColumnHeader>
+						<Width>36</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Width>24</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Width>30</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Width>14</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Width>20</Width>
+					</TableColumnHeader>
+				</TableHeaders>
+				<TableRowEntries>
+					<TableRowEntry>
+						<TableColumnItems>
+							<TableColumnItem>
+								<PropertyName>Id</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>DisplayName</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>Description</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>MembershipType</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>WebUrl</PropertyName>
+							</TableColumnItem>
+						</TableColumnItems>
+					</TableRowEntry>
+				</TableRowEntries>
+			</TableControl>
+		</View>
+		<!-- PSMicrosoftTeams.Channels.FileFolder.ChannelFileFolder — Get-PSMsTeamsTeamChannelFilesFolder -->
+		<View>
+			<Name>PSMicrosoftTeams.Channels.FileFolder.ChannelFileFolder</Name>
+			<ViewSelectedBy>
+				<TypeName>PSMicrosoftTeams.Channels.FileFolder.ChannelFileFolder</TypeName>
+			</ViewSelectedBy>
+			<TableControl>
+				<AutoSize/>
+				<TableHeaders>
+					<TableColumnHeader>
+						<Width>36</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Width>24</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Width>10</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Width>20</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Width>60</Width>
+					</TableColumnHeader>
+				</TableHeaders>
+				<TableRowEntries>
+					<TableRowEntry>
+						<TableColumnItems>
+							<TableColumnItem>
+								<PropertyName>Id</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>Name</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>Size</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>LastModifiedDateTime</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>WebUrl</PropertyName>
+							</TableColumnItem>
+						</TableColumnItems>
+					</TableRowEntry>
+				</TableRowEntries>
+			</TableControl>
+		</View>
+		<!-- PSMicrosoftTeams.Members.ConversationMember — Get-PSMsTeamsTeamMember / Get-PSMsTeamsTeamChannelMember -->
 		<View>
 			<Name>PSMicrosoftTeams.Members.ConversationMember</Name>
 			<ViewSelectedBy>
@@ -193,22 +293,22 @@
 				<AutoSize/>
 				<TableHeaders>
 					<TableColumnHeader>
-            			<Width>8</Width>
-          			</TableColumnHeader>
-          			<TableColumnHeader>
-            			<Width>8</Width>
+						<Width>36</Width>
 					</TableColumnHeader>
 					<TableColumnHeader>
-						<Width>8</Width>
+						<Width>24</Width>
 					</TableColumnHeader>
 					<TableColumnHeader>
-						<Width>8</Width>
+						<Width>30</Width>
 					</TableColumnHeader>
 					<TableColumnHeader>
-						<Width>8</Width>
+						<Width>36</Width>
 					</TableColumnHeader>
 					<TableColumnHeader>
-						<Width>16</Width>
+						<Width>12</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Width>36</Width>
 					</TableColumnHeader>
 				</TableHeaders>
 				<TableRowEntries>
@@ -231,6 +331,36 @@
 							</TableColumnItem>
 							<TableColumnItem>
 								<PropertyName>Id</PropertyName>
+							</TableColumnItem>
+						</TableColumnItems>
+					</TableRowEntry>
+				</TableRowEntries>
+			</TableControl>
+		</View>
+		<!-- PSMicrosoftEntraID.Groups.AssignedLabel — Get-PSMsTeamsTeamLabel -->
+		<View>
+			<Name>PSMicrosoftEntraID.Groups.AssignedLabel</Name>
+			<ViewSelectedBy>
+				<TypeName>PSMicrosoftEntraID.Groups.AssignedLabel</TypeName>
+			</ViewSelectedBy>
+			<TableControl>
+				<AutoSize/>
+				<TableHeaders>
+					<TableColumnHeader>
+						<Width>40</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Width>30</Width>
+					</TableColumnHeader>
+				</TableHeaders>
+				<TableRowEntries>
+					<TableRowEntry>
+						<TableColumnItems>
+							<TableColumnItem>
+								<PropertyName>LabelId</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>DisplayName</PropertyName>
 							</TableColumnItem>
 						</TableColumnItems>
 					</TableRowEntry>

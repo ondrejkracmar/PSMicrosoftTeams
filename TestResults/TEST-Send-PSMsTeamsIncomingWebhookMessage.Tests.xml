@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="12" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-02-12" time="14:01:10">
+  <environment user="root" nunit-version="2.5.8.0" clr-version="9.0.1" os-version="6.6.87.2-microsoft-standard-WSL2" machine-name="dfab52a26652" user-domain="" platform="Linux" cwd="/workspaces/PSMicrosoftTeams/src" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="0.2388" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftTeams/src/tests/functions/message/Send-PSMsTeamsIncomingWebhookMessage.Tests.ps1" executed="True" result="Success" success="True" time="0.2388" asserts="0" description="/workspaces/PSMicrosoftTeams/src/tests/functions/message/Send-PSMsTeamsIncomingWebhookMessage.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Send-PSMsTeamsIncomingWebhookMessage" executed="True" result="Success" success="True" time="0.1578" asserts="0" description="Send-PSMsTeamsIncomingWebhookMessage">
+            <results>
+              <test-suite type="TestFixture" name="Send-PSMsTeamsIncomingWebhookMessage.Parameter validation" executed="True" result="Success" success="True" time="0.0589" asserts="0" description="Send-PSMsTeamsIncomingWebhookMessage.Parameter validation">
+                <results>
+                  <test-case description="Should support ShouldProcess" name="Send-PSMsTeamsIncomingWebhookMessage.Parameter validation.Should support ShouldProcess" time="0.0098" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have mandatory WebhookUrl parameter" name="Send-PSMsTeamsIncomingWebhookMessage.Parameter validation.Should have mandatory WebhookUrl parameter" time="0.0058" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have mandatory Title parameter" name="Send-PSMsTeamsIncomingWebhookMessage.Parameter validation.Should have mandatory Title parameter" time="0.0063" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have mandatory Text parameter" name="Send-PSMsTeamsIncomingWebhookMessage.Parameter validation.Should have mandatory Text parameter" time="0.0061" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have optional ThemeColor parameter with validation" name="Send-PSMsTeamsIncomingWebhookMessage.Parameter validation.Should have optional ThemeColor parameter with validation" time="0.0135" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have optional Facts parameter" name="Send-PSMsTeamsIncomingWebhookMessage.Parameter validation.Should have optional Facts parameter" time="0.0052" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have optional Actions parameter" name="Send-PSMsTeamsIncomingWebhookMessage.Parameter validation.Should have optional Actions parameter" time="0.0051" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have optional Sections parameter" name="Send-PSMsTeamsIncomingWebhookMessage.Parameter validation.Should have optional Sections parameter" time="0.005" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Send-PSMsTeamsIncomingWebhookMessage.Webhook message sending" executed="True" result="Success" success="True" time="0.1261" asserts="0" description="Send-PSMsTeamsIncomingWebhookMessage.Webhook message sending">
+                <results>
+                  <test-case description="Should invoke Invoke-RestMethod with POST to webhook URI" name="Send-PSMsTeamsIncomingWebhookMessage.Webhook message sending.Should invoke Invoke-RestMethod with POST to webhook URI" time="0.065" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Send-PSMsTeamsIncomingWebhookMessage.Pipeline input" executed="True" result="Success" success="True" time="0.1552" asserts="0" description="Send-PSMsTeamsIncomingWebhookMessage.Pipeline input">
+                <results>
+                  <test-case description="Should accept WebhookUrl from pipeline by property name" name="Send-PSMsTeamsIncomingWebhookMessage.Pipeline input.Should accept WebhookUrl from pipeline by property name" time="0.0063" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should accept Title from pipeline by property name" name="Send-PSMsTeamsIncomingWebhookMessage.Pipeline input.Should accept Title from pipeline by property name" time="0.0141" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should accept Text from pipeline by property name" name="Send-PSMsTeamsIncomingWebhookMessage.Pipeline input.Should accept Text from pipeline by property name" time="0.0068" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

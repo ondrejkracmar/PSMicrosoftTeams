@@ -577,5 +577,21 @@
             Gets or sets the hyperlink to the team in the Microsoft Teams client.
             </summary>
         </member>
+        <member name="T:PSMicrosoftTeams.Teams.TeamLabel">
+            <summary>
+            Represents a sensitivity label assigned to a Microsoft 365 group / Microsoft Teams team.
+            Corresponds to the microsoft.graph.assignedLabel resource type.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Teams.TeamLabel.LabelId">
+            <summary>
+            Gets or sets the unique identifier (GUID) of the sensitivity label.
+            </summary>
+        </member>
+        <member name="P:PSMicrosoftTeams.Teams.TeamLabel.DisplayName">
+            <summary>
+            Gets or sets the display name of the sensitivity label.
+            </summary>
+        </member>
     </members>
 </doc>

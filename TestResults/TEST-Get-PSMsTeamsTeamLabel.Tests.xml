@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="13" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2026-02-12" time="14:01:28">
+  <environment user="root" nunit-version="2.5.8.0" clr-version="9.0.1" os-version="6.6.87.2-microsoft-standard-WSL2" machine-name="dfab52a26652" user-domain="" platform="Linux" cwd="/workspaces/PSMicrosoftTeams/src" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="15.555" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="/workspaces/PSMicrosoftTeams/src/tests/functions/team/Get-PSMsTeamsTeamLabel.Tests.ps1" executed="True" result="Success" success="True" time="15.555" asserts="0" description="/workspaces/PSMicrosoftTeams/src/tests/functions/team/Get-PSMsTeamsTeamLabel.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Get-PSMsTeamsTeamLabel" executed="True" result="Success" success="True" time="15.4661" asserts="0" description="Get-PSMsTeamsTeamLabel">
+            <results>
+              <test-suite type="TestFixture" name="Get-PSMsTeamsTeamLabel.Parameter validation" executed="True" result="Success" success="True" time="0.0969" asserts="0" description="Get-PSMsTeamsTeamLabel.Parameter validation">
+                <results>
+                  <test-case description="Should have correct OutputType" name="Get-PSMsTeamsTeamLabel.Parameter validation.Should have correct OutputType" time="0.0266" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have Identity parameter with aliases" name="Get-PSMsTeamsTeamLabel.Parameter validation.Should have Identity parameter with aliases" time="0.019" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have DisplayName parameter" name="Get-PSMsTeamsTeamLabel.Parameter validation.Should have DisplayName parameter" time="0.0135" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have EnableException parameter" name="Get-PSMsTeamsTeamLabel.Parameter validation.Should have EnableException parameter" time="0.0159" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should have Identity, InputObject and DisplayName parameter sets" name="Get-PSMsTeamsTeamLabel.Parameter validation.Should have Identity, InputObject and DisplayName parameter sets" time="0.0193" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSMsTeamsTeamLabel.Identity parameter set" executed="True" result="Success" success="True" time="0.2201" asserts="0" description="Get-PSMsTeamsTeamLabel.Identity parameter set">
+                <results>
+                  <test-case description="Should resolve team and query groups/{id} endpoint with assignedLabels select" name="Get-PSMsTeamsTeamLabel.Identity parameter set.Should resolve team and query groups/{id} endpoint with assignedLabels select" time="0.0622" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should return TeamLabel objects with LabelId and DisplayName" name="Get-PSMsTeamsTeamLabel.Identity parameter set.Should return TeamLabel objects with LabelId and DisplayName" time="0.0583" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSMsTeamsTeamLabel.DisplayName parameter set" executed="True" result="Success" success="True" time="0.2673" asserts="0" description="Get-PSMsTeamsTeamLabel.DisplayName parameter set">
+                <results>
+                  <test-case description="Should query groups endpoint with displayName filter" name="Get-PSMsTeamsTeamLabel.DisplayName parameter set.Should query groups endpoint with displayName filter" time="0.0447" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSMsTeamsTeamLabel.InputObject parameter set" executed="True" result="Success" success="True" time="0.3011" asserts="0" description="Get-PSMsTeamsTeamLabel.InputObject parameter set">
+                <results>
+                  <test-case description="Should query groups/{id} for labels when InputObject is provided" name="Get-PSMsTeamsTeamLabel.InputObject parameter set.Should query groups/{id} for labels when InputObject is provided" time="0.032" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSMsTeamsTeamLabel.Error handling" executed="True" result="Success" success="True" time="0.3242" asserts="0" description="Get-PSMsTeamsTeamLabel.Error handling">
+                <results>
+                  <test-case description="Should assert connection before executing" name="Get-PSMsTeamsTeamLabel.Error handling.Should assert connection before executing" time="0.0208" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-PSMsTeamsTeamLabel.Pipeline input" executed="True" result="Success" success="True" time="15.4623" asserts="0" description="Get-PSMsTeamsTeamLabel.Pipeline input">
+                <results>
+                  <test-case description="Should accept InputObject from pipeline" name="Get-PSMsTeamsTeamLabel.Pipeline input.Should accept InputObject from pipeline" time="0.0132" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should accept Identity from pipeline by property name" name="Get-PSMsTeamsTeamLabel.Pipeline input.Should accept Identity from pipeline by property name" time="0.0196" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="Should process InputObject piped from Get-PSMsTeamsTeam" name="Get-PSMsTeamsTeamLabel.Pipeline input.Should process InputObject piped from Get-PSMsTeamsTeam" time="15.0996" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

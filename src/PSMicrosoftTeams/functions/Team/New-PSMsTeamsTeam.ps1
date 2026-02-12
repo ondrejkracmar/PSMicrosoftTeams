@@ -335,7 +335,7 @@
                 if (Test-PSFParameterBinding -ParameterName 'Owners') {
                     [System.Collections.ArrayList] $bodyOwnerUrlList = [System.Collections.ArrayList]::new()
                     foreach ($itemOwner in $Owners) {
-                        [PSMicrosoftTeams.Users.User] $aADUser = Get-PSEntraIDUser -Identity $itemOwner
+                        [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $itemOwner
                         [hashtable] $ownerBody = @{}
                         if (-not([object]::Equals($aADUser, $null))) {
                             $ownerBody['@odata.type'] = '#microsoft.graph.aadUserConversationMember'
@@ -355,7 +355,7 @@
                     [System.Collections.ArrayList] $bodyMemberUrlList = [System.Collections.ArrayList]::new()
                     foreach ($itemMember in $Members) {
                         [hashtable] $memberBody = @{}
-                        [PSMicrosoftTeams.Users.User] $aADUser = Get-PSEntraIDUser -Identity $itemMember
+                        [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $itemMember
                         if (-not([object]::Equals($aADUser, $null))) {
                             $memberBody['@odata.type'] = '#microsoft.graph.aadUserConversationMember'
                             $memberBody['user@odata.bind'] = ('{0}/users/''({1})''' -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id)

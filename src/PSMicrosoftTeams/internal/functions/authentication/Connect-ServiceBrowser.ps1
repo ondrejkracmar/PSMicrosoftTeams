@@ -138,13 +138,6 @@
 		$uriFinal = $uri + ($paramStrings -join '&')
 		Write-Verbose "Authorize Uri: $uriFinal"
 
-		#$redirectTo = 'https://raw.githubusercontent.com/FriedrichWeinmann/EntraAuth/master/nothing-to-see-here.txt'
-		#$redirectTo = (Join-Path -Path $script:ModuleRoot -ChildPath 'nothing-to-see-here.txt') -replace '\\','/'
-		$redirectTo = "http://localhost:$(Get-Random -Minimum 9800 -Maximum 9999)/"
-		if ((Get-Random -Minimum 10 -Maximum 99) -eq 66) {
-			$redirectTo = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
-		}
-		
 		# Start local server to catch the redirect
 		$http = [System.Net.HttpListener]::new()
 		$http.Prefixes.Add(("$RedirectUri/" -replace '//$', '/'))

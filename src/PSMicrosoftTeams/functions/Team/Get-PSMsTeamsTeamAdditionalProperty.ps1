@@ -53,7 +53,7 @@
                 foreach ($itemInputObject in $InputObject) {
                     Invoke-PSFProtectedCommand -ActionString 'Team.AdditionalProperty' -ActionStringValues $itemInputObject.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                         [string] $path = ('teams/{0}' -f $itemInputObject.Id)
-                        ConvertFrom-RestTeamAdditionalProperty -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -ErrorAction Stop)
+                        ConvertFrom-RestObject -Type ([PSMicrosoftTeams.Teams.TeamAdditionalProperty]) -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -ErrorAction Stop)
                     } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
                     if (Test-PSFFunctionInterrupt) { return }
                 }
@@ -64,7 +64,7 @@
                         [PSMicrosoftTeams.Teams.Team] $team = Get-PSMsTeamsTeam -Identity $itemIdentity
                         if (-not([object]::Equals($team, $null))) {
                             [string] $path = ('teams/{0}' -f $team.Id)
-                            ConvertFrom-RestTeamAdditionalProperty -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -ErrorAction Stop)
+                            ConvertFrom-RestObject -Type ([PSMicrosoftTeams.Teams.TeamAdditionalProperty]) -InputObject (Invoke-EntraRequest -Service $service -Path $path -Query $query -Header $header -Method Get -ErrorAction Stop)
                         }
                         else {
                             if ($EnableException.IsPresent) {

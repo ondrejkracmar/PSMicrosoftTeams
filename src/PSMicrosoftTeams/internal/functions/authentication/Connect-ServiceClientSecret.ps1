@@ -51,12 +51,12 @@
 	
     process {
         $body = @{
-            resource      = $Resource
+            scope         = '{0}/.default' -f $Resource
             client_id     = $ClientID
             client_secret = [PSCredential]::new('NoMatter', $ClientSecret).GetNetworkCredential().Password
             grant_type    = 'client_credentials'
         }
-        try { $authResponse = Invoke-RestMethod -Method Post -Uri "$AuthenticationUrl/$TenantId/oauth2/token" -Body $body -ErrorAction Stop }
+        try { $authResponse = Invoke-RestMethod -Method Post -Uri "$AuthenticationUrl/$TenantId/oauth2/v2.0/token" -Body $body -ErrorAction Stop }
         catch { throw }
 		
         Read-AuthResponse -AuthResponse $authResponse
