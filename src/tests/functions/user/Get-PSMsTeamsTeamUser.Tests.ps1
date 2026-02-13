@@ -156,9 +156,9 @@
     }
 
     Context 'Parameter sets' {
-        It 'Should have Identity as default parameter set' {
+        It 'Should have All as default parameter set' {
             $command = Get-Command -Name Get-PSMsTeamsTeamUser -Module PSMicrosoftTeams
-            $command.DefaultParameterSet | Should -Be 'Identity'
+            $command.DefaultParameterSet | Should -Be 'All'
         }
 
         It 'Should have Identity, Name, CompanyName, Filter, All parameter sets' {

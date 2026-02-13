@@ -29,12 +29,12 @@
             $command.Parameters.Keys | Should -Contain 'WhatIf'
         }
 
-        It 'Should have mandatory Subject parameter' {
+        It 'Should have optional Subject parameter' {
             $command = Get-Command -Name Send-PSMsTeamsTeamChannelMessage -Module PSMicrosoftTeams
             $param = $command.Parameters['Subject']
             $param | Should -Not -BeNullOrEmpty
             ($param.Attributes | Where-Object { $_ -is [System.Management.Automation.ParameterAttribute] -and $_.Mandatory }).Count |
-                Should -BeGreaterThan 0
+                Should -Be 0
         }
 
         It 'Should have mandatory Message parameter' {

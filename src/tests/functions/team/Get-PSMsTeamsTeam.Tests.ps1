@@ -39,9 +39,9 @@
     }
 
     Context 'Parameter validation' {
-        It 'Should have Identity as default parameter set' {
+        It 'Should have All as default parameter set' {
             $command = Get-Command -Name Get-PSMsTeamsTeam -Module PSMicrosoftTeams
-            $command.DefaultParameterSet | Should -Be 'Identity'
+            $command.DefaultParameterSet | Should -Be 'All'
         }
 
         It 'Should have mandatory Identity parameter' {
