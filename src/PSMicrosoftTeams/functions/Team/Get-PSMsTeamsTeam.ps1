@@ -81,7 +81,7 @@
                     $mailNickNameQuery['$Filter'] = ("resourceProvisioningOptions/Any(x:x eq 'Team') and mailNickName eq '{0}'" -f $team)
 
                     Invoke-PSFProtectedCommand -ActionString 'Team.Get' -ActionStringValues $team -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        [PSMicrosoftTeams.Teams.Team[]]$mailNickName = Invoke-EntraRequest -Service $service -Path 'groups' -Query $mailNickNameQuery -Method Get -ErrorAction Stop
+                        $mailNickName = Invoke-EntraRequest -Service $service -Path 'groups' -Query $mailNickNameQuery -Method Get -ErrorAction Stop
                         if (-not([object]::Equals($mailNickName, $null))) {
                             [string] $teamId = $mailNickName[0].Id
                         }

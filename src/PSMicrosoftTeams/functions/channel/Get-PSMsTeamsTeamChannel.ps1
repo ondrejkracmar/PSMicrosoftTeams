@@ -91,11 +91,13 @@
                 Invoke-PSFProtectedCommand -ActionString 'TeamChannel.Get' -ActionStringValues $DisplayName, $Identity -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
                     [PSMicrosoftTeams.Teams.Team]$team = Get-PSMsTeamsTeam -Identity $Identity
                     if (-not([object]::Equals($team, $null))) {
-                        $query['$Filter'] = ("startswith(displayName,'{0}')" -f $DisplayName)
+                        $channelQuery['$Filter'] = ("startswith(displayName,'{0}')" -f $DisplayName)
                         [string] $path = ("teams/{0}/allChannels/") -f $team.Id, $Channel
-                        [PSMicrosoftTeams.Channels.Channel[]] $channelList =ConvertFrom-RestObject -Type ([PSMicrosoftTeams.Channels.Channel]) -InputObject( Invoke-EntraRequest -Service $service -Path $path -Query $query -Method Get -ErrorAction Stop)
-                        foreach ($itemChannel in $channelList) {
-                            Get-PSMsTeamsTeamChannel -Identity $team.Id -Channel $itemChannel.Id
+                        [PSMicrosoftTeams.Channels.Channel[]] $channelList =ConvertFrom-RestObject -Type ([PSMicrosoftTeams.Channels.Channel]) -InputObject( Invoke-EntraRequest -Service $service -Path $path -Query $channelQuery -Method Get -ErrorAction Stop)
+                        if ($channelList) {
+                            foreach ($itemChannel in $channelList) {
+                                Get-PSMsTeamsTeamChannel -Identity $team.Id -Channel $itemChannel.Id
+                            }
                         }
                     }
                     else {
@@ -114,8 +116,10 @@
                         $query['$Filter'] = ("membershipType eq '{0}'" -f $MembershipType)
                         [string] $path = ("teams/{0}/allChannels") -f $team.Id
                         [PSMicrosoftTeams.Channels.Channel[]] $channelList = ConvertFrom-RestObject -Type ([PSMicrosoftTeams.Channels.Channel]) -InputObject( Invoke-EntraRequest -Service $service -Path $path -Query $query -Method Get -ErrorAction Stop)
-                        foreach ($itemChannel in $channelList) {
-                            Get-PSMsTeamsTeamChannel -Identity $team.Id -Channel $itemChannel.Id
+                        if ($channelList) {
+                            foreach ($itemChannel in $channelList) {
+                                Get-PSMsTeamsTeamChannel -Identity $team.Id -Channel $itemChannel.Id
+                            }
                         }
                     }
                     else {
@@ -153,8 +157,10 @@
                             $query['$Filter'] = ('membershipType eq ''{0}''' -f 'Standard')
                         }
                         [PSMicrosoftTeams.Channels.Channel[]] $channelList =  ConvertFrom-RestObject -Type ([PSMicrosoftTeams.Channels.Channel]) -InputObject( Invoke-EntraRequest -Service $service -Path $path -Query $query -Method Get -ErrorAction Stop)
-                        foreach ($itemChannel in $channelList) {
-                            Get-PSMsTeamsTeamChannel -Identity $team.Id -Channel $itemChannel.Id
+                        if ($channelList) {
+                            foreach ($itemChannel in $channelList) {
+                                Get-PSMsTeamsTeamChannel -Identity $team.Id -Channel $itemChannel.Id
+                            }
                         }
                     }
                     else {
