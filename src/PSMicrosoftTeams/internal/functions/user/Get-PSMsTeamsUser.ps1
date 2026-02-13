@@ -10,7 +10,7 @@
         UserPrincipalName, Mail or Id of the user attribute populated in tenant/directory.
 
     .PARAMETER Name
-        DIsplayName, GivenName, SureName of the user attribute populated in tenant/directory.
+        DisplayName, GivenName, SurName of the user attribute populated in tenant/directory.
 
     .PARAMETER CompanyName
         CompanyName of the user attribute populated in tenant/directory.
@@ -72,7 +72,7 @@
         $query = @{
             '$count'  = 'true'
             '$top'    = Get-PSFConfigValue -FullName ('{0}.Settings.GraphApiQuery.PageSize' -f $script:ModuleName)
-            '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.TeamMember).Value -join ',')
+            '$select' = ((Get-PSFConfig -Module $script:ModuleName -Name Settings.GraphApiQuery.Select.User).Value -join ',')
         }
         $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
@@ -120,7 +120,7 @@
                 }
                 else {
                     Invoke-PSFProtectedCommand -ActionString 'User.Filter' -ActionStringValues $Filter -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        Invoke-EntraRequest -Service 'graph' -Path 'users' -Query $query -Method Get -ErrorAction Stop
+                        Invoke-EntraRequest -Service $service -Path 'users' -Query $query -Method Get -ErrorAction Stop
                     } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                 }
             }

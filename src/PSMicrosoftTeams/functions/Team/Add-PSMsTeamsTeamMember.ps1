@@ -115,19 +115,18 @@
                 foreach ($itemUser in $User) {
                     [PSMicrosoftEntraID.Users.User] $teamUser = Get-PSMsTeamsUser -Identity $itemUser
                     if (-not([object]::Equals($teamUser, $null))) {
-                        $userUrl = "{0}/users/{1}" -f (Get-EntraService -Name $service).ServiceUrl, $userObj.Id
                         [void] $bodyMemberUrlList.Add(
                             @{
                                 '@odata.type'     = "#microsoft.graph.aadUserConversationMember"
                                 'roles'           = @($Role.ToLower())
-                                'user@odata.bind' = ('{0}/users(''{1}'')' -f (Get-EntraService -Name $service).ServiceUrl, $itemInputObject.Id)
+                                'user@odata.bind' = ('{0}/users(''{1}'')' -f (Get-EntraService -Name $service).ServiceUrl, $teamUser.Id)
                             }
                         )
                         [void] $memberUserPrincipalListList.Add($teamUser.UserPrincipalName)
                     }
                     else {
                         if ($EnableException.IsPresent) {
-                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $userId)
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $itemUser)
                         }
                     }
                 }
@@ -136,7 +135,7 @@
 
     }
     end {
-        if ($memberUrlList.count -eq 1) {
+        if ($bodyMemberUrlList.count -eq 1) {
             $path = ('teams/{0}/members' -f $team.Id)
             $method = 'POST'
             $body = $bodyMemberUrlList[0]

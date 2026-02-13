@@ -81,10 +81,10 @@ function Remove-PSMsTeamsTeamChannel {
                 Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Get.Failed) -f $Identity)
             }
         }
-        [string] $path = "teams/{0}/channels/{1}" -f $team.Id, $Channel
     }
 
     process {
+        [string] $path = "teams/{0}/channels/{1}" -f $team.Id, $Channel
         if ($PassThru.IsPresent) {
             [PSMicrosoftEntraID.Batch.Request] @{Method = 'DELETE'; Url = ('/{0}' -f $path); Headers = $header }
         }

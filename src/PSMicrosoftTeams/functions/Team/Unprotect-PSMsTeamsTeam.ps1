@@ -4,7 +4,7 @@ function Unprotect-PSMsTeamsTeam {
         Unarchive (unprotect) a Microsoft Teams team.
 
     .DESCRIPTION
-        Unarchives a Microsoft Teams team via Microsoft Graph API POST /teams/{id}/archive.
+        Unarchives a Microsoft Teams team via Microsoft Graph API POST /teams/{id}/unarchive.
         After unarchiving, users can send/like messages and make changes again according to tenant/team settings.
 
     .PARAMETER Identity
@@ -36,9 +36,9 @@ function Unprotect-PSMsTeamsTeam {
         return a `PSMicrosoftEntraID.Batch.Request` object for batch processing.
 
     .EXAMPLE
-        PS C:\> Protect-PSMsTeamsTeam -Identity "teamname@contoso.com"
+        PS C:\> Unprotect-PSMsTeamsTeam -Identity "teamname@contoso.com"
 
-        Archives the team with the specified identity. If the team is not found, an error is thrown.
+        Unarchives the team with the specified identity. If the team is not found, an error is thrown.
 #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
     [OutputType()]
@@ -76,11 +76,11 @@ function Unprotect-PSMsTeamsTeam {
                     [string] $path = ("teams/{0}/unarchive" -f $itemInputObject.Id)
 
                     if ($PassThru.IsPresent) {
-                        [PSMicrosoftEntraID.Batch.Request]@{ Method = $method; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
+                        [PSMicrosoftEntraID.Batch.Request]@{ Method = $method; Url = ('/{0}' -f $path); Headers = $header }
                     }
                     else {
                         Invoke-PSFProtectedCommand -ActionString 'Team.Unarchive' -ActionStringValues $itemInputObject.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                            [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method $method -ErrorAction Stop)
+                            [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Method $method -ErrorAction Stop)
                         } -EnableException:$EnableException -Confirm:$cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                         if (Test-PSFFunctionInterrupt) { return }
                     }
@@ -93,18 +93,18 @@ function Unprotect-PSMsTeamsTeam {
                     if (-not([object]::Equals($team, $null))) {
                         [string] $path = ("teams/{0}/unarchive" -f $team.Id)
                         if ($PassThru.IsPresent) {
-                            [PSMicrosoftEntraID.Batch.Request]@{ Method = $method; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
+                            [PSMicrosoftEntraID.Batch.Request]@{ Method = $method; Url = ('/{0}' -f $path); Headers = $header }
                         }
                         else {
                             Invoke-PSFProtectedCommand -ActionString 'Team.Unarchive' -ActionStringValues $team.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                                [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method Post -ErrorAction Stop)
+                                [void](Invoke-EntraRequest -Service $service -Path $path -Header $header -Method Post -ErrorAction Stop)
                             } -EnableException:$EnableException -Confirm:$cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                             if (Test-PSFFunctionInterrupt) { return }
                         }
                     }
                     else {
                         if ($EnableException.IsPresent) {
-                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Get.Failed) -f $group)
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Get.Failed) -f $itemIdentity)
                         }
                     }
                 }

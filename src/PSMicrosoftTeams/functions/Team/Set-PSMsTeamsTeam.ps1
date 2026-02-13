@@ -117,7 +117,9 @@
         [Parameter()]
         [switch] $EnableException,
         [Parameter()]
-        [switch] $Force
+        [switch] $Force,
+        [Parameter()]
+        [switch] $PassThru
     )
 
     begin {
@@ -187,7 +189,7 @@
                     }
                     else {
                         if ($EnableException.IsPresent) {
-                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Get.Failed) -f $teamId)
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Get.Failed) -f $itemIdentity)
                         }
                     }
                 }

@@ -30,11 +30,9 @@
 	)
 	process {
 		foreach ($scope in $Scopes) {
-			foreach ($scope in $Scopes) {
-				if ($scope -like 'https://*/*') { $scope }
-				elseif ($scope -like 'api:/') { $scope }
-				else { "{0}/{1}" -f $Resource, $scope }
-			}
+			if ($scope -like 'https://*/*') { $scope }
+			elseif ($scope -like 'api:/') { $scope }
+			else { "{0}/{1}" -f $Resource, $scope }
 		}
 	}
 }

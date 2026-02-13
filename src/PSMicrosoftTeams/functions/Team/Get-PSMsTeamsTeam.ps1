@@ -32,7 +32,7 @@
 
     #>
     [OutputType('PSMicrosoftTeams.Teams.Team')]
-    [CmdletBinding(DefaultParameterSetName = 'Identity')]
+    [CmdletBinding(DefaultParameterSetName = 'All')]
     param(
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
         [ValidateGroupIdentity()]
@@ -49,7 +49,7 @@
         [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'Filter')]
         [ValidateNotNullOrEmpty()]
         [switch]$AdvancedFilter,
-        [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'All')]
+        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'All')]
         [ValidateNotNullOrEmpty()]
         [switch]$All,
         [Parameter()]
@@ -119,12 +119,10 @@
                 if (Test-PSFFunctionInterrupt) { return }
             }
             'All' {
-                if ($All.IsPresent) {
-                    Invoke-PSFProtectedCommand -ActionString 'Team.List' -ActionStringValues 'All' -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                        ConvertFrom-RestObject -Type ([PSMicrosoftTeams.Teams.Team]) -InputObject (Invoke-EntraRequest -Service $service -Path 'teams' -Query $queryLocal -Method Get -ErrorAction Stop)
-                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
-                    if (Test-PSFFunctionInterrupt) { return }
-                }
+                Invoke-PSFProtectedCommand -ActionString 'Team.List' -ActionStringValues 'All' -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                    ConvertFrom-RestObject -Type ([PSMicrosoftTeams.Teams.Team]) -InputObject (Invoke-EntraRequest -Service $service -Path 'teams' -Query $queryLocal -Method Get -ErrorAction Stop)
+                } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+                if (Test-PSFFunctionInterrupt) { return }
             }
         }
     }

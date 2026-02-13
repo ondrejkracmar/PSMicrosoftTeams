@@ -69,7 +69,7 @@
         [Parameter(ParameterSetName = 'SendMessage', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [Alias("ChannelId")]
         [string] $Channel,
-        [Parameter(ParameterSetName = 'SendMessage', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
+        [Parameter(ParameterSetName = 'SendMessage', ValueFromPipelineByPropertyName = $true)]
         [string] $Subject,
         [Parameter(ParameterSetName = 'SendMessage', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [string] $Message,
@@ -91,6 +91,7 @@
         [int] $commandRetryCount = Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryCount' -f $script:ModuleName)
         [System.TimeSpan] $commandRetryWait = New-TimeSpan -Seconds (Get-PSFConfigValue -FullName ('{0}.Settings.Command.RetryWaitInSeconds' -f $script:ModuleName))
         [hashtable] $header = @{ 'Content-Type' = 'application/json' }
+        [string] $method = 'Post'
         if ($Force.IsPresent -and (-not $Confirm.IsPresent)) {
             [bool] $cmdLetConfirm = $false
         }

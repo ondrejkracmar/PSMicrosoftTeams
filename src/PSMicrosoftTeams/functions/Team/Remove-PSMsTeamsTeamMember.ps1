@@ -83,7 +83,9 @@ function Remove-PSMsTeamsTeamMember {
         [Parameter()]
         [switch] $EnableException,
         [Parameter()]
-        [switch] $Force
+        [switch] $Force,
+        [Parameter()]
+        [switch] $PassThru
     )
 
     begin {
@@ -143,7 +145,7 @@ function Remove-PSMsTeamsTeamMember {
                         [void] $bodyMemberUrlList.Add(
                             @{
                                 '@odata.type'     = "#microsoft.graph.aadUserConversationMember"
-                                'user@odata.bind' = ('{0}/users(''{1}'')' -f (Get-EntraService -Name $service).ServiceUrl, $teamUsert.Id)
+                                'user@odata.bind' = ('{0}/users(''{1}'')' -f (Get-EntraService -Name $service).ServiceUrl, $teamUser.Id)
                             }
                         )
                         [void] $memberUserPrincipalListList.Add($teamUser.UserPrincipalName)
@@ -160,7 +162,6 @@ function Remove-PSMsTeamsTeamMember {
     end {
         switch ($PSCmdlet.ParameterSetName) {
             'IdentityInputObject' {
-                $method = 'DELETE'
                 $path = ('teams/{0}/members/remove' -f $team.Id)
                 $body = @{ values = @($bodyMemberUrlList) }
                 $method = 'POST'
@@ -168,7 +169,7 @@ function Remove-PSMsTeamsTeamMember {
                     [PSMicrosoftEntraID.Batch.Request] @{ Method = $method; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
                 }
                 else {
-                    Invoke-PSFProtectedCommand -ActionString 'TeamMember.Remove' -ActionStringValues $team.DisplayName, (($memberUserPrincipalListList | ForEach-Object { "{0}" -f $psiTEM }) -join ',') -Target $team.DisplayName -ScriptBlock {
+                    Invoke-PSFProtectedCommand -ActionString 'TeamMember.Remove' -ActionStringValues $team.DisplayName, (($memberUserPrincipalListList | ForEach-Object { "{0}" -f $PSItem }) -join ',') -Target $team.DisplayName -ScriptBlock {
                         [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body  -Method $method -ErrorAction Stop)
                     } -EnableException:$EnableException -Confirm:$cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                     if (Test-PSFFunctionInterrupt) { return }
@@ -182,7 +183,7 @@ function Remove-PSMsTeamsTeamMember {
                     [PSMicrosoftEntraID.Batch.Request] @{ Method = $method; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
                 }
                 else {
-                    Invoke-PSFProtectedCommand -ActionString 'TeamMember.Remove' -ActionStringValues $team.DisplayName, (($memberUserPrincipalListList | ForEach-Object { "{0}" -f $psiTEM }) -join ',') -Target $team.DisplayName -ScriptBlock {
+                    Invoke-PSFProtectedCommand -ActionString 'TeamMember.Remove' -ActionStringValues $team.DisplayName, (($memberUserPrincipalListList | ForEach-Object { "{0}" -f $PSItem }) -join ',') -Target $team.DisplayName -ScriptBlock {
                         [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body  -Method $method -ErrorAction Stop)
                     } -EnableException:$EnableException -Confirm:$cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                     if (Test-PSFFunctionInterrupt) { return }

@@ -46,6 +46,6 @@
 			$serviceUrlBase = $serviceUrlBase -replace "%$key%", $BoundParameters.$key
 		}
 
-		"$($serviceUrlBase.TrimEnd('/'))/$($Path.TrimStart('/'))"
+		"$($serviceUrlBase.TrimEnd('/'))/$($BoundParameters.Path.TrimStart('/'))"
 	}
 }

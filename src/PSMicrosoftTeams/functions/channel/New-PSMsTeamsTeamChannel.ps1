@@ -145,7 +145,7 @@ function New-PSMsTeamsTeamChannel {
             }
             else {
                 if ($EnableException.IsPresent) {
-                    Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $owner)
+                    Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name User.Get.Failed) -f $member)
                 }
             }
         }

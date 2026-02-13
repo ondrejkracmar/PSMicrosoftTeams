@@ -114,12 +114,13 @@
 		$this.Type = 'KeyVault'
 	}
 
-	EntraToken([string]$Service, [string] $AccessToken, [string]$TenantID, [string]$IdentityID, [string[]] $Scopes, [string]$ServiceUrl, [string]$AuthenticationUr, [string]$IdentityType) {
+	EntraToken([string]$Service, [string] $AccessToken, [string]$TenantID, [string]$IdentityID, [string[]] $Scopes, [string]$ServiceUrl, [string]$AuthenticationUrl, [string]$IdentityType) {
 		$this.Service = $Service
 		$this.AccessToken = $AccessToken
 		$this.TenantID = $TenantID
 		$this.Scopes = $Scopes
 		$this.ServiceUrl = $ServiceUrl
+		$this.AuthenticationUrl = $AuthenticationUrl
 		$this.Type = $IdentityType
 
 		if ($IdentityID) {
@@ -251,7 +252,7 @@
 				$this.SetTokenMetadata($result)
 			}
 			AzToken {
-				$result = Connect-ServiceAzToken -AzToken $this.AccessToken
+				$result = Connect-ServiceAzToken -AzToken $this
 				$this.SetTokenMetadata($result)
 			}
 			Federated {

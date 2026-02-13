@@ -127,7 +127,7 @@
                     [hashtable] $body = @{}
                     $body['@odata.type'] = '#microsoft.graph.aadUserConversationMember'
                     $body['user@odata.bind'] = ('{0}/users(''{1}'')' -f (Get-EntraService -Name $service).ServiceUrl, $itemInputObject.Id)
-                    if (Test-PSFParameterBinding -ParameterName 'Roles') {
+                    if (Test-PSFParameterBinding -ParameterName 'Role') {
                         $body['roles'] = @($Role.ToLower())
                     }
                     else {
@@ -153,7 +153,7 @@
                         [hashtable] $body = @{}
                         $body['@odata.type'] = '#microsoft.graph.aadUserConversationMember'
                         $body['user@odata.bind'] = ('{0}/users(''{1}'')' -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id)
-                        if (Test-PSFParameterBinding -ParameterName 'Roles') {
+                        if (Test-PSFParameterBinding -ParameterName 'Role') {
                             $body['roles'] = @($Role.ToLower())
                         }
                         else {

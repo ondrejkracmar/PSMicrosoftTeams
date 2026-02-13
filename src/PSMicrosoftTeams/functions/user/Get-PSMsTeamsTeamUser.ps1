@@ -38,7 +38,7 @@
 
 #>
     [OutputType('PSMicrosoftEntraID.Users.User')]
-    [CmdletBinding(DefaultParameterSetName = 'Identity')]
+    [CmdletBinding(DefaultParameterSetName = 'All')]
     param (
         [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Identity')]
         [Alias("Id", "UserPrincipalName", "Mail")]
@@ -60,7 +60,7 @@
         [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'Filter')]
         [ValidateNotNullOrEmpty()]
         [switch] $AdvancedFilter,
-        [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'All')]
+        [Parameter(Mandatory = $false, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'All')]
         [ValidateNotNullOrEmpty()]
         [switch] $All,
         [Parameter()]
@@ -154,21 +154,19 @@
                 }
             }
             'All' {
-                if ($All.IsPresent) {
-                    if ($Disabled.IsPresent) {
-                        [hashtable] $header = @{}
-                        $header['ConsistencyLevel'] = 'eventual'
-                        $queryLocal['$Filter'] = "accountEnabled eq false"
-                        Invoke-PSFProtectedCommand -ActionString 'User.Filter' -ActionStringValues 'accountEnabled eq false' -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                            ConvertFrom-RestObject -Type ([PSMicrosoftEntraID.Users.User]) -InputObject (Invoke-EntraRequest -Service $service -Path ('users') -Header $header -Query $queryLocal -Method Get -ErrorAction Stop)
-                        } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
-                    }
-                    else {
-                        Invoke-PSFProtectedCommand -ActionString 'User.List' -ActionStringValues 'All' -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                            ConvertFrom-RestObject -Type ([PSMicrosoftEntraID.Users.User]) -InputObject (Invoke-EntraRequest -Service $service -Path ('users') -Query $queryLocal -Method Get -ErrorAction Stop)
-                        } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
-                        if (Test-PSFFunctionInterrupt) { return }
-                    }
+                if ($Disabled.IsPresent) {
+                    [hashtable] $header = @{}
+                    $header['ConsistencyLevel'] = 'eventual'
+                    $queryLocal['$Filter'] = "accountEnabled eq false"
+                    Invoke-PSFProtectedCommand -ActionString 'User.Filter' -ActionStringValues 'accountEnabled eq false' -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                        ConvertFrom-RestObject -Type ([PSMicrosoftEntraID.Users.User]) -InputObject (Invoke-EntraRequest -Service $service -Path ('users') -Header $header -Query $queryLocal -Method Get -ErrorAction Stop)
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+                }
+                else {
+                    Invoke-PSFProtectedCommand -ActionString 'User.List' -ActionStringValues 'All' -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
+                        ConvertFrom-RestObject -Type ([PSMicrosoftEntraID.Users.User]) -InputObject (Invoke-EntraRequest -Service $service -Path ('users') -Query $queryLocal -Method Get -ErrorAction Stop)
+                    } -EnableException $EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
+                    if (Test-PSFFunctionInterrupt) { return }
                 }
             }
         }

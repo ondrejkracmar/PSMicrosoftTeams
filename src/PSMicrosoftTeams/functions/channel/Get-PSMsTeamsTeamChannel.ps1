@@ -53,7 +53,7 @@
         [ValidateNotNullOrEmpty()]
         [string] $MembershipType = 'Standard',
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'IdentityChannelType')]
-        [ValidateSet('Team', 'Incomming', 'All')]
+        [ValidateSet('Team', 'Incoming', 'All')]
         [ValidateNotNullOrEmpty()]
         [string] $ChannelType = 'All',
         [Parameter()]
@@ -81,7 +81,7 @@
                     }
                     else {
                         if ($EnableException.IsPresent) {
-                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Get.Failed) -f $teamIdentity)
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Get.Failed) -f $Identity)
                         }
                     }
                 } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
@@ -92,7 +92,7 @@
                     [PSMicrosoftTeams.Teams.Team]$team = Get-PSMsTeamsTeam -Identity $Identity
                     if (-not([object]::Equals($team, $null))) {
                         $channelQuery['$Filter'] = ("startswith(displayName,'{0}')" -f $DisplayName)
-                        [string] $path = ("teams/{0}/allChannels/") -f $team.Id, $Channel
+                        [string] $path = ("teams/{0}/allChannels/") -f $team.Id
                         [PSMicrosoftTeams.Channels.Channel[]] $channelList =ConvertFrom-RestObject -Type ([PSMicrosoftTeams.Channels.Channel]) -InputObject( Invoke-EntraRequest -Service $service -Path $path -Query $channelQuery -Method Get -ErrorAction Stop)
                         if ($channelList) {
                             foreach ($itemChannel in $channelList) {
@@ -102,7 +102,7 @@
                     }
                     else {
                         if ($EnableException.IsPresent) {
-                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Get.Failed) -f $teamIdentity)
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Get.Failed) -f $Identity)
                         }
                     }
                 } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
@@ -124,7 +124,7 @@
                     }
                     else {
                         if ($EnableException.IsPresent) {
-                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Get.Failed) -f $teamIdentity)
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Get.Failed) -f $Identity)
                         }
                     }
                 } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false
@@ -139,7 +139,7 @@
                             'Team' {
                                 [string] $path = ('teams/{0}/channels' -f $team.Id)
                             }
-                            'Incomming' {
+                            'Incoming' {
                                 [string] $path = ('teams/{0}/incomingChannels' -f $team.Id)
                             }
                             'All' {
@@ -149,12 +149,6 @@
                                 [string] $path = ('teams/{0}/allChannels' -f $team.Id)
                             }
 
-                        }
-                        if (Test-PSFParameterBinding -ParameterName 'MembershipType') {
-                            $query['$Filter'] = ('membershipType eq ''{0}''' -f $MembershipType.ToLower())
-                        }
-                        else {
-                            $query['$Filter'] = ('membershipType eq ''{0}''' -f 'Standard')
                         }
                         [PSMicrosoftTeams.Channels.Channel[]] $channelList =  ConvertFrom-RestObject -Type ([PSMicrosoftTeams.Channels.Channel]) -InputObject( Invoke-EntraRequest -Service $service -Path $path -Query $query -Method Get -ErrorAction Stop)
                         if ($channelList) {
@@ -166,7 +160,7 @@
                     else {
 
                         if ($EnableException.IsPresent) {
-                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Get.Failed) -f $teamIdentity)
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Get.Failed) -f $Identity)
                         }
                     }
                 } -EnableException:$EnableException -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait -WhatIf:$false

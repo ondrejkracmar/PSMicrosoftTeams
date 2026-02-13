@@ -332,17 +332,16 @@
                     $body['template@odata.bind'] = ('{0}/teamsTemplates(''standard'')' -f (Get-EntraService -Name $service).ServiceUrl)
                 }
 
+                [System.Collections.ArrayList] $bodyMemberUrlList = [System.Collections.ArrayList]::new()
                 if (Test-PSFParameterBinding -ParameterName 'Owners') {
-                    [System.Collections.ArrayList] $bodyOwnerUrlList = [System.Collections.ArrayList]::new()
                     foreach ($itemOwner in $Owners) {
                         [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $itemOwner
                         [hashtable] $ownerBody = @{}
                         if (-not([object]::Equals($aADUser, $null))) {
                             $ownerBody['@odata.type'] = '#microsoft.graph.aadUserConversationMember'
-                            $ownerBody['user@odata.bind'] = ('{0}/users/''({1})''' -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id)
+                            $ownerBody['user@odata.bind'] = ('{0}/users(''{1}'')' -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id)
                             $ownerBody['roles'] = @('owner')
-                            [void] $bodyOwnerUrlList.Add($ownerBody )
-                            $body = @{ members = [array]$bodyOwnerUrlList }
+                            [void] $bodyMemberUrlList.Add($ownerBody)
                         }
                         else {
                             if ($EnableException.IsPresent) {
@@ -352,15 +351,14 @@
                     }
                 }
                 if (Test-PSFParameterBinding -ParameterName 'Members') {
-                    [System.Collections.ArrayList] $bodyMemberUrlList = [System.Collections.ArrayList]::new()
                     foreach ($itemMember in $Members) {
                         [hashtable] $memberBody = @{}
                         [PSMicrosoftEntraID.Users.User] $aADUser = Get-PSEntraIDUser -Identity $itemMember
                         if (-not([object]::Equals($aADUser, $null))) {
                             $memberBody['@odata.type'] = '#microsoft.graph.aadUserConversationMember'
-                            $memberBody['user@odata.bind'] = ('{0}/users/''({1})''' -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id)
+                            $memberBody['user@odata.bind'] = ('{0}/users(''{1}'')' -f (Get-EntraService -Name $service).ServiceUrl, $aADUser.Id)
                             $memberBody['roles'] = @('member')
-                            [void]$memberBodyList.Add($memberBody)
+                            [void] $bodyMemberUrlList.Add($memberBody)
                         }
                         else {
                             if ($EnableException.IsPresent) {
@@ -369,6 +367,7 @@
                         }
                     }
                 }
+                if ($bodyMemberUrlList.Count -gt 0) { $body['members'] = [array]$bodyMemberUrlList }
 
                 if ($PassThru.IsPresent) {
                     [PSMicrosoftEntraID.Batch.Request] @{ Method = $method; Url = ('/{0}' -f $path); Body = $body; Headers = $header }

@@ -81,7 +81,7 @@
     process {
         switch ($PSCmdlet.ParameterSetName) {
             'IdentityChannel' {
-                Invoke-PSFProtectedCommand -ActionString 'TeamChannelCahnnelMember.Get' -ActionStringValues $Channel -Target $Identity -ScriptBlock {
+                Invoke-PSFProtectedCommand -ActionString 'TeamChannelMember.Get' -ActionStringValues $Channel -Target $Identity -ScriptBlock {
                     [PSMicrosoftTeams.Teams.Team] $team = Get-PSMsTeamsTeam -Identity $Identity -EnableException:$EnableException
                     if (-not([object]::Equals($team, $null))) {
                         if (Test-PSFParameterBinding -ParameterName 'All') {

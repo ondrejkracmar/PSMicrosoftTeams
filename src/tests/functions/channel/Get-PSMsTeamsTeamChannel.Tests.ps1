@@ -73,7 +73,7 @@
             $param | Should -Not -BeNullOrEmpty
             $validateSet = $param.Attributes | Where-Object { $_ -is [System.Management.Automation.ValidateSetAttribute] }
             $validateSet.ValidValues | Should -Contain 'Team'
-            $validateSet.ValidValues | Should -Contain 'Incomming'
+            $validateSet.ValidValues | Should -Contain 'Incoming'
             $validateSet.ValidValues | Should -Contain 'All'
         }
 

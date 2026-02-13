@@ -75,11 +75,11 @@
                 foreach ($itemInputObject in $InputObject) {
                     [string] $path = ('groups/{0}' -f $itemInputObject.Id)
                     if ($PassThru.IsPresent) {
-                        [PSMicrosoftEntraID.Batch.Request] @{ Method = $method; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
+                        [PSMicrosoftEntraID.Batch.Request] @{ Method = $method; Url = ('/{0}' -f $path); Headers = $header }
                     }
                     else {
                         Invoke-PSFProtectedCommand -ActionString 'Team.Delete' -ActionStringValues $itemInputObject.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                            [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method $method -ErrorAction Stop)
+                            [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Method $method -ErrorAction Stop)
                         } -EnableException:$EnableException -Confirm:$cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                         if (Test-PSFFunctionInterrupt) { return }
                     }
@@ -92,18 +92,18 @@
                         [string] $path = ('groups/{0}' -f $team.Id)
 
                         if ($PassThru.IsPresent) {
-                            [PSMicrosoftEntraID.Batch.Request] @{ Method = $method; Url = ('/{0}' -f $path); Body = $body; Headers = $header }
+                            [PSMicrosoftEntraID.Batch.Request] @{ Method = $method; Url = ('/{0}' -f $path); Headers = $header }
                         }
                         else {
                             Invoke-PSFProtectedCommand -ActionString 'Team.Delete' -ActionStringValues $team.DisplayName -Target (Get-PSFLocalizedString -Module $script:ModuleName -Name Identity.Platform) -ScriptBlock {
-                                [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Body $body -Method $method -ErrorAction Stop)
+                                [void] (Invoke-EntraRequest -Service $service -Path $path -Header $header -Method $method -ErrorAction Stop)
                             } -EnableException:$EnableException -Confirm:$cmdLetConfirm -PSCmdlet $PSCmdlet -Continue -RetryCount $commandRetryCount -RetryWait $commandRetryWait
                             if (Test-PSFFunctionInterrupt) { return }
                         }
                     }
                     else {
                         if ($EnableException.IsPresent) {
-                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Get.Failed) -f $group)
+                            Invoke-TerminatingException -Cmdlet $PSCmdlet -Message ((Get-PSFLocalizedString -Module $script:ModuleName -Name Team.Get.Failed) -f $itemIdentity)
                         }
                     }
                 }

@@ -38,7 +38,7 @@
 
 	"TeamChannelMember.Add"          = "Add user '{0}' to channel {1}"
 	'TeamChannelMember.Remove'       = "Remove membershipid '{0}'"
-	'TeamChannelCahnnelMember.Get'   = "Get members from channel '{0}'"
+	'TeamChannelMember.Get'   = "Get members from channel '{0}'"
 
 	'TeamChannel.Message.Send'       = "Send message with subject '{0}' to channel '{1}'"
 

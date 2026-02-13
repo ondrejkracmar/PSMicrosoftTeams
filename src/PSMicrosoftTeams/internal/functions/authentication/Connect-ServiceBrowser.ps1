@@ -161,6 +161,7 @@ $uriFinal
 
 		# Get Result
 		$task = $http.GetContextAsync()
+		$redirectTo = "$($RedirectUri.TrimEnd('/'))/"
 		$authorizationCode, $stateReturn, $sessionState = $null
 		try {
 			while (-not $task.IsCompleted) {

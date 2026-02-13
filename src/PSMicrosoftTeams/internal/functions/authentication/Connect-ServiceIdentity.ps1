@@ -62,7 +62,7 @@
 			$env:IDENTITY_API_VERSION = "2018-02-01"
 		}
 
-		if ((-not $env:IDENTITY_ENDPOINT) -or (-not $env:IDENTITY_HEADER)) {
+		if ((-not $env:IDENTITY_ENDPOINT) -and (-not $isAzureVM)) {
 			Invoke-TerminatingException -Cmdlet $Cmdlet -Message "Cannot identify a Managed Identity. MSI logon not possible!" -Category ConnectionError
 		}
 
