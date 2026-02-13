@@ -80,6 +80,27 @@
         It 'Should accept Identity from pipeline by value' {
             $command = Get-Command -Name Get-PSMsTeamsTeamUser -Module PSMicrosoftTeams
             $param = $command.Parameters['Identity']
+            ($param.Attributes | Where-Object { $_ -is [System.Management.Automation.ParameterAttribute] -and $_.ValueFromPipeline }).Count |
+                Should -BeGreaterThan 0
+        }
+
+        It 'Should accept Identity from pipeline by property name' {
+            $command = Get-Command -Name Get-PSMsTeamsTeamUser -Module PSMicrosoftTeams
+            $param = $command.Parameters['Identity']
+            ($param.Attributes | Where-Object { $_ -is [System.Management.Automation.ParameterAttribute] -and $_.ValueFromPipelineByPropertyName }).Count |
+                Should -BeGreaterThan 0
+        }
+
+        It 'Should NOT accept CompanyName from pipeline by value' {
+            $command = Get-Command -Name Get-PSMsTeamsTeamUser -Module PSMicrosoftTeams
+            $param = $command.Parameters['CompanyName']
+            ($param.Attributes | Where-Object { $_ -is [System.Management.Automation.ParameterAttribute] -and $_.ValueFromPipeline }).Count |
+                Should -Be 0
+        }
+
+        It 'Should accept CompanyName from pipeline by property name' {
+            $command = Get-Command -Name Get-PSMsTeamsTeamUser -Module PSMicrosoftTeams
+            $param = $command.Parameters['CompanyName']
             ($param.Attributes | Where-Object { $_ -is [System.Management.Automation.ParameterAttribute] -and $_.ValueFromPipelineByPropertyName }).Count |
                 Should -BeGreaterThan 0
         }
@@ -147,11 +168,28 @@
     }
 
     Context 'Pipeline input' {
-        It 'Should accept multiple Identity values from pipeline' {
+        It 'Should accept string values from pipeline (binds to Identity)' {
             Mock -ModuleName PSMicrosoftTeams Invoke-EntraRequest -RemoveParameterType 'Token' { return $script:mockUser }
             Mock -ModuleName PSMicrosoftTeams ConvertFrom-RestObject { return $script:mockUser }
 
-            { @('user001@contoso.com', 'user002@contoso.com') | ForEach-Object { Get-PSMsTeamsTeamUser -Identity $_ } } | Should -Not -Throw
+            { 'user001@contoso.com', 'user002@contoso.com' | Get-PSMsTeamsTeamUser } | Should -Not -Throw
+            Should -Invoke -ModuleName PSMicrosoftTeams Invoke-EntraRequest -Times 2
+        }
+
+        It 'Should accept single GUID from pipeline' {
+            Mock -ModuleName PSMicrosoftTeams Invoke-EntraRequest -RemoveParameterType 'Token' { return $script:mockUser }
+            Mock -ModuleName PSMicrosoftTeams ConvertFrom-RestObject { return $script:mockUser }
+
+            { 'c58ae520-0303-4f89-beae-bbf663963efd' | Get-PSMsTeamsTeamUser } | Should -Not -Throw
+        }
+
+        It 'Should not cause parameter set ambiguity when piping strings' {
+            Mock -ModuleName PSMicrosoftTeams Invoke-EntraRequest -RemoveParameterType 'Token' { return $script:mockUser }
+            Mock -ModuleName PSMicrosoftTeams ConvertFrom-RestObject { return $script:mockUser }
+
+            # This previously failed with "Parameter set cannot be resolved" because
+            # both Identity and CompanyName accepted ValueFromPipeline with [string[]]
+            { 'john@contoso.com' | Get-PSMsTeamsTeamUser } | Should -Not -Throw
         }
     }
 

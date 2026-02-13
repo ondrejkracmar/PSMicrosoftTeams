@@ -47,7 +47,7 @@
         [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $false, ParameterSetName = 'Name')]
         [ValidateNotNullOrEmpty()]
         [string[]]$Name,
-        [Parameter(Mandatory = $True, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'CompanyName')]
+        [Parameter(Mandatory = $True, ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'CompanyName')]
         [ValidateNotNullOrEmpty()]
         [string[]]$CompanyName,
         [Parameter(Mandatory = $false, ParameterSetName = 'CompanyName')]
